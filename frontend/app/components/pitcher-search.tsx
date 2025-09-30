@@ -1,127 +1,87 @@
 import React, { useState } from "react";
 
-export default function PlayerSearch() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [startYear, setStartYear] = useState("");
-  const [endYear, setEndYear] = useState("");
-  const [players, setPlayers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [playerWar, setPlayerWar] = useState(null);
+interface PitcherData {
+  Name: string;
+  Team: string;
+  Age: number;
+  W: number;
+  L: number;
+}
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+export default function PitcherSearch() {
+  const [season, setSeason] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [data, setData] = useState<PitcherData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  const handleSearch = async () => {
     setLoading(true);
-    setPlayers([]);
-    setPlayerWar(null);
-
+    setError("");
+    setData([]);
     try {
-      const response = await fetch(
-        `http://127.0.0.1:6969/api/search-player?first_name=${encodeURIComponent(
-          firstName
-        )}&last_name=${encodeURIComponent(lastName)}`
-      );
-      const data = await response.json();
-      setPlayers(data);
-    } catch (error) {
-      console.error("Error fetching players:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      const params = new URLSearchParams();
+      if (season) params.append("season", season);
+      if (name) params.append("name", name);
 
-  const getPitcherWar = async (playerFullName) => {
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:6969/api/get-pitcher-war?full_name=${encodeURIComponent(
-          playerFullName
-        )}&start_year=${encodeURIComponent(startYear)}&end_year=${encodeURIComponent(
-          endYear
-        )}`
-      );
-      const data = await response.json();
-      if (Array.isArray(data) && data.length > 0) {
-        setPlayerWar(data[0]);
+      const res = await fetch(`http://127.0.0.1:6969/api/search-pitcher?${params.toString()}`);
+      if (!res.ok) throw new Error("Network response was not ok");
+
+      const json: PitcherData[] = await res.json();
+      if (json.length === 0) {
+        setError("No pitchers found for the given criteria.");
       } else {
-        setPlayerWar(null);
+        setData(json);
       }
     } catch (error) {
-      console.error("Error fetching pitcher WAR:", error);
+      console.error("Error fetching data", error);
+      setError("Failed to fetch pitcher data. Please try again.");
     }
+    setLoading(false);
   };
+
+  const columns: (keyof PitcherData)[] = ["Name", "Team", "Age", "W", "L"];
 
   return (
     <div>
-      <h1>Search MLB Player</h1>
-
-      <form onSubmit={handleSubmit}>
+      <div>
         <input
           type="text"
-          placeholder="First Name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
+          placeholder="Season year"
+          value={season}
+          onChange={(e) => setSeason(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Last Name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Player name (optional)"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
-        <button type="submit">Search</button>
-      </form>
+        <button onClick={handleSearch}>Search</button>
+      </div>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : players.length > 0 ? (
-        <div>
-          <div>
-            <input
-              type="text"
-              placeholder="Start Year"
-              value={startYear}
-              onChange={(e) => setStartYear(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="End Year"
-              value={endYear}
-              onChange={(e) => setEndYear(e.target.value)}
-            />
-          </div>
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
 
-          <table>
-            <thead>
-              <tr>
-                <th>Player Name</th>
-                <th>Action</th>
+      {data.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              {columns.map((key) => (
+                <th key={key}>{key}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, idx) => (
+              <tr key={idx}>
+                {columns.map((col) => (
+                  <td key={col}>{row[col]}</td>
+                ))}
               </tr>
-            </thead>
-            <tbody>
-              {players.map((player, idx) => {
-                const fullName = `${player.name_first} ${player.name_last}`;
-                return (
-                  <tr key={idx}>
-                    <td>{fullName}</td>
-                    <td>
-                      <button onClick={() => getPitcherWar(fullName)}>
-                        Show WAR
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p>No players found.</p>
-      )}
-
-      {playerWar !== null && (
-        <div>
-          <h2>WAR</h2>
-          <p>{playerWar}</p>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 
 interface PitcherData {
+  IDfg: string;
   Name: string;
   Team: string;
   Age: number;
   W: number;
   L: number;
+  start?: number;
+  end?: number;
+  loadingYears?: boolean;
+  errorYears?: string;
 }
 
 export default function PitcherSearch() {
@@ -40,6 +45,32 @@ export default function PitcherSearch() {
     setLoading(false);
   };
 
+  const handleFindYears = async (idfg: string, index: number) => {
+    setData((prev) => {
+      const newData = [...prev];
+      newData[index] = { ...newData[index], loadingYears: true, errorYears: undefined };
+      return newData;
+    });
+
+    try {
+      const res = await fetch(`http://127.0.0.1:6969/api/get-player-years?fangraph_id=${idfg}`);
+      if (!res.ok) throw new Error("Failed to fetch years");
+      const json: { start: number; end: number } = await res.json();
+      setData((prev) => {
+        const newData = [...prev];
+        newData[index] = { ...newData[index], start: json.start, end: json.end, loadingYears: false };
+        return newData;
+      });
+    } catch (err) {
+      console.error("Error fetching player years", err);
+      setData((prev) => {
+        const newData = [...prev];
+        newData[index] = { ...newData[index], loadingYears: false, errorYears: "Error loading years" };
+        return newData;
+      });
+    }
+  };
+
   const columns: (keyof PitcherData)[] = ["Name", "Team", "Age", "W", "L"];
 
   return (
@@ -70,14 +101,32 @@ export default function PitcherSearch() {
               {columns.map((key) => (
                 <th key={key}>{key}</th>
               ))}
+              <th>Years Played</th>
             </tr>
           </thead>
           <tbody>
             {data.map((row, idx) => (
               <tr key={idx}>
-                {columns.map((col) => (
-                  <td key={col}>{row[col]}</td>
-                ))}
+                <td>{row.Name}</td>
+                <td>{row.Team}</td>
+                <td>{row.Age}</td>
+                <td>{row.W}</td>
+                <td>{row.L}</td>
+                <td>
+                  {row.start && row.end ? (
+                    <span>
+                      {row.start} - {row.end}
+                    </span>
+                  ) : row.loadingYears ? (
+                    <span>Loading...</span>
+                  ) : row.errorYears ? (
+                    <span>{row.errorYears}</span>
+                  ) : (
+                    <button onClick={() => handleFindYears(row.IDfg, idx)}>
+                      find years played
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

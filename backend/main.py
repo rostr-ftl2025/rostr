@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import fuzzywuzzy.process
 import pandas
+import fuzzywuzzy
 import pybaseball
 
 app = Flask(__name__)
@@ -15,13 +17,19 @@ def hello_world():
 @app.route("/api/search-pitcher", methods=["GET"])
 def search_pitcher():
 
-    player_full_name = request.args.get("name")
     season = request.args.get("season")
+    player_search_name = request.args.get("name")
     
     all_data = pybaseball.pitching_stats(season)
 
-    if player_full_name:
-        player_data = all_data[all_data["Name"] == player_full_name]
+    if player_search_name:
+
+        all_names = all_data["Name"]
+        matches = fuzzywuzzy.process.extract(player_search_name, all_names, limit=10)
+        matches = filter(lambda x: x[1] > 70, matches)
+        matches_names = map(lambda x: x[0], matches)
+
+        player_data = all_data[all_data["Name"].isin(matches_names)]
         if len(player_data) > 0:
             return jsonify(player_data[["Name", "Team", "Age", "W", "L", "IDfg"]].to_dict(orient="records"))
         else:

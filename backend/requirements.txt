@@ -2,3 +2,5 @@ flask
 flask_cors
 pybaseball
 fuzzywuzzy[speedup]
+python-dotenv
+psycopg[binary]

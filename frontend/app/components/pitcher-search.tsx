@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_URL } from "~/config";
 
 interface PitcherData {
   IDfg: string;
@@ -29,7 +30,7 @@ export default function PitcherSearch() {
       if (season) params.append("season", season);
       if (name) params.append("name", name);
 
-      const res = await fetch(`http://127.0.0.1:7000/api/search-pitcher?${params.toString()}`);
+      const res = await fetch(`${API_URL}/api/search-pitcher?${params.toString()}`);
       if (!res.ok) throw new Error("Network response was not ok");
 
       const json: PitcherData[] = await res.json();
@@ -53,7 +54,7 @@ export default function PitcherSearch() {
     });
 
     try {
-      const res = await fetch(`http://127.0.0.1:7000/api/get-player-years?fangraph_id=${idfg}`);
+      const res = await fetch(`${API_URL}/api/get-player-years?fangraph_id=${idfg}`);
       if (!res.ok) throw new Error("Failed to fetch years");
       const json: { start: number; end: number } = await res.json();
       setData((prev) => {

@@ -5,46 +5,23 @@
 
 ## How to run (development mode)
 
-### Backend (Python/Flask):
+This project uses [Docker](https://www.docker.com/) to manage containers. Install from: [https://www.docker.com/](https://www.docker.com/).
 
-Ensure [the latest Python version](https://www.python.org/downloads/)  is installed.
-
-Change to the `backend` directory.
+From the **project directory**, run:
 
 ```bash
-cd backend
+docker compose up --build
 ```
 
-Install all the required Python libraries.
+Other common commands:
+
+To stop containers:
 
 ```bash
-pip3 install -r requirements.txt
+docker compose down
 ```
 
-Run the script.
-
+Clean up Docker environment:
 ```bash
-python3 main.py
-```
-
-### Frontend: (Node.js/React)
-
-Ensure [the latest Node.js LTS version](https://nodejs.org/en/download) is installed.
-
-Change to the `frontend` directory.
-
-```bash
-cd frontend
-```
-
-Install packages.
-
-```bash
-npm install
-```
-
-Run the React app.
-
-```bash
-npm run dev
+docker system prune -a
 ```

@@ -9,7 +9,7 @@ services:
       - ./backend:/app
     depends_on:
       - db
-    command: flask run --host=0.0.0.0 --port=5006 --reload
+    command: flask run --debug --host=0.0.0.0 --port=5006
 
   frontend:
     build:

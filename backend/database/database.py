@@ -22,8 +22,9 @@ class Database:
         """Utility to run SQL safely"""
         with self.connect().cursor() as cur:
             cur.execute(query, params or ())
+            self.conn.commit()
             if fetchone:
                 return cur.fetchone()
             elif fetchall:
                 return cur.fetchall()
-            self.conn.commit()
+            

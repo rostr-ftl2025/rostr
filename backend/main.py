@@ -34,4 +34,4 @@ def hello_world():
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", port=7000, debug=True)
+    app.run("0.0.0.0", port=5006, debug=True)

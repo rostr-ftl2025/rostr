@@ -15,13 +15,13 @@ export default function SignInPage() {
       <div className="space-x-4">
         <button
           onClick={() => setShowSignIn(true)}
-          className="bg-[#bde0fe] hover:bg-[#a2d2ff] text-gray-800 font-semibold py-2 px-6 rounded-xl shadow-md transition"
+          className="bg-[#562424] hover:bg-[#562424] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
         >
           Sign In
         </button>
         <button
           onClick={() => setShowSignUp(true)}
-          className="bg-[#caffbf] hover:bg-[#b5fbb1] text-gray-800 font-semibold py-2 px-6 rounded-xl shadow-md transition"
+          className="bg-[#caffbf] hover:bg-[#b5fbb1] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
         >
           Sign Up
         </button>

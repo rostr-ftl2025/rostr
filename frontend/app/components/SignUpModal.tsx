@@ -19,13 +19,14 @@ export function SignUpModal({ onClose }: SignUpModalProps) {
       const res = await fetch(`${API_URL}/api/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username, password: password }),
       });
 
       const data = await res.json();
       if (res.ok) setMessage("✅ Account created successfully!");
       else setMessage("❌ " + (data.error || "Something went wrong"));
     } catch (err) {
+      console.log(err)
       setMessage("❌ Network error");
     }
   }

@@ -20,10 +20,17 @@ services:
 
   db:
     image: postgres:16
+    container_name: postgres-db
+    restart: unless-stopped
     env_file:
       - ./backend/.env
+    ports:
+      - "5432:5432"
     volumes:
+      # Persist database data
       - pgdata:/var/lib/postgresql/data
+      # Automatically run schema.sql on first startup
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
 volumes:
   pgdata:

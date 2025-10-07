@@ -71,11 +71,7 @@ export function SignUpModal({ onClose }: SignUpModalProps) {
             required
           />
           <button
-<<<<<<< HEAD
-            className="bg-[#562424] hover:bg-[#b5fbb1] py-2 rounded-lg font-semibold text-white"
-=======
             className="bg-[#caffbf] hover:bg-[#b5fbb1] py-2 rounded-lg font-semibold text-gray-800 disabled:opacity-50"
->>>>>>> 711c6bc246301236fa83551b51cb6e8fb6a4cbea
             type="submit"
             disabled={loading}
           >

@@ -10,9 +10,11 @@ class UserController:
         self.bp.add_url_rule("/api/users", view_func=self.create_user, methods=["POST"])
 
     def create_user(self):
-        data = request.json
+        data = request.get_json()
         username = data.get("username")
         password = data.get("password")
+        print(f"Username: {username}")
+        print(f"Password: {password}")
 
         if not username or not password:
             return jsonify({"error": "username and password are required"}), 400

@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 5006
 
-CMD ["python", "main.py"]
+CMD ["python", "-m", "flask", "--debug" "run", "--host=0.0.0.0", "--port=5006"]

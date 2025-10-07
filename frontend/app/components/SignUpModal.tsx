@@ -56,7 +56,7 @@ export function SignUpModal({ onClose }: SignUpModalProps) {
             onChange={(e) => setPassword(e.target.value)}
           />
           <button
-            className="bg-[#caffbf] hover:bg-[#b5fbb1] py-2 rounded-lg font-semibold text-gray-800"
+            className="bg-[#562424] hover:bg-[#b5fbb1] py-2 rounded-lg font-semibold text-white"
             type="submit"
           >
             Sign Up

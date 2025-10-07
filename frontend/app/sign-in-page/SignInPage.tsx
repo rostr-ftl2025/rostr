@@ -7,9 +7,9 @@ export default function SignInPage() {
   const [showSignUp, setShowSignUp] = useState(false);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-[#faf8f3] text-center">
+    <div className="flex flex-col items-center justify-center h-screen bg-[#F5DBD5] text-center">
       <h1 className="text-6xl font-bold text-[#3b3b3b] mb-10 tracking-wide">
-        Rostr<span className="text-[#89c2d9]">.</span>
+        Rostr<span className="text-[#850027]">.</span>
       </h1>
 
       <div className="space-x-4">
@@ -21,7 +21,7 @@ export default function SignInPage() {
         </button>
         <button
           onClick={() => setShowSignUp(true)}
-          className="bg-[#caffbf] hover:bg-[#b5fbb1] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
+          className="bg-[#562424] hover:bg-[#562424] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
         >
           Sign Up
         </button>

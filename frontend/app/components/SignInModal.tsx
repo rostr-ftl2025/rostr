@@ -23,10 +23,10 @@ export function SignInModal({ onClose }: SignInModalProps) {
       });
 
       const data = await res.json();
-      if (res.ok) setMessage("✅ Signed in successfully!");
-      else setMessage("❌ " + (data.error || "Something went wrong"));
+      if (res.ok) setMessage("Signed in successfully!");
+      else setMessage((data.error || "Something went wrong"));
     } catch (err) {
-      setMessage("❌ Network error");
+      setMessage("Network error");
     }
   }
 
@@ -55,7 +55,7 @@ export function SignInModal({ onClose }: SignInModalProps) {
             onChange={(e) => setPassword(e.target.value)}
           />
           <button
-            className="bg-[#bde0fe] hover:bg-[#a2d2ff] py-2 rounded-lg font-semibold text-gray-800"
+            className="bg-[#562424] hover:bg-[#a2d2ff] py-2 rounded-lg font-semibold text-white"
             type="submit"
           >
             Sign In

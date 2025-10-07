@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from database import User, Database
+import bcrypt
 
 
 class UserExistsException(Exception):
@@ -17,8 +18,7 @@ class UserController:
         data = request.get_json()
         username = data.get("username")
         password = data.get("password")
-        print(f"Username: {username}")
-        print(f"Password: {password}")
+        hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
         if not username or not password:
             return jsonify({"error": "username and password are required"}), 400
@@ -30,7 +30,7 @@ class UserController:
             if existing_user:
                 raise UserExistsException("This username is already taken.")
 
-            user = self.user_model.create(username, password)
+            user = self.user_model.create(username, hashed_password)
             return jsonify(user), 201
         except Exception as e:
             return jsonify({"error": str(e)}), 400

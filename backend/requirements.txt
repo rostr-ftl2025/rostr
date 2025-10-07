@@ -4,3 +4,4 @@ pybaseball
 fuzzywuzzy[speedup]
 python-dotenv
 psycopg[binary]
+bcrypt

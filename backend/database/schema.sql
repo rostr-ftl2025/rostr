@@ -32,5 +32,6 @@ CREATE TABLE players (
     mlbid VARCHAR(50),
     idfg VARCHAR(50),
     position VARCHAR(50),
+    grade FLOAT,
     FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
 );

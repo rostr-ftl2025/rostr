@@ -1,5 +1,12 @@
+import datetime
 from flask import Blueprint, request, jsonify
-from database import Player, Database
+from database import Database
+from models import Player
+import pybaseball
+from pybaseball import pitching_stats
+import pandas as pd
+
+pybaseball.enable_cache()
 
 
 class PlayerController:
@@ -38,3 +45,37 @@ class PlayerController:
             return jsonify({"error": "Player not found"}), 404
 
         return jsonify({"message": f"Removed player {player_name}"}), 200
+
+
+    def get_pitcher_stats(name: str, season: int) -> dict[str,float]:
+        """
+        Retrieve a single pitcher's season stats from pybaseball
+        and return them as a dictionary ready for grading.
+
+        Args:
+            name (str): Pitcher's full name (e.g., 'Clayton Kershaw')
+            season (int): MLB season year (e.g., 2015)
+
+        Returns:
+            dict: Dictionary with the key stats used in grade calculation
+        """
+        df = pitching_stats(season)
+        player_data = df[df['Name'].str.lower() == name.lower()]
+
+        if player_data.empty:
+            raise ValueError(f"No stats found for {name} in {season}")
+
+        row = player_data.iloc[0]
+
+        # Build the stats dict (match the grading function keys)
+        stats = {
+            'ERA': float(row['ERA']),
+            'WAR': float(row['WAR']),
+            'O_Swing': float(row['O-Swing% (pi)']),
+            'Contact': float(row['Contact% (pi)']),
+            'Zone': float(row['Zone% (pi)']),
+            'Pace': float(row['Pace (pi)']),
+            'wSL_C': float(row['wSL/C (pi)']) if not pd.isna(row['wSL/C (pi)']) else 0.0,
+            'GS': float(row['GS'])
+        }
+        return stats

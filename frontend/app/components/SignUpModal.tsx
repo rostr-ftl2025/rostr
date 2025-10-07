@@ -10,25 +10,38 @@ export function SignUpModal({ onClose }: SignUpModalProps) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  async function handleSignUp(e: FormEvent<HTMLFormElement>) {
+  function handleSignUp(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
-    try {
-      const res = await fetch(`${API_URL}/api/users`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username, password: password }),
+    fetch(`${API_URL}/api/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: username.trim(),
+        password: password.trim(),
+      }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (res.ok) {
+          setMessage("✅ Account created successfully!");
+          setUsername("");
+          setPassword("");
+        } else {
+          setMessage("❌ " + (data.error || "Something went wrong"));
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setMessage("❌ Network error");
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      const data = await res.json();
-      if (res.ok) setMessage("✅ Account created successfully!");
-      else setMessage("❌ " + (data.error || "Something went wrong"));
-    } catch (err) {
-      console.log(err)
-      setMessage("❌ Network error");
-    }
   }
 
   return (
@@ -47,6 +60,7 @@ export function SignUpModal({ onClose }: SignUpModalProps) {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            required
           />
           <input
             className="border rounded-lg px-3 py-2"
@@ -54,12 +68,18 @@ export function SignUpModal({ onClose }: SignUpModalProps) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
           <button
+<<<<<<< HEAD
             className="bg-[#562424] hover:bg-[#b5fbb1] py-2 rounded-lg font-semibold text-white"
+=======
+            className="bg-[#caffbf] hover:bg-[#b5fbb1] py-2 rounded-lg font-semibold text-gray-800 disabled:opacity-50"
+>>>>>>> 711c6bc246301236fa83551b51cb6e8fb6a4cbea
             type="submit"
+            disabled={loading}
           >
-            Sign Up
+            {loading ? "Creating..." : "Sign Up"}
           </button>
           {message && (
             <p className="text-center text-sm text-gray-600">{message}</p>

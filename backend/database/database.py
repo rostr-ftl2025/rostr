@@ -6,10 +6,6 @@ class Database:
     """Handles connection to PostgreSQL using psycopg 3.2"""
 
     def __init__(self, dsn: str):
-        """
-        dsn example:
-        "dbname=mydb user=myuser password=mypassword host=localhost port=5432"
-        """
         self.dsn = dsn
         self.conn = None
 

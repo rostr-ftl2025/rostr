@@ -2,6 +2,10 @@ from flask import Blueprint, request, jsonify
 from database import User, Database
 
 
+class UserExistsException(Exception):
+    pass
+
+
 class UserController:
     def __init__(self, db: Database):
         self.user_model = User(db)
@@ -20,6 +24,12 @@ class UserController:
             return jsonify({"error": "username and password are required"}), 400
 
         try:
+
+            # Check if user exists
+            existing_user = self.user_model.get_by_username(username)
+            if existing_user:
+                raise UserExistsException("This username is already taken.")
+
             user = self.user_model.create(username, password)
             return jsonify(user), 201
         except Exception as e:

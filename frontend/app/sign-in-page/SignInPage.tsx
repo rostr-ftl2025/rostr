@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { SignInModal } from "../components/SignInModal";
-import { SignUpModal } from "../components/SignUpModal";
+import { AuthModal } from "./AuthModal";
 
 export default function SignInPage() {
-  const [showSignIn, setShowSignIn] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [initialMode, setInitialMode] = useState<"signin" | "signup">("signin");
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-[#F5DBD5] text-center">
@@ -14,21 +13,32 @@ export default function SignInPage() {
 
       <div className="space-x-4">
         <button
-          onClick={() => setShowSignIn(true)}
-          className="bg-[#562424] hover:bg-[#562424] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
+          onClick={() => {
+            setInitialMode("signin");
+            setShowAuthModal(true);
+          }}
+          className="bg-[#562424] hover:bg-[#734343] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
         >
           Sign In
         </button>
         <button
-          onClick={() => setShowSignUp(true)}
-          className="bg-[#562424] hover:bg-[#562424] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
+          onClick={() => {
+            setInitialMode("signup");
+            setShowAuthModal(true);
+          }}
+          className="bg-[#562424] hover:bg-[#734343] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
         >
           Sign Up
         </button>
       </div>
 
-      {showSignIn && <SignInModal onClose={() => setShowSignIn(false)} />}
-      {showSignUp && <SignUpModal onClose={() => setShowSignUp(false)} />}
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => setShowAuthModal(false)}
+          // Optional: pass which mode to start in
+          initialMode={initialMode}
+        />
+      )}
     </div>
   );
 }

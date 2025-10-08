@@ -12,7 +12,7 @@ class UserController:
         self.user_model = User(db)
         self.bp = Blueprint("users", __name__)
 
-        self.bp.add_url_rule("/api/users", view_func=self.create_user, methods=["POST"])
+        self.bp.add_url_rule("/api/users/create_user", view_func=self.create_user, methods=["POST"])
 
     def create_user(self):
         data = request.get_json()

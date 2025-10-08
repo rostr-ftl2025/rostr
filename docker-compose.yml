@@ -5,8 +5,11 @@ services:
       - "5006:5006"
     env_file:
       - ./backend/.env
+    volumes:
+      - ./backend:/app
     depends_on:
       - db
+    command: flask run --debug --host=0.0.0.0 --port=5006
 
   frontend:
     build:
@@ -15,8 +18,12 @@ services:
         VITE_API_URL: "http://backend:5006"
     ports:
       - "5007:5007"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
+    command: npm run dev
 
   db:
     image: postgres:16
@@ -27,9 +34,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # Persist database data
       - pgdata:/var/lib/postgresql/data
-      # Automatically run schema.sql on first startup
       - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
 volumes:

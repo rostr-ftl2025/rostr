@@ -1,34 +1,40 @@
 import React, { useState } from "react";
-import { SignInModal } from "../components/SignInModal";
-import { SignUpModal } from "../components/SignUpModal";
+import { AuthModal } from "./AuthModal";
 
 export default function SignInPage() {
-  const [showSignIn, setShowSignIn] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
+  const [showAuthForm, setShowAuthForm] = useState(false);
+  const [initialMode, setInitialMode] = useState<"signin" | "signup">("signin");
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-[#faf8f3] text-center">
+    <div className="flex flex-col items-center justify-center h-screen bg-[#F5DBD5] text-center">
       <h1 className="text-6xl font-bold text-[#3b3b3b] mb-10 tracking-wide">
-        Rostr<span className="text-[#89c2d9]">.</span>
+        Rostr<span className="text-[#850027]">.</span>
       </h1>
 
-      <div className="space-x-4">
-        <button
-          onClick={() => setShowSignIn(true)}
-          className="bg-[#bde0fe] hover:bg-[#a2d2ff] text-gray-800 font-semibold py-2 px-6 rounded-xl shadow-md transition"
-        >
-          Sign In
-        </button>
-        <button
-          onClick={() => setShowSignUp(true)}
-          className="bg-[#caffbf] hover:bg-[#b5fbb1] text-gray-800 font-semibold py-2 px-6 rounded-xl shadow-md transition"
-        >
-          Sign Up
-        </button>
-      </div>
-
-      {showSignIn && <SignInModal onClose={() => setShowSignIn(false)} />}
-      {showSignUp && <SignUpModal onClose={() => setShowSignUp(false)} />}
+      {!showAuthForm ? (
+        <div className="space-x-4">
+          <button
+            onClick={() => {
+              setInitialMode("signin");
+              setShowAuthForm(true);
+            }}
+            className="bg-[#562424] hover:bg-[#734343] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => {
+              setInitialMode("signup");
+              setShowAuthForm(true);
+            }}
+            className="bg-[#562424] hover:bg-[#734343] text-white font-semibold py-2 px-6 rounded-xl shadow-md transition"
+          >
+            Sign Up
+          </button>
+        </div>
+      ) : (
+        <AuthModal mode={initialMode} onClose={() => setShowAuthForm(false)} />
+      )}
     </div>
   );
 }

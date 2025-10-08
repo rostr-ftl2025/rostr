@@ -2,10 +2,9 @@ import datetime
 from flask import Blueprint, request, jsonify
 from database import Database, models
 import pybaseball
-from pybaseball import pitching_stats
 import pandas as pd
 
-pybaseball.enable_cache()
+pybaseball.cache.enable()
 
 
 class PlayerController:
@@ -58,7 +57,7 @@ class PlayerController:
         Returns:
             dict: Dictionary with the key stats used in grade calculation
         """
-        df = pitching_stats(season)
+        df = pybaseball.pitching_stats(season)
         player_data = df[df['Name'].str.lower() == name.lower()]
 
         if player_data.empty:

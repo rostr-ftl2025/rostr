@@ -19,7 +19,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
     setMessage("");
     setLoading(true);
 
-    // ✅ Dynamic endpoint
+    // Dynamic endpoint
     const endpoint = `/api/users/${mode}`;
 
     try {
@@ -37,18 +37,18 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
       if (res.ok) {
         setMessage(
           mode === "signin"
-            ? "✅ Signed in successfully!"
-            : "✅ Account created successfully!"
+            ? "Signed in successfully!"
+            : "Account created successfully!"
         );
         if (mode === "signup") {
           setUsername("");
           setPassword("");
         }
       } else {
-        setMessage("❌ " + (data.error || "Something went wrong"));
+        setMessage(data.error || "Something went wrong");
       }
     } catch {
-      setMessage("❌ Network error");
+      setMessage("Network error");
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
           onClick={onClose}
           className="text-gray-400 hover:text-gray-600 text-lg"
         >
-          ✕
+          ×
         </button>
       </div>
 
@@ -108,11 +108,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
           required
         />
         <button
-          className={`py-2 rounded-lg font-semibold text-white ${
-            mode === "signin"
-              ? "bg-[#562424] hover:bg-[#734343]"
-              : "bg-[#4caf50] hover:bg-[#45a049]"
-          } disabled:opacity-50`}
+          className={"py-2 rounded-lg font-semibold text-white bg-[#562424] hover:bg-[#734343] disabled:opacity-50"}
           type="submit"
           disabled={loading}
         >

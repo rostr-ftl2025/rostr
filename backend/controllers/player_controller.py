@@ -1,7 +1,6 @@
 import datetime
 from flask import Blueprint, request, jsonify
-from database import Database
-from models import Player
+from database import Database, models
 import pybaseball
 from pybaseball import pitching_stats
 import pandas as pd
@@ -11,7 +10,7 @@ pybaseball.enable_cache()
 
 class PlayerController:
     def __init__(self, db: Database):
-        self.player_model = Player(db)
+        self.player_model = models.Player(db)
         self.bp = Blueprint("players", __name__)
 
         self.bp.add_url_rule("/api/teams/<int:team_id>/players", view_func=self.add_player, methods=["POST"])

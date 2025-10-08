@@ -3,11 +3,11 @@ import type { FormEvent } from "react";
 import { API_URL } from "~/config";
 
 interface AuthModalProps {
+  mode?: "signin" | "signup";
   onClose: () => void;
-  initialMode?: "signin" | "signup";
 }
 
-export function AuthModal({ onClose, initialMode = "signin" }: AuthModalProps) {
+export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -19,8 +19,7 @@ export function AuthModal({ onClose, initialMode = "signin" }: AuthModalProps) {
     setMessage("");
     setLoading(true);
 
-    const endpoint =
-      mode === "signin" ? "/api/users/signin" : "/api/users/create_user";
+    const endpoint = mode === "signin" ? "/api/users/signin" : "/api/users";
 
     try {
       const res = await fetch(`${API_URL}${endpoint}`, {
@@ -55,17 +54,9 @@ export function AuthModal({ onClose, initialMode = "signin" }: AuthModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-96 relative transition-all duration-300">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-3 text-gray-400 hover:text-gray-600"
-        >
-          ✕
-        </button>
-
-        {/* Toggle Buttons */}
-        <div className="flex justify-center mb-6">
+    <div className="bg-white rounded-2xl shadow-lg p-8 w-96 transition-all duration-300">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex space-x-2">
           <button
             onClick={() => setMode("signin")}
             className={`px-4 py-2 rounded-l-lg font-semibold ${
@@ -87,50 +78,56 @@ export function AuthModal({ onClose, initialMode = "signin" }: AuthModalProps) {
             Sign Up
           </button>
         </div>
-
-        <h2 className="text-2xl font-semibold mb-4 text-gray-700 text-center">
-          {mode === "signin" ? "Sign In" : "Sign Up"}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
-          <input
-            className="border rounded-lg px-3 py-2"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <input
-            className="border rounded-lg px-3 py-2"
-            placeholder="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button
-            className={`py-2 rounded-lg font-semibold text-white ${
-              mode === "signin"
-                ? "bg-[#562424] hover:bg-[#734343]"
-                : "bg-[#4caf50] hover:bg-[#45a049]"
-            } disabled:opacity-50`}
-            type="submit"
-            disabled={loading}
-          >
-            {loading
-              ? mode === "signin"
-                ? "Signing In..."
-                : "Creating..."
-              : mode === "signin"
-              ? "Sign In"
-              : "Sign Up"}
-          </button>
-
-          {message && (
-            <p className="text-center text-sm text-gray-600">{message}</p>
-          )}
-        </form>
+        <button
+          onClick={onClose}
+          className="text-gray-400 hover:text-gray-600 text-lg"
+        >
+          ✕
+        </button>
       </div>
+
+      <h2 className="text-2xl font-semibold mb-4 text-gray-700 text-center">
+        {mode === "signin" ? "Sign In" : "Sign Up"}
+      </h2>
+
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
+        <input
+          className="border rounded-lg px-3 py-2"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          className="border rounded-lg px-3 py-2"
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button
+          className={`py-2 rounded-lg font-semibold text-white ${
+            mode === "signin"
+              ? "bg-[#562424] hover:bg-[#734343]"
+              : "bg-[#4caf50] hover:bg-[#45a049]"
+          } disabled:opacity-50`}
+          type="submit"
+          disabled={loading}
+        >
+          {loading
+            ? mode === "signin"
+              ? "Signing In..."
+              : "Creating..."
+            : mode === "signin"
+            ? "Sign In"
+            : "Sign Up"}
+        </button>
+
+        {message && (
+          <p className="text-center text-sm text-gray-600">{message}</p>
+        )}
+      </form>
     </div>
   );
 }

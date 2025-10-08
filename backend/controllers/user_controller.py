@@ -12,9 +12,10 @@ class UserController:
         self.user_model = User(db)
         self.bp = Blueprint("users", __name__)
 
-        self.bp.add_url_rule("/api/users/create_user", view_func=self.create_user, methods=["POST"])
+        self.bp.add_url_rule("/api/users/signup", view_func=self.signup, methods=["POST"])
+        self.bp.add_url_rule("/api/users/signin", view_func=self.signin, methods=["POST"])
 
-    def create_user(self):
+    def signup(self):
         data = request.get_json()
         username = data.get("username")
         password = data.get("password")
@@ -34,3 +35,6 @@ class UserController:
             return jsonify(user), 201
         except Exception as e:
             return jsonify({"error": str(e)}), 400
+
+    def signin(self):
+        return jsonify({"error": "Functionality not implemented yet"}), 400

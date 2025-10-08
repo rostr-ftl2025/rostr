@@ -19,7 +19,8 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
     setMessage("");
     setLoading(true);
 
-    const endpoint = mode === "signin" ? "/api/users/signin" : "/api/users";
+    // ✅ Dynamic endpoint
+    const endpoint = `/api/users/${mode}`;
 
     try {
       const res = await fetch(`${API_URL}${endpoint}`, {

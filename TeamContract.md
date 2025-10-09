@@ -66,4 +66,4 @@ By signing below, we acknowledge that we have read, discussed, and agreed to the
 
 Team Member Signatures:
 
-Lucinda Li, Rui Weng, Vriti Dahiya, Jason Li
+Lucinda Li, Rui Weng, Vriti Dahiya, Jason Li, Mustafa Majeed

@@ -15,12 +15,42 @@ This contract sets out shared expectations and commitments for how our team will
 
 ---
 ## Team Norms and Expectations
+a) Preparation
+Each team member commits to reading assigned materials and completing individual readiness work before class.
+
+Members who come unprepared agree to accept reasonable consequences determined by the team (e.g., lower peer evaluation scores).
+
+b) Communication
+We will use Instagram as our primary communication channel.
+
+Team members will respond to messages within 18 hours on weekdays.
+
+All communication will remain respectful, professional, and constructive.
+
+c) Attendance & Participation
+Members will attend all scheduled classes and team meetings unless illness or emergencies occur.
+
+If unable to attend, a member must notify the team and the FTL TA's in advance and provide input asynchronously.
+
+During team activities, every member will contribute ideas and engage in the discussion.
+
+d) Decision Making
+Decisions will be made by consensus when possible.
+
+If consensus cannot be reached, a vote will be taken; majority rules.
+
+e) Work Quality
+All deliverables should be completed on time, tested, and meet the agreed quality standard.
+
+Members agree to review each other’s work constructively before submission.
+
+Each Major Pull Request will be reviewed by at least two team members.
 
 ### Communication
 
 * Which platform will you use for communication outside of class, when required for work on your course project? (Examples: Text message, Discord, WeChat, etc.)
 
-* Each teammate agrees to respond to messages in at most how long? 1 day? 2 days? Some other amount of time? 
+* Each teammate agrees to respond to messages in at most 1 day (unless otherwise specified)
 
 * What things should a teammate notify you about? (Examples: if they think they won't be able to meet a deadline, if they have to miss lecture, etc.)
 

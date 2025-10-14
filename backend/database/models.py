@@ -33,6 +33,11 @@ class Team:
     def get_by_user(self, user_id: int):
         query = "SELECT * FROM teams WHERE user_id = %s;"
         return self.db.execute(query, (user_id,), fetchall=True)
+    
+    def get_all_players(self, team_id: int):
+        query = "SELECT * FROM players WHERE team_id = %s;"
+        return self.db.execute(query, (team_id,), fetchall=True)
+
 
 
 class Player:
@@ -46,7 +51,11 @@ class Player:
         RETURNING id, player_name;
         """
         return self.db.execute(query, (team_id, player_name, mlbid, idfg, position), fetchone=True)
-
-    def get_by_team(self, team_id: int):
-        query = "SELECT * FROM players WHERE team_id = %s;"
-        return self.db.execute(query, (team_id,), fetchall=True)
+    
+    def remove(self, team_id: int, player_name: str):
+        query = """
+        DELETE FROM players 
+        WHERE team_id = %s AND player_name = %s
+        RETURNING id, player_name;
+        """
+        return self.db.execute(query, (team_id, player_name), fetchone=True)

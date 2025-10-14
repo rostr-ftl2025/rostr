@@ -1,4 +1,4 @@
-import TeamMakerPitchers from "~/team_maker_page/TeamMaker";
+import TeamMakerPitchers from "~/team-maker-page/TeamMaker";
 import type { Route } from "./+types/home";
 
 

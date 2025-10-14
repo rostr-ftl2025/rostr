@@ -10,8 +10,8 @@ class PlayerController:
         self.bp = Blueprint("players", __name__)
 
         self.bp.add_url_rule("/api/search-pitcher", view_func=self.search_pitcher, methods=["GET"])
-        self.bp.add_url_rule("/api/teams/<int:team_id>/players", view_func=self.add_player, methods=["POST"])
-        self.bp.add_url_rule("/api/teams/<int:team_id>/players/<string:player_name>", view_func=self.remove_player, methods=["DELETE"])
+        self.bp.add_url_rule("/api/teams/<int:team_id>/add-player", view_func=self.add_player, methods=["POST"])
+        self.bp.add_url_rule("/api/teams/<int:team_id>/remove-player/<string:player_name>", view_func=self.remove_player, methods=["DELETE"])
 
         self.all_pitcher_data = pybaseball.pitching_stats(2025)
 
@@ -51,14 +51,7 @@ class PlayerController:
             return jsonify({"error": str(e)}), 400
 
     def remove_player(self, team_id, player_name):
-        query = """
-        DELETE FROM players 
-        WHERE team_id = %s AND player_name = %s
-        RETURNING id, player_name;
-        """
-        result = self.player_model.db.execute(query, (team_id, player_name), fetchone=True)
-
+        result = self.player_model.remove(team_id, player_name)
         if not result:
             return jsonify({"error": "Player not found"}), 404
-
         return jsonify({"message": f"Removed player {player_name}"}), 200

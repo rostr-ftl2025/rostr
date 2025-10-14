@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
 from database import Player, Database
+import pybaseball
+import rapidfuzz
 
 
 class PlayerController:
@@ -7,8 +9,30 @@ class PlayerController:
         self.player_model = Player(db)
         self.bp = Blueprint("players", __name__)
 
+        self.bp.add_url_rule("/api/search-pitcher", view_func=self.search_pitcher, methods=["GET"])
         self.bp.add_url_rule("/api/teams/<int:team_id>/players", view_func=self.add_player, methods=["POST"])
         self.bp.add_url_rule("/api/teams/<int:team_id>/players/<string:player_name>", view_func=self.remove_player, methods=["DELETE"])
+
+        self.all_pitcher_data = pybaseball.pitching_stats(2025)
+
+        """
+        IDfg: string;
+        Name: string;
+        Team: string;
+        Age: number;
+        W: number;
+        L: number;
+  """
+
+    def search_pitcher(self):
+        
+        searched_name = request.args.get("name")
+        matches = rapidfuzz.process.extract(searched_name, self.all_pitcher_data["Name"], score_cutoff=0.7)
+        matched_players_data = self.all_pitcher_data[self.all_pitcher_data["Name"].isin([data[0] for data in matches])]
+
+        data_as_array = matched_players_data[["IDfg", "Name", "Team", "Age", "W", "L"]].to_dict(orient="records")
+
+        return jsonify(data_as_array)
 
     def add_player(self, team_id):
         data = request.json

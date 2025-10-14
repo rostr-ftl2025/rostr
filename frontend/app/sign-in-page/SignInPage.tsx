@@ -1,9 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AuthModal } from "./AuthModal";
+import { getUserFromJWT } from "~/utils/getToken";
 
 export default function SignInPage() {
+
   const [showAuthForm, setShowAuthForm] = useState(false);
   const [initialMode, setInitialMode] = useState<"signin" | "signup">("signin");
+  const [userInfo, setUserInfo] = useState<{ username?: string; userID?: string } | null>(null);
+
+  // Check JWT on page load
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    if (token) {
+      const info = getUserFromJWT(token);
+      setUserInfo(info);
+      if (info?.userID) {
+        window.location.assign("/team-maker");
+      }
+    }
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-[#F5DBD5] text-center">

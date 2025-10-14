@@ -18,8 +18,10 @@ if not DSN:
 
 db = Database(DSN)
 
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
 # Register controllers
-user_controller = UserController(db)
+user_controller = UserController(db, app)
 team_controller = TeamController(db)
 player_controller = PlayerController(db)
 

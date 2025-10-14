@@ -3,11 +3,14 @@ import PitcherSearchCard from "./PitcherSearchCard"
 import PitcherRoster from "./PitcherRoster"
 import { createTeam, deleteTeam, fetchUserTeams } from "./api/teamRoster"
 import { classNames } from "./utils"
+import { getUserFromJWT } from "~/utils/getToken"
+import SignOutButton from "~/components/sign-out-button"
 
 interface Team {
   team_id: number
   team_name: string
 }
+
 
 export default function TeamMaker() {
   const [userId, setUserId] = useState<number | null>(null)
@@ -18,10 +21,11 @@ export default function TeamMaker() {
   const [loading, setLoading] = useState(false)
   const [rosterRefreshFlag, setRosterRefreshFlag] = useState(0)
 
+  // Get userId from JWT on mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const id = params.get("userID")
-    setUserId(id ? Number(id) : null)
+    const token = localStorage.getItem("jwtToken");
+    const info = getUserFromJWT(token ?? "");
+    setUserId(info?.userID ? Number(info.userID) : null);
   }, [])
 
   useEffect(() => {
@@ -82,10 +86,10 @@ export default function TeamMaker() {
     return (
       <div className="p-8 text-gray-900">
         <div className="mb-4 text-red-600 font-bold">
-          No user ID found in URL. Please provide ?userID=123
+          No user ID found in JWT. Please sign in.
         </div>
         <div className="text-gray-700">
-          Implementing proper sign-in (not just a URL param) is coming soon.
+          You must be signed in to use the Team Maker.
         </div>
       </div>
     )
@@ -97,9 +101,8 @@ export default function TeamMaker() {
         <h1 className="text-3xl font-bold tracking-wide">
           Rostr<span className="text-[#850027]">.</span> Team Maker — Pitchers
         </h1>
-        <div className="text-sm text-gray-700 mb-2">
-          Implementing proper sign-in (not just a URL param) is coming soon.
-        </div>
+
+        <SignOutButton />
 
         <div className="rounded-2xl bg-white p-4 shadow space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">

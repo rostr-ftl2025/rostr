@@ -53,41 +53,41 @@ class Player:
 
     def calculate_pitcher_grade(stats:dict) -> float:
         """
-        Calculate a pitcher's grade (0-100) using weighted MLB stats.
-        stats: dict containing the keys:
-        ERA, WAR, O_Swing, Contact, Zone, Pace, wSL_C, GS
+        Calculates a 0-100 fantasy pitcher grade based on
+        the difference between actual and expected stats.
+
+        Equal weight for BA, SLG, wOBA, and ERA.
         """
-        weights = {
-            'WAR': 0.25,
-            'ERA': 0.25,
-            'O_Swing': 0.10,
-            'Contact': 0.10,
-            'Zone': 0.10,
-            'Pace': 0.05,
-            'wSL_C': 0.05,
-            'Durability': 0.10
-        }
 
-        # Normalize values to 0–1
-        ERA_norm = max(0, min(1, (5 - stats['ERA']) / (5 - 1.5)))
-        WAR_norm = min(1, stats['WAR'] / 9)
-        O_Swing_norm = min(1, stats['O_Swing'] / 0.4)
-        Contact_norm = max(0, min(1, (0.8 - stats['Contact']) / (0.8 - 0.65)))
-        Zone_norm = min(1, stats['Zone'] / 0.55)
-        Pace_norm = max(0, min(1, (26 - stats['Pace']) / (26 - 20)))
-        wSL_norm = max(0, min(1, (stats['wSL_C'] + 3) / 6))
-        Durability_norm = min(1, stats['GS'] / 34)
+        # Extract stats safely
+        BA, xBA = stats.get("BA", 0), stats.get("xBA", 0)
+        SLG, xSLG = stats.get("SLG", 0), stats.get("xSLG", 0)
+        wOBA, xwOBA = stats.get("wOBA", 0), stats.get("xwOBA", 0)
+        ERA, xERA = stats.get("ERA", 0), stats.get("xERA", 0)
 
-        # Weighted average
-        grade = (
-            weights['WAR'] * WAR_norm +
-            weights['ERA'] * ERA_norm +
-            weights['O_Swing'] * O_Swing_norm +
-            weights['Contact'] * Contact_norm +
-            weights['Zone'] * Zone_norm +
-            weights['Pace'] * Pace_norm +
-            weights['wSL_C'] * wSL_norm +
-            weights['Durability'] * Durability_norm
-        ) * 100
+        # Calculate differences (expected - actual)
+        BA_diff = xBA - BA
+        SLG_diff = xSLG - SLG
+        wOBA_diff = xwOBA - wOBA
+        ERA_diff = xERA - ERA
 
-        return round(grade, 2)
+        # Equal weights
+        weight = 0.25
+
+        # Multipliers for normalization
+        m_ba = 1000
+        m_slg = 1000
+        m_woba = 1000
+        m_era = 10
+
+        # Combine weighted differences
+        delta = weight * (
+            m_ba * BA_diff +
+            m_slg * SLG_diff +
+            m_woba * wOBA_diff +
+            m_era * ERA_diff
+        )
+
+        # Base score (50 neutral)
+        grade = 50 + delta
+        return round(max(0, min(100, grade)), 2)

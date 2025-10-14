@@ -1,7 +1,7 @@
 import datetime
 from flask import Blueprint, request, jsonify
 from database import Database, models
-import pybaseball
+from pybaseball import playerid_lookup, statcast_pitcher
 import pandas as pd
 
 pybaseball.cache.enable()
@@ -47,33 +47,52 @@ class PlayerController:
 
     def get_pitcher_stats(name: str, season: int) -> dict[str,float]:
         """
-        Retrieve a single pitcher's season stats from pybaseball
-        and return them as a dictionary ready for grading.
+        Retrieve key Statcast stats for a given pitcher and season using pybaseball.
 
-        Args:
-            name (str): Pitcher's full name (e.g., 'Clayton Kershaw')
-            season (int): MLB season year (e.g., 2015)
-
-        Returns:
-            dict: Dictionary with the key stats used in grade calculation
-        """
-        df = pybaseball.pitching_stats(season)
-        player_data = df[df['Name'].str.lower() == name.lower()]
-
-        if player_data.empty:
-            raise ValueError(f"No stats found for {name} in {season}")
-
-        row = player_data.iloc[0]
-
-        # Build the stats dict (match the grading function keys)
-        stats = {
-            'ERA': float(row['ERA']),
-            'WAR': float(row['WAR']),
-            'O_Swing': float(row['O-Swing% (pi)']),
-            'Contact': float(row['Contact% (pi)']),
-            'Zone': float(row['Zone% (pi)']),
-            'Pace': float(row['Pace (pi)']),
-            'wSL_C': float(row['wSL/C (pi)']) if not pd.isna(row['wSL/C (pi)']) else 0.0,
-            'GS': float(row['GS'])
+        Returns a dictionary:
+        {
+            'BA', 'xBA', 'SLG', 'xSLG', 'wOBA', 'xwOBA', 'ERA', 'xERA'
         }
-        return stats
+        """
+
+        try:
+            # Get MLB player ID
+            first, last = name.split(" ", 1)
+            pid = playerid_lookup(last, first).key_mlbam.values[0]
+
+            # Define season range
+            start_date = f"{season}-03-01"
+            end_date = f"{season}-11-30"
+
+            # Pull raw Statcast data
+            df = statcast_pitcher(start_date, end_date, pid)
+
+            if df.empty:
+                raise ValueError(f"No Statcast data found for {name} ({season})")
+
+            # Directly use Statcast-calculated expected stats
+            stats = {
+                "BA": df["ba"].mean(skipna=True),
+                "xBA": df["estimated_ba_using_speedangle"].mean(skipna=True),
+                "SLG": df["slg"].mean(skipna=True),
+                "xSLG": df["estimated_slg_using_speedangle"].mean(skipna=True),
+                "wOBA": df["woba_value"].mean(skipna=True),
+                "xwOBA": df["estimated_woba_using_speedangle"].mean(skipna=True),
+                "ERA": df["era"].mean(skipna=True) if "era" in df.columns else 0.0,
+                "xERA": df["pitch_xera"].mean(skipna=True) if "pitch_xera" in df.columns else 0.0,
+            }
+
+            # Clean any NaNs
+            for k, v in stats.items():
+                stats[k] = float(v) if pd.notna(v) else 0.0
+
+            return stats
+
+        except Exception as e:
+            print(f"[Error] Could not retrieve Statcast data for {name}: {e}")
+            return {
+                "BA": 0.0, "xBA": 0.0,
+                "SLG": 0.0, "xSLG": 0.0,
+                "wOBA": 0.0, "xwOBA": 0.0,
+                "ERA": 0.0, "xERA": 0.0
+            }

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { API_URL } from "~/config";
+import { getUserFromJWT } from "~/utils/getToken";
 
 interface AuthModalProps {
   mode?: "signin" | "signup";
@@ -13,6 +14,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userInfo, setUserInfo] = useState<{ username?: string; userID?: string } | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -20,7 +22,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
     setLoading(true);
 
     // Dynamic endpoint
-    const endpoint = `/api/users/${mode}`;
+    const endpoint = mode === "signin" ? "/api/users/signin" : "/api/users/signup";
 
     try {
       const res = await fetch(`${API_URL}${endpoint}`, {
@@ -43,6 +45,15 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
         if (mode === "signup") {
           setUsername("");
           setPassword("");
+        }
+        // Save JWT and extract user info after sign in
+        if (mode === "signin" && data.token) {
+          localStorage.setItem("jwtToken", data.token);
+          const info = getUserFromJWT(data.token);
+          setUserInfo(info);
+          if (info?.userID) {
+            window.location.assign("/team-maker");
+          }
         }
       } else {
         setMessage(data.error || "Something went wrong");
@@ -83,7 +94,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
           onClick={onClose}
           className="text-gray-400 hover:text-gray-600 text-lg"
         >
-          ×
+          x
         </button>
       </div>
 

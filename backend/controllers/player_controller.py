@@ -59,6 +59,7 @@ class PlayerController:
 
             return jsonify(player), 201
         except Exception as e:
+            print(e.with_traceback())
             return jsonify({"error": str(e)}), 400
 
     def remove_player(self, team_id, player_name):
@@ -68,7 +69,7 @@ class PlayerController:
         return jsonify({"message": f"Removed player {player_name}"}), 200
 
 
-    def get_pitcher_stats(name: str, season: int) -> dict[str,float]:
+    def get_pitcher_stats(self, name: str, season: int) -> dict[str,float]:
         """
         Retrieve key Statcast stats for a given pitcher and season using pybaseball.
 
@@ -80,7 +81,7 @@ class PlayerController:
 
         try:
             # Get MLB player ID
-            first, last = name.split(" ", 1)
+            first, last = name.split(" ")
             pid = playerid_lookup(last, first).key_mlbam.values[0]
 
             # Define season range

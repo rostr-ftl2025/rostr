@@ -50,7 +50,8 @@ class Player:
         VALUES (%s, %s, %s, %s, %s, %s)
         RETURNING id, player_name;
         """
-        return self.db.execute(query, (team_id, player_name, mlbid, idfg, position), fetchone=True)
+        # TODO: Replace 0 with grade
+        return self.db.execute(query, (team_id, player_name, mlbid, idfg, position, 0), fetchone=True)
 
     def get_by_team(self, team_id: int):
         query = "SELECT * FROM players WHERE team_id = %s;"

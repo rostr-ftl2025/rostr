@@ -4,6 +4,7 @@ from database import Database, models
 import pybaseball
 from pybaseball import playerid_lookup, statcast_pitcher
 import pandas as pd
+import rapidfuzz
 
 pybaseball.cache.enable()
 
@@ -50,6 +51,12 @@ class PlayerController:
 
         try:
             player = self.player_model.create(team_id, player_name, mlbid, idfg, position)
+
+            player_stats = self.get_pitcher_stats(player_name, 2025)
+            player_grade = self.player_model.calculate_pitcher_grade(player_stats)
+            
+            print(player_grade)
+
             return jsonify(player), 201
         except Exception as e:
             return jsonify({"error": str(e)}), 400
@@ -112,3 +119,6 @@ class PlayerController:
                 "wOBA": 0.0, "xwOBA": 0.0,
                 "ERA": 0.0, "xERA": 0.0
             }
+        
+        
+        

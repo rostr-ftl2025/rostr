@@ -11,7 +11,6 @@ interface Team {
   team_name: string
 }
 
-
 export default function TeamMaker() {
   const [userId, setUserId] = useState<number | null>(null)
   const [teams, setTeams] = useState<Team[]>([])
@@ -21,11 +20,16 @@ export default function TeamMaker() {
   const [loading, setLoading] = useState(false)
   const [rosterRefreshFlag, setRosterRefreshFlag] = useState(0)
 
+  // 🔧 NEW preference states
+  const [favoriteTeamId, setFavoriteTeamId] = useState<number | null>(null)
+  const [teamColor, setTeamColor] = useState("#562424")
+  const [isPublic, setIsPublic] = useState(true)
+
   // Get userId from JWT on mount
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
-    const info = getUserFromJWT(token ?? "");
-    setUserId(info?.userID ? Number(info.userID) : null);
+    const token = localStorage.getItem("jwtToken")
+    const info = getUserFromJWT(token ?? "")
+    setUserId(info?.userID ? Number(info.userID) : null)
   }, [])
 
   useEffect(() => {
@@ -51,7 +55,7 @@ export default function TeamMaker() {
     setLoading(true)
     setMessage(null)
     try {
-      await createTeam(userId, newTeamName) // SQL auto-generates team_id
+      await createTeam(userId, newTeamName)
       setNewTeamName("")
       const updatedTeams = await fetchUserTeams(userId)
       setTeams(updatedTeams)
@@ -82,6 +86,16 @@ export default function TeamMaker() {
     }
   }
 
+  // 🔧 NEW: Handle saving preferences (placeholder logic)
+  const handleSavePreferences = () => {
+    setMessage(`Preferences saved for team ${selectedTeamId}`)
+    console.log({
+      favorite: favoriteTeamId,
+      color: teamColor,
+      public: isPublic,
+    })
+  }
+
   if (userId === null) {
     return (
       <div className="p-8 text-gray-900">
@@ -105,6 +119,7 @@ export default function TeamMaker() {
         <SignOutButton />
 
         <div className="rounded-2xl bg-white p-4 shadow space-y-3">
+          {/* ---------- TEAM SELECTION ---------- */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
             <div>
               <label className="text-sm font-medium text-gray-700">Select Team</label>
@@ -137,7 +152,7 @@ export default function TeamMaker() {
                   loading ? "bg-gray-200 text-gray-400" : "bg-[#562424] text-white hover:bg-[#734343]"
                 )}
               >
-                Create Team
+                Create
               </button>
               <button
                 onClick={handleDeleteTeam}
@@ -149,16 +164,71 @@ export default function TeamMaker() {
                     : "bg-rose-600 text-white hover:bg-rose-700"
                 )}
               >
-                Delete Team
+                Delete
+              </button>
+            </div>
+          </div>
+
+          {/* ---------- NEW: TEAM PREFERENCES ---------- */}
+          <div className="mt-4 border-t border-gray-200 pt-4">
+            <h2 className="text-lg font-semibold mb-2">Team Preferences</h2>
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Favorite Team</label>
+                <select
+                  value={favoriteTeamId ?? ""}
+                  onChange={(e) => setFavoriteTeamId(Number(e.target.value))}
+                  className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#850027]"
+                >
+                  <option value="">None</option>
+                  {teams.map((team) => (
+                    <option key={team.team_id} value={team.team_id}>
+                      {team.team_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700">Team Color</label>
+                <input
+                  type="color"
+                  value={teamColor}
+                  onChange={(e) => setTeamColor(e.target.value)}
+                  className="mt-1 h-10 w-16 cursor-pointer rounded border border-gray-300"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 mt-2 sm:mt-6">
+                <input
+                  type="checkbox"
+                  checked={isPublic}
+                  onChange={(e) => setIsPublic(e.target.checked)}
+                  id="public"
+                  className="h-4 w-4 text-[#850027] focus:ring-[#850027]"
+                />
+                <label htmlFor="public" className="text-sm text-gray-700">
+                  Public team
+                </label>
+              </div>
+
+              <button
+                onClick={handleSavePreferences}
+                className="rounded-xl bg-[#562424] px-4 py-2 text-sm font-semibold text-white shadow hover:bg-[#734343]"
+              >
+                Save Preferences
               </button>
             </div>
           </div>
 
           {message && (
-            <div className="mt-2 rounded-lg bg-gray-50 p-2 text-sm text-gray-700">{message}</div>
+            <div className="mt-2 rounded-lg bg-gray-50 p-2 text-sm text-gray-700">
+              {message}
+            </div>
           )}
         </div>
 
+        {/* ---------- MAIN GRID ---------- */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <PitcherSearchCard

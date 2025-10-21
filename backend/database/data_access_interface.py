@@ -1,5 +1,3 @@
-# /project/database/data_access_interface.py
-
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from database.entities.user_entity import UserEntity
@@ -71,4 +69,12 @@ class PlayerDataAccessInterface(ABC):
 
     @abstractmethod
     def delete(self, player_name: str) -> dict:
+        pass
+
+    # New: get all players for a specific team
+    @abstractmethod
+    def list_by_team(self, team_id: int) -> List[dict]:
+        """
+        Return all players that belong to the given team_id.
+        """
         pass

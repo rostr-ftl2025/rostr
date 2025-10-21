@@ -1,5 +1,3 @@
-# /project/database/data_access.py
-
 from typing import List, Optional
 from database import Database
 from database.entities.user_entity import UserEntity
@@ -170,3 +168,12 @@ class PlayerDataAccess(PlayerDataAccessInterface):
         RETURNING id, player_name;
         """
         return self.db.execute(query, (player_name,), fetchone=True)
+
+    # New: list all players for a team
+    def list_by_team(self, team_id: int) -> List[dict]:
+        query = """
+        SELECT id, team_id, player_name, mlbid, idfg, position
+        FROM players
+        WHERE team_id = %s;
+        """
+        return self.db.execute(query, (team_id,), fetchall=True)

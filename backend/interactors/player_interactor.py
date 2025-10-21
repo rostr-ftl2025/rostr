@@ -58,8 +58,25 @@ class PlayerInteractor:
 
         if not player_name or not team_id or not position or not mlbid or not idfg:
             return jsonify({"error": "All fields are required"}), 400
-
+        
+        # Check it here
         try:
+            # Use the new method to fetch existing players on this team
+            existing_players = self.player_data_access.list_by_team(team_id)
+
+            # Consider a player duplicate if FanGraphs ID matches or names match case-insensitively
+            name_lower = str(player_name).strip().lower()
+            idfg_str = str(idfg).strip()
+
+            already_on_team = any(
+                (str(p.get("idfg")).strip() == idfg_str) or
+                (str(p.get("player_name")).strip().lower() == name_lower)
+                for p in existing_players
+            )
+
+            if already_on_team:
+                return jsonify({"error": "Player already exists on this team"}), 409
+
             # Create entity
             player_entity = PlayerEntity(
                 team_id=team_id,

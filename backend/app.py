@@ -1,33 +1,51 @@
-from flask import Flask
-from flask_cors import CORS
-from database import Database
-from controllers import UserController, TeamController, PlayerController
 from dotenv import load_dotenv
 import os
+
+from flask import Flask
+from flask_cors import CORS
+
+from database import Database
+
+from interactors import UserInteractor, TeamInteractor, PlayerInteractor
+from database.data_access_postgresql import (
+    UserDataAccess,
+    TeamDataAccess,
+    PlayerDataAccess
+)
+
+
 
 # Load environment variables from .env
 load_dotenv()
 
+
+# Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # enables CORS for all routes
-
-# Get DSN from environment
-DSN = os.getenv("DSN")
-if not DSN:
-    raise ValueError("No DSN found in .env file")
-
-db = Database(DSN)
-
+CORS(app)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
-# Register controllers
-user_controller = UserController(db, app)
-team_controller = TeamController(db)
-player_controller = PlayerController(db)
 
-app.register_blueprint(user_controller.bp)
-app.register_blueprint(team_controller.bp)
-app.register_blueprint(player_controller.bp)
+# Initialize database
+DSN = os.getenv("DSN")
+db = Database(DSN)
+
+
+# Initialize data access
+user_data_access = UserDataAccess(db)
+team_data_access = TeamDataAccess(db)
+player_data_access = PlayerDataAccess(db)
+
+
+# Register interactors
+user_interactor = UserInteractor(user_data_access, app)
+team_interactor = TeamInteractor(team_data_access)
+player_interactor = PlayerInteractor(player_data_access)
+
+
+# Register Flask blueprints
+app.register_blueprint(user_interactor.bp)
+app.register_blueprint(team_interactor.bp)
+app.register_blueprint(player_interactor.bp)
 
 
 @app.route("/")

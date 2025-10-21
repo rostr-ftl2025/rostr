@@ -21,6 +21,7 @@ export default function PitcherSearchCard({ teamId, onRosterChange }: Props) {
   const [results, setResults] = useState<PitcherData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [addedIds, setAddedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const doFetch = async () => {
@@ -45,7 +46,7 @@ export default function PitcherSearchCard({ teamId, onRosterChange }: Props) {
   }, [name])
 
   const handleAdd = async (player: PitcherData) => {
-    if (!teamId) return
+    if (!teamId || addedIds.has(player.IDfg)) return
     try {
       await addPlayerToTeam(teamId, {
         player_name: player.Name,
@@ -53,6 +54,7 @@ export default function PitcherSearchCard({ teamId, onRosterChange }: Props) {
         idfg: player.IDfg,
         position: "P",
       })
+      setAddedIds((prev) => new Set(prev).add(player.IDfg))
       if (onRosterChange) onRosterChange()
     } catch (e) {
       console.error(e)
@@ -90,25 +92,32 @@ export default function PitcherSearchCard({ teamId, onRosterChange }: Props) {
             </tr>
           </thead>
           <tbody>
-            {results.map((row) => (
-              <tr key={row.IDfg} className="border-t">
-                <td className="px-3 py-2 font-medium">{row.Name}</td>
-                <td className="px-3 py-2 text-gray-700">{row.Team}</td>
-                <td className="px-3 py-2 text-gray-700">{row.Age}</td>
-                <td className="px-3 py-2 text-gray-700">{row.W}</td>
-                <td className="px-3 py-2 text-gray-700">{row.L}</td>
-                <td className="px-3 py-2 text-right">
-                  <button
-                    onClick={() => handleAdd(row)}
-                    className={classNames(
-                      "rounded-lg px-3 py-1 text-sm font-semibold shadow bg-[#562424] text-white hover:bg-[#734343]"
-                    )}
-                  >
-                    Add
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {results.map((row) => {
+              const isAdded = addedIds.has(row.IDfg)
+              return (
+                <tr key={row.IDfg} className="border-t">
+                  <td className="px-3 py-2 font-medium">{row.Name}</td>
+                  <td className="px-3 py-2 text-gray-700">{row.Team}</td>
+                  <td className="px-3 py-2 text-gray-700">{row.Age}</td>
+                  <td className="px-3 py-2 text-gray-700">{row.W}</td>
+                  <td className="px-3 py-2 text-gray-700">{row.L}</td>
+                  <td className="px-3 py-2 text-right">
+                    <button
+                      onClick={() => handleAdd(row)}
+                      disabled={isAdded}
+                      className={classNames(
+                        "rounded-lg px-3 py-1 text-sm font-semibold shadow transition-colors",
+                        isAdded
+                          ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                          : "bg-[#562424] text-white hover:bg-[#734343]"
+                      )}
+                    >
+                      {isAdded ? "Added" : "Add"}
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
             {!loading && results.length === 0 && !error && (
               <tr>
                 <td className="px-3 py-6 text-center text-gray-500" colSpan={6}>

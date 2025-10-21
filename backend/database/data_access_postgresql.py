@@ -23,7 +23,7 @@ class UserDataAccess(UserDataAccessInterface):
         query = """
         INSERT INTO users (username, password)
         VALUES (%s, %s)
-        RETURNING id, username, password;
+        RETURNING id, username;
         """
         return self.db.execute(
             query,

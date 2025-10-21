@@ -40,7 +40,7 @@ class UserInteractor:
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        if not bcrypt.checkpw(password.encode(), user["password"].encode()):
+        if not bcrypt.checkpw(password.encode(), user["password"]):
             return jsonify({"error": "Invalid password"}), 401
 
         token = jwt.encode(

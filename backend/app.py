@@ -34,3 +34,7 @@ app.register_blueprint(player_controller.bp)
 def hello_world():
     return "Hello, API is running!"
 
+if __name__ == "__main__":
+    print("🚀 Starting Flask server on http://127.0.0.1:5000")
+    app.run(debug=True, host="127.0.0.1", port=5000)
+

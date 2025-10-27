@@ -44,64 +44,36 @@ class Player:
     def __init__(self, db: Database):
         self.db = db
 
-    def create(self, team_id: int, player_name: str, mlbid=None, idfg=None, position=None):
+    def create(self, team_id: int, player_name: str, mlbid=None, idfg=None, position=None, grade = 0.0):
         query = """
         INSERT INTO players (team_id, player_name, mlbid, idfg, position, grade)
         VALUES (%s, %s, %s, %s, %s, %s)
         RETURNING id, player_name;
         """
-        # TODO: Replace 0 with grade
-        return self.db.execute(query, (team_id, player_name, mlbid, idfg, position, 0), fetchone=True)
+        return self.db.execute(query, (team_id, player_name, mlbid, idfg, position, grade), fetchone=True)
 
     def get_by_team(self, team_id: int):
         query = "SELECT * FROM players WHERE team_id = %s;"
         return self.db.execute(query, (team_id,), fetchall=True)
 
-    def calculate_pitcher_grade(stats:dict) -> float:
+    def calculate_pitcher_grade(self, stats: dict) -> float:
         """
-        Calculates a 0-100 fantasy pitcher grade based on
-        the difference between actual and expected stats.
-
-        Equal weight for BA, SLG, wOBA, and ERA.
+        Calculate a pitcher's grade using the fantasy formula:
+        Grade = 150 × K% + 0.3 × IP − 10 × ERA
+        Weights based on typical fantasy baseball head-to-head (H2H) scoring systems, which reward 
+        strikeouts (K%) heavily, innings pitched (IP) moderately, and punish high ERA significantly
         """
+        try:
+            k_percent = stats.get("K%")
+            ip = stats.get("IP")
+            era = stats.get("ERA")
 
-        # Extract stats safely
-        BA, xBA = stats.get("BA", 0), stats.get("xBA", 0)
-        SLG, xSLG = stats.get("SLG", 0), stats.get("xSLG", 0)
-        wOBA, xwOBA = stats.get("wOBA", 0), stats.get("xwOBA", 0)
-        ERA, xERA = stats.get("ERA", 0), stats.get("xERA", 0)
+            if k_percent is None or ip is None or era is None:
+                raise ValueError("Missing required pitching stats.")
 
-        # Calculate differences (expected - actual)
-        BA_diff = xBA - BA
-        SLG_diff = xSLG - SLG
-        wOBA_diff = xwOBA - wOBA
-        ERA_diff = xERA - ERA
+            grade = 150 * k_percent + 0.3 * ip - 10 * era
+            return round(grade, 2)
 
-        # Equal weights
-        weight = 0.25
-
-        # Multipliers for normalization
-        m_ba = 1000
-        m_slg = 1000
-        m_woba = 1000
-        m_era = 10
-
-        # Combine weighted differences
-        delta = weight * (
-            m_ba * BA_diff +
-            m_slg * SLG_diff +
-            m_woba * wOBA_diff +
-            m_era * ERA_diff
-        )
-
-        # Base score (50 neutral)
-        grade = 50 + delta
-        return round(max(0, min(100, grade)), 2)
-    
-    def remove(self, team_id: int, player_name: str):
-        query = """
-        DELETE FROM players 
-        WHERE team_id = %s AND player_name = %s
-        RETURNING id, player_name;
-        """
-        return self.db.execute(query, (team_id, player_name), fetchone=True)
+        except Exception as e:
+            print(f"Error calculating pitcher grade: {e}")
+            return 0.0

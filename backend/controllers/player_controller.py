@@ -2,7 +2,7 @@ import datetime
 from flask import Blueprint, request, jsonify
 from database import Database, models
 import pybaseball
-from pybaseball import playerid_lookup, statcast_pitcher
+from pybaseball import pitching_stats
 import pandas as pd
 import rapidfuzz
 
@@ -50,17 +50,24 @@ class PlayerController:
             return jsonify({"error": "player_name is required"}), 400
 
         try:
-            player = self.player_model.create(team_id, player_name, mlbid, idfg, position)
-
             player_stats = self.get_pitcher_stats(player_name, 2025)
             player_grade = self.player_model.calculate_pitcher_grade(player_stats)
             
-            print(player_grade)
+            player = self.player_model.create(
+            team_id=team_id,
+            player_name=player_name,
+            mlbid=mlbid,
+            idfg=idfg,
+            position=position,
+            grade=player_grade)
 
+            print(f"✅ Added {player_name} with grade {player_grade}")
             return jsonify(player), 201
+
         except Exception as e:
-            print(e.with_traceback())
+            print(f"❌ Error adding player: {e}")
             return jsonify({"error": str(e)}), 400
+
 
     def remove_player(self, team_id, player_name):
         result = self.player_model.remove(team_id, player_name)
@@ -69,57 +76,33 @@ class PlayerController:
         return jsonify({"message": f"Removed player {player_name}"}), 200
 
 
-    def get_pitcher_stats(self, name: str, season: int) -> dict[str,float]:
+    def get_pitcher_stats(self, name: str, season: int) -> dict[str, float]:
         """
-        Retrieve key Statcast stats for a given pitcher and season using pybaseball.
-
-        Returns a dictionary:
-        {
-            'BA', 'xBA', 'SLG', 'xSLG', 'wOBA', 'xwOBA', 'ERA', 'xERA'
-        }
+        Fetch basic pitching stats for a given player and season.
+        Returns a dictionary with K%, IP, and ERA.
         """
-
         try:
-            # Get MLB player ID
-            first, last = name.split(" ")
-            pid = playerid_lookup(last, first).key_mlbam.values[0]
+            # Get all pitchers' stats for that season
+            data = pitching_stats(season)
 
-            # Define season range
-            start_date = f"{season}-03-01"
-            end_date = f"{season}-11-30"
+            # Match by name (case-insensitive)
+            player_data = data[data['Name'].str.lower() == name.lower()]
 
-            # Pull raw Statcast data
-            df = statcast_pitcher(start_date, end_date, pid)
+            if player_data.empty:
+                print(f"No data found for {name} in {season}.")
+                return {}
 
-            if df.empty:
-                raise ValueError(f"No Statcast data found for {name} ({season})")
+            # Extract only relevant fields
+            strikeout_rate = float(player_data.iloc[0]['K%'])
+            innings_pitched = float(player_data.iloc[0]['IP'])
+            era = float(player_data.iloc[0]['ERA'])
 
-            # Directly use Statcast-calculated expected stats
-            stats = {
-                "BA": df["ba"].mean(skipna=True),
-                "xBA": df["estimated_ba_using_speedangle"].mean(skipna=True),
-                "SLG": df["slg"].mean(skipna=True),
-                "xSLG": df["estimated_slg_using_speedangle"].mean(skipna=True),
-                "wOBA": df["woba_value"].mean(skipna=True),
-                "xwOBA": df["estimated_woba_using_speedangle"].mean(skipna=True),
-                "ERA": df["era"].mean(skipna=True) if "era" in df.columns else 0.0,
-                "xERA": df["pitch_xera"].mean(skipna=True) if "pitch_xera" in df.columns else 0.0,
+            return {
+                "K%": strikeout_rate,
+                "IP": innings_pitched,
+                "ERA": era
             }
-
-            # Clean any NaNs
-            for k, v in stats.items():
-                stats[k] = float(v) if pd.notna(v) else 0.0
-
-            return stats
 
         except Exception as e:
-            print(f"[Error] Could not retrieve Statcast data for {name}: {e}")
-            return {
-                "BA": 0.0, "xBA": 0.0,
-                "SLG": 0.0, "xSLG": 0.0,
-                "wOBA": 0.0, "xwOBA": 0.0,
-                "ERA": 0.0, "xERA": 0.0
-            }
-        
-        
-        
+            print(f"Error fetching stats for {name}: {e}")
+            return {}

@@ -1,4 +1,4 @@
-import TeamMakerPitchers from "~/team-maker-page/TeamMaker";
+import TeamMaker from "~/team-maker-page/TeamMaker";
 import type { Route } from "./+types/home";
 
 
@@ -9,6 +9,6 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function TeamMaker() {
-  return <TeamMakerPitchers />;
+export default function TeamMakerRoute() {
+  return <TeamMaker />;
 }

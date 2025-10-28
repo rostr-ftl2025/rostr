@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react"
-import PitcherSearchCard from "./PitcherSearchCard"
-import PitcherRoster from "./PitcherRoster"
-import { createTeam, deleteTeam, fetchUserTeams } from "./api/teamRoster"
-import { classNames } from "./utils"
-import { getUserFromJWT } from "~/utils/getToken"
-import SignOutButton from "~/components/sign-out-button"
+import React, { useEffect, useState } from "react";
+import PitcherSearchCard from "./PitcherSearchCard";
+import PitcherRoster from "./PitcherRoster";
+import { createTeam, deleteTeam, fetchUserTeams } from "./api/teamRoster";
+import { classNames } from "./utils";
+import { getUserFromJWT } from "~/utils/getToken";
+import SignOutButton from "~/components/sign-out-button";
 
 interface Team {
-  team_id: number
-  team_name: string
+  team_id: number;
+  team_name: string;
 }
 
 export default function TeamMaker() {
@@ -37,58 +37,65 @@ export default function TeamMaker() {
   }, [checkedAuth, userId])
 
   useEffect(() => {
-    if (userId === null) return
+    if (userId === null) return;
     const fetchTeams = async () => {
       try {
-        const res = await fetchUserTeams(userId)
-        setTeams(res)
-        if (res.length > 0) setSelectedTeamId(res[0].team_id)
+        const res = await fetchUserTeams(userId);
+        setTeams(res);
+        if (res.length > 0) setSelectedTeamId(res[0].team_id);
       } catch (e) {
-        console.error("Failed to fetch teams", e)
+        console.error("Failed to fetch teams", e);
       }
-    }
-    fetchTeams()
-  }, [userId])
+    };
+    fetchTeams();
+  }, [userId]);
 
   const handleCreateTeam = async () => {
-    if (!userId) return
+    if (!userId) return;
     if (!newTeamName.trim()) {
-      setMessage("Team name is required.")
-      return
+      setMessage("Team name is required.");
+      return;
     }
-    setLoading(true)
-    setMessage(null)
+    setLoading(true);
+    setMessage(null);
     try {
-      await createTeam(userId, newTeamName) // SQL auto-generates team_id
-      setNewTeamName("")
-      const updatedTeams = await fetchUserTeams(userId)
-      setTeams(updatedTeams)
-      setSelectedTeamId(updatedTeams[updatedTeams.length - 1]?.team_id ?? null)
-      setMessage("Team created successfully.")
+      await createTeam(userId, newTeamName);
+      setNewTeamName("");
+      const updatedTeams = await fetchUserTeams(userId);
+      setTeams(updatedTeams);
+      setSelectedTeamId(updatedTeams[updatedTeams.length - 1]?.team_id ?? null);
+      setMessage("Team created successfully.");
     } catch (e: any) {
-      setMessage(e.message || "Failed to create team.")
+      setMessage(e.message || "Failed to create team.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDeleteTeam = async () => {
-    if (!selectedTeamId) return
-    setLoading(true)
-    setMessage(null)
+    if (!selectedTeamId) return;
+    setLoading(true);
+    setMessage(null);
     try {
-      await deleteTeam(selectedTeamId)
-      const updatedTeams = userId ? await fetchUserTeams(userId) : []
-      setTeams(updatedTeams)
-      setSelectedTeamId(updatedTeams[0]?.team_id ?? null)
-      setRosterRefreshFlag((f) => f + 1)
-      setMessage("Team deleted successfully.")
+      await deleteTeam(selectedTeamId);
+      const updatedTeams = userId ? await fetchUserTeams(userId) : [];
+      setTeams(updatedTeams);
+      setSelectedTeamId(updatedTeams[0]?.team_id ?? null);
+      setRosterRefreshFlag((f) => f + 1);
+      setMessage("Team deleted successfully.");
     } catch (e: any) {
-      setMessage(e.message || "Failed to delete team.")
+      setMessage(e.message || "Failed to delete team.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  // ⭐ Navigate to grading display page
+  const handleShowGrade = async () => {
+    // Replace this with real backend grade calculation
+    const grade = 93;
+    window.location.href = `/grading-display?grade=${grade}`;
+  };
 
   if (!checkedAuth) {
     return <div className="p-8 text-gray-900">Loading...</div>
@@ -106,7 +113,9 @@ export default function TeamMaker() {
         <div className="rounded-2xl bg-white p-4 shadow space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Select Team</label>
+              <label className="text-sm font-medium text-gray-700">
+                Select Team
+              </label>
               <select
                 value={selectedTeamId ?? ""}
                 onChange={(e) => setSelectedTeamId(Number(e.target.value))}
@@ -133,7 +142,9 @@ export default function TeamMaker() {
                 disabled={loading}
                 className={classNames(
                   "rounded-xl px-4 py-2 text-sm font-semibold shadow",
-                  loading ? "bg-gray-200 text-gray-400" : "bg-[#562424] text-white hover:bg-[#734343]"
+                  loading
+                    ? "bg-gray-200 text-gray-400"
+                    : "bg-[#562424] text-white hover:bg-[#734343]"
                 )}
               >
                 Create Team
@@ -150,11 +161,21 @@ export default function TeamMaker() {
               >
                 Delete Team
               </button>
+
+              {/* ⭐ Show Grade Button */}
+              <button
+                onClick={handleShowGrade}
+                className="rounded-xl bg-[#562424] text-white px-4 py-2 text-sm font-semibold shadow hover:bg-[#734343]"
+              >
+                Show Grade
+              </button>
             </div>
           </div>
 
           {message && (
-            <div className="mt-2 rounded-lg bg-gray-50 p-2 text-sm text-gray-700">{message}</div>
+            <div className="mt-2 rounded-lg bg-gray-50 p-2 text-sm text-gray-700">
+              {message}
+            </div>
           )}
         </div>
 
@@ -166,13 +187,10 @@ export default function TeamMaker() {
             />
           </div>
           <div>
-            <PitcherRoster
-              key={rosterRefreshFlag}
-              teamId={selectedTeamId ?? 0}
-            />
+            <PitcherRoster key={rosterRefreshFlag} teamId={selectedTeamId ?? 0} />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

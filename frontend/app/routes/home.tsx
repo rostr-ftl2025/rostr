@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import SignInPage from "~/sign-in-page/SignInPage";
+import SignInPage from "sign-in-page/SignInPage";
 
 
 export function meta({}: Route.MetaArgs) {

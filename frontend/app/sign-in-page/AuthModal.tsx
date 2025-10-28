@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from "react";
-import type { FormEvent } from "react";
-import { API_URL } from "~/config";
-import { getUserFromJWT } from "~/utils/getToken";
+import { useState } from "react";
 import { handleSubmit } from "./api/handleSubmit";
 
 interface AuthModalProps {

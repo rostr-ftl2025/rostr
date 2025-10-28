@@ -11,9 +11,9 @@ interface Team {
   team_name: string
 }
 
-
 export default function TeamMaker() {
   const [userId, setUserId] = useState<number | null>(null)
+  const [checkedAuth, setCheckedAuth] = useState(false)
   const [teams, setTeams] = useState<Team[]>([])
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null)
   const [newTeamName, setNewTeamName] = useState("")
@@ -26,7 +26,15 @@ export default function TeamMaker() {
     const token = localStorage.getItem("jwtToken");
     const info = getUserFromJWT(token ?? "");
     setUserId(info?.userID ? Number(info.userID) : null);
+    setCheckedAuth(true)
   }, [])
+
+  // redirect to homepage if auth checked and no userId found
+  useEffect(() => {
+    if (checkedAuth && userId === null) {
+      window.location.assign("/")
+    }
+  }, [checkedAuth, userId])
 
   useEffect(() => {
     if (userId === null) return
@@ -82,17 +90,8 @@ export default function TeamMaker() {
     }
   }
 
-  if (userId === null) {
-    return (
-      <div className="p-8 text-gray-900">
-        <div className="mb-4 text-red-600 font-bold">
-          No user ID found in JWT. Please sign in.
-        </div>
-        <div className="text-gray-700">
-          You must be signed in to use the Team Maker.
-        </div>
-      </div>
-    )
+  if (!checkedAuth) {
+    return <div className="p-8 text-gray-900">Loading...</div>
   }
 
   return (

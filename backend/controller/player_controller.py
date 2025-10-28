@@ -4,10 +4,10 @@ from database.entities.player_entity import PlayerEntity
 import pybaseball
 from pybaseball import pitching_stats
 import rapidfuzz
-from interactors.pitcher_grading_service import PitcherGradingService
+from controller.pitcher_grading_service import PitcherGradingService
 
 
-class PlayerInteractor:
+class PlayerController:
     def __init__(self, player_data_access: PlayerDataAccessInterface):
         """
         player_data_access: an instance of a class that implements PlayerDataAccessInterface

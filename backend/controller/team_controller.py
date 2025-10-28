@@ -3,7 +3,7 @@ from database.data_access_interface import TeamDataAccessInterface
 from database.entities.team_entity import TeamEntity
 
 
-class TeamInteractor:
+class TeamController:
     def __init__(self, team_data_access: TeamDataAccessInterface):
         """
         team_data_access: An implementation of TeamDataAccessInterface (e.g., TeamDataAccess)

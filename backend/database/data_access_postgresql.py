@@ -17,42 +17,47 @@ class UserDataAccess(UserDataAccessInterface):
     def __init__(self, db: Database):
         self.db = db
 
-    def create(self, user: UserEntity) -> dict:
+    def create(self, username: str, password: Optional[bytes] = None) -> UserEntity:
         query = """
         INSERT INTO users (username, password)
         VALUES (%s, %s)
-        RETURNING id, username;
+        RETURNING username;
         """
-        return self.db.execute(
-            query,
-            (user.get_username(), user.get_password()),
-            fetchone=True,
-        )
+        row = self.db.execute(query, (username, password), fetchone=True)
+        if not row:
+            raise Exception("Failed to create user")
+        # Do not return secret; construct a UserEntity with password omitted
+        return UserEntity(row.get("username") or username, None)
 
-    def read(self, username: str) -> Optional[dict]:
-        query = "SELECT * FROM users WHERE username = %s;"
-        return self.db.execute(query, (username,), fetchone=True)
+    def read(self, username: str) -> Optional[UserEntity]:
+        query = "SELECT id, username, password FROM users WHERE username = %s;"
+        row = self.db.execute(query, (username,), fetchone=True)
+        if not row:
+            return None
+        return UserEntity(row.get("username"), row.get("password"), row.get("id"))
 
-    def update(self, user: UserEntity) -> dict:
+    def update(self, username: str, password: Optional[bytes]) -> Optional[UserEntity]:
         query = """
         UPDATE users
         SET password = %s
         WHERE username = %s
-        RETURNING id, username, password;
+        RETURNING username;
         """
-        return self.db.execute(
-            query,
-            (user.get_password(), user.get_username()),
-            fetchone=True,
-        )
+        row = self.db.execute(query, (password, username), fetchone=True)
+        if not row:
+            return None
+        return UserEntity(row.get("username"), None)
 
-    def delete(self, username: str) -> dict:
+    def delete(self, username: str) -> Optional[UserEntity]:
         query = """
         DELETE FROM users
         WHERE username = %s
-        RETURNING id, username;
+        RETURNING username;
         """
-        return self.db.execute(query, (username,), fetchone=True)
+        row = self.db.execute(query, (username,), fetchone=True)
+        if not row:
+            return None
+        return UserEntity(row.get("username"), None)
 
 
 # -------------------------

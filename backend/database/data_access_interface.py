@@ -10,19 +10,32 @@ from database.entities.player_entity import PlayerEntity
 # -------------------------
 class UserDataAccessInterface(ABC):
     @abstractmethod
-    def create(self, user: UserEntity) -> dict:
+    def create(self, username: str, password: Optional[bytes] = None) -> UserEntity:
+        """
+        Create a user from primitive data and return the created UserEntity
+        (do NOT include secrets in the returned entity).
+        """
         pass
 
     @abstractmethod
-    def read(self, username: str) -> Optional[dict]:
+    def read(self, username: str) -> Optional[UserEntity]:
+        """
+        Return a UserEntity for the given username or None if not found.
+        """
         pass
 
     @abstractmethod
-    def update(self, user: UserEntity) -> dict:
+    def update(self, username: str, password: Optional[bytes]) -> Optional[UserEntity]:
+        """
+        Update the user's password and return the updated UserEntity.
+        """
         pass
 
     @abstractmethod
-    def delete(self, username: str) -> dict:
+    def delete(self, username: str) -> Optional[UserEntity]:
+        """
+        Delete the user and return the deleted UserEntity (or None if not found).
+        """
         pass
 
 

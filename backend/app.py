@@ -6,11 +6,26 @@ from flask_cors import CORS
 
 from database import Database
 
-from interactors import UserInteractor, TeamInteractor, PlayerInteractor
+from interactors import (
+    SignupInteractor,
+    SigninInteractor
+)
+
+from controller import (
+    SignupController,
+    SigninController,
+    TeamController,
+    PlayerController
+)
+
 from database.data_access_postgresql import (
     UserDataAccess,
     TeamDataAccess,
     PlayerDataAccess
+)
+
+from blueprint import (
+    UserBlueprint
 )
 
 
@@ -37,15 +52,25 @@ player_data_access = PlayerDataAccess(db)
 
 
 # Register interactors
-user_interactor = UserInteractor(user_data_access, app)
-team_interactor = TeamInteractor(team_data_access)
-player_interactor = PlayerInteractor(player_data_access)
+signup_interactor = SignupInteractor(user_data_access)
+signin_interactor = SigninInteractor(user_data_access,)
+
+
+# Register controllers
+signup_controller = SignupController(signup_interactor)
+signin_controller = SigninController(signin_interactor, app)
+
+
+# Register blueprints
+user_blueprint = UserBlueprint(signup_controller, signin_controller)
+team_controller = TeamController(team_data_access)
+player_controller = PlayerController(player_data_access)
 
 
 # Register Flask blueprints
-app.register_blueprint(user_interactor.bp)
-app.register_blueprint(team_interactor.bp)
-app.register_blueprint(player_interactor.bp)
+app.register_blueprint(user_blueprint.bp)
+app.register_blueprint(team_controller.bp)
+app.register_blueprint(player_controller.bp)
 
 
 @app.route("/")

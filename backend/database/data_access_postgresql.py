@@ -111,7 +111,7 @@ class TeamDataAccess(TeamDataAccessInterface):
 
     def get_all_players(self, team_id: int):
         query = """
-        SELECT player_name, mlbid, idfg, position
+        SELECT player_name, mlbid, idfg, position, grade
         FROM players
         WHERE team_id = %s;
         """

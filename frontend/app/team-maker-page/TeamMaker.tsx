@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import PitcherSearchCard from "./PitcherSearchCard";
-import PitcherRoster from "./PitcherRoster";
-import { createTeam, deleteTeam, fetchUserTeams } from "./api/teamRoster";
-import { classNames } from "./utils";
-import { getUserFromJWT } from "~/utils/getToken";
-import SignOutButton from "~/components/sign-out-button";
+import React, { useEffect, useState } from "react"
+import PitcherSearchCard from "./PitcherSearchCard"
+import PitcherRoster from "./PitcherRoster"
+import { createTeam, deleteTeam, fetchUserTeams } from "./api/teamRoster"
+import { classNames } from "./utils"
+import { getUserFromJWT } from "~/utils/getToken"
+import SignOutButton from "~/components/sign-out-button"
+import { Link } from "react-router-dom"
 
 interface Team {
   team_id: number;
@@ -91,15 +92,13 @@ export default function TeamMaker() {
   };
 
   // ⭐ Navigate to grading display page
-  const handleShowGrade = async () => {
-    // Replace this with real backend grade calculation
-    const grade = 93;
-    window.location.href = `/grading-display?grade=${grade}`;
-  };
-
-  if (!checkedAuth) {
-    return <div className="p-8 text-gray-900">Loading...</div>
+  const handleShowGrade = () => {
+  if (!selectedTeamId) {
+    alert("Please select a team first.");
+    return;
   }
+  window.location.href = `/grading-display?teamId=${selectedTeamId}`;
+};
 
   return (
     <div className="min-h-screen bg-[#F5DBD5] px-4 py-8 text-gray-900">

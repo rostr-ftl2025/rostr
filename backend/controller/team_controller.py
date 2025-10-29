@@ -86,6 +86,7 @@ class TeamController:
                     "mlbid": p.get("mlbid"),
                     "idfg": p.get("idfg"),
                     "position": p.get("position"),
+                    "grade": p.get("grade")
                 }
                 for p in players
             ]

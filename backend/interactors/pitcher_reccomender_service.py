@@ -15,15 +15,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 class PitcherRecommenderService:
     WEIGHTS = {
-        "pitching+": 0.30,
-        "stuff+": 0.25,
-        "k-bb%": 0.20,
-        "xfip-": -0.15,
-        "barrel%": -0.10,
-        "hardhit%": -0.10,
-        "gb%": 0.05,
-        "swstr%": 0.05,
-        "wpa/li": 0.05
+        "pitching+": 0.30, # Overall Pitching performance (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
+        "stuff+": 0.25, # Overall Quality of pitches (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
+        "k-bb%": 0.20, # Strikeout minus Walk percentage
+        "xfip-": -0.15, # Pure pitching effectiveness, FIP-Fielding Independent Pitching (lower is better)
+        "barrel%": -0.10, # % of batted balls hit the ideal exit velocity/launch angle combination for a HR or OB play
+        "hardhit%": -0.10, # % of batted balls with an exit velocity of 95+ mph
+        "gb%": 0.05, # Ground Ball percentage
+        "swstr%": 0.05, # Whiffs per pitch
+        "wpa/li": 0.05 # Clutch performance metric (https://library.fangraphs.com/misc/wpa-li/)
     }
 
     @staticmethod

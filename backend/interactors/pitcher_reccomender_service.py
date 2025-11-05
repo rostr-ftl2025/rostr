@@ -64,6 +64,7 @@ class PitcherRecommenderService:
 
 
 '''
+Alt implementation, works but not sure if faster than above, switch out if needed
 from typing import List, Dict, Optional
 
 
@@ -141,6 +142,7 @@ class PitcherRecommenderServiceFast:
 
 '''
 
+# Delete after done testing
 current_team = [
     {"name": "Gerrit Cole", "team": "NYY", "pitching+": 110, "stuff+": 105, "k-bb%": 26, "xfip-": 80, "barrel%": 5.5, "hardhit%": 32, "gb%": 44, "swstr%": 15, "wpa/li": 2.1},
     {"name": "Framber Valdez", "team": "HOU", "pitching+": 102, "stuff+": 95, "k-bb%": 18, "xfip-": 90, "barrel%": 4.5, "hardhit%": 30, "gb%": 66, "swstr%": 12, "wpa/li": 1.5}

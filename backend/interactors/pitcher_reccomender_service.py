@@ -1,17 +1,10 @@
 from pybaseball import pitching_stats
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler 
 from sklearn.metrics.pairwise import cosine_similarity
+import time
 
-#df = pitching_stats(2025)
-
-#columns = list([col.lower() for col in df.columns])
-
-#print(df['Name'].values)
-
-#print(df.head())
-#print(columns)
 
 class PitcherRecommenderService:
     WEIGHTS = {
@@ -65,9 +58,88 @@ class PitcherRecommenderService:
         penalty = PitcherRecommenderService.diversity_penalty(df_candidates, df_team, alpha)
         df_candidates["final_score"] = df_candidates["base_score"] + penalty
 
-        print(df_candidates[["name", "base_score", "final_score"]])
         return df_candidates.sort_values(by="final_score", ascending=False).head(top_n)
 
+
+
+
+'''
+from typing import List, Dict, Optional
+
+
+class PitcherRecommenderServiceFast:
+    def __init__(self, weights: Optional[Dict[str, float]] = None):
+        # Your defaults (order preserved)
+        self.WEIGHTS: Dict[str, float] = weights or {
+            "pitching+": 0.30,
+            "stuff+":    0.25,
+            "k-bb%":     0.20,
+            "xfip-":    -0.15,
+            "barrel%":  -0.10,
+            "hardhit%": -0.10,
+            "gb%":       0.05,
+            "swstr%":    0.05,
+            "wpa/li":    0.05,
+        }
+        self.FEATURES = tuple(self.WEIGHTS.keys())
+
+        # Precompute weight vectors/masks in float64 to mirror sklearn defaults
+        w = np.array([self.WEIGHTS[f] for f in self.FEATURES], dtype=np.float64)
+        self._pos_mask = (w > 0)
+        self._neg_mask = (w < 0)
+        self._w_pos = w[self._pos_mask]                  # positive weights as-is
+        self._w_neg_abs = np.abs(w[self._neg_mask])      # absolute value for negative weights
+
+        # Fallback if no neg/pos columns (edge cases)
+        if self._w_pos.size == 0:
+            self._w_pos = np.zeros((0,), dtype=np.float64)
+        if self._w_neg_abs.size == 0:
+            self._w_neg_abs = np.zeros((0,), dtype=np.float64)
+
+        self._scaler = MinMaxScaler()  # identical to your original normalization
+
+    def recommend_pitchers(self, current_team: List[Dict], candidates: List[Dict], top_n: int = 5, alpha:  float = 0.4):
+
+        df_team = pd.DataFrame(current_team)
+        df_cand = pd.DataFrame(candidates)
+
+        # Build full matrix in the same column order you used
+        full = pd.concat([df_team, df_cand], ignore_index=True)
+        X = full.loc[:, self.FEATURES].to_numpy(dtype=np.float64, copy=False)
+
+        # --- EXACT normalization parity (sklearn MinMaxScaler) ---
+        X01 = self._scaler.fit_transform(X)
+
+        n_team = len(df_team)
+        F = len(self.FEATURES)
+        X_team01 = X01[:n_team] if n_team else np.empty((0, F), dtype=np.float64)
+        X_cand01 = X01[n_team:]
+
+        # --- EXACT base score math (no constants; same as your loop) ---
+        # sum_{pos} w_pos * x + sum_{neg} |w_neg| * (1 - x)
+        # vectorized split to match the loop behavior precisely
+        base = np.zeros(X_cand01.shape[0], dtype=np.float64)
+        if self._w_pos.size:
+            base += X_cand01[:, self._pos_mask] @ self._w_pos
+        if self._w_neg_abs.size:
+            base += (1.0 - X_cand01[:, self._neg_mask]) @ self._w_neg_abs
+
+        # --- EXACT cosine penalty parity (sklearn cosine_similarity) ---
+        if X_team01.size == 0:
+            penalty = np.zeros(X_cand01.shape[0], dtype=np.float64)
+        else:
+            sim_matrix = cosine_similarity(X_cand01, X_team01)  # same routine as before
+            max_sim = sim_matrix.max(axis=1)
+            penalty = -alpha * max_sim
+
+        final = base + penalty
+
+        out = df_cand.copy()
+        out["base_score"]  = base
+        out["final_score"] = final
+        return out.sort_values("final_score", ascending=False).head(top_n).reset_index(drop=True)
+
+'''
 
 current_team = [
     {"name": "Gerrit Cole", "team": "NYY", "pitching+": 110, "stuff+": 105, "k-bb%": 26, "xfip-": 80, "barrel%": 5.5, "hardhit%": 32, "gb%": 44, "swstr%": 15, "wpa/li": 2.1},
@@ -80,5 +152,10 @@ candidates = [
     {"name": "Logan Webb", "team": "SF", "pitching+": 108, "stuff+": 100, "k-bb%": 21, "xfip-": 83, "barrel%": 4.8, "hardhit%": 33, "gb%": 61, "swstr%": 13, "wpa/li": 1.9}
 ]
 
-rec = PitcherRecommenderService.recommend_pitchers(current_team, candidates, top_n=2)
-print(rec[["name", "final_score"]])
+
+
+start_time = time.perf_counter()
+rec = PitcherRecommenderService()
+print(rec.recommend_pitchers(current_team, candidates, top_n=3))
+end_time = time.perf_counter()
+print(f"Execution time: {end_time - start_time:.6f} seconds")

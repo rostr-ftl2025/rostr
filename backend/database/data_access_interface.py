@@ -81,7 +81,7 @@ class PlayerDataAccessInterface(ABC):
         pass
 
     @abstractmethod
-    def delete(self, player_name: str) -> dict:
+    def delete(self, player_name: str, team_id: int) -> dict:
         pass
 
     # New: get all players for a specific team

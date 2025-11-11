@@ -111,7 +111,7 @@ class TeamDataAccess(TeamDataAccessInterface):
 
     def get_all_players(self, team_id: int):
         query = """
-        SELECT player_name, mlbid, idfg, position, grade
+        SELECT player_name, mlbid, idfg, position, grade, analysis
         FROM players
         WHERE team_id = %s;
         """
@@ -128,9 +128,9 @@ class PlayerDataAccess(PlayerDataAccessInterface):
 
     def create(self, player: PlayerEntity) -> dict:
         query = """
-        INSERT INTO players (team_id, player_name, mlbid, idfg, position, grade)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        RETURNING id, team_id, player_name, mlbid, idfg, position, grade;
+        INSERT INTO players (team_id, player_name, mlbid, idfg, position, grade, analysis)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        RETURNING id, team_id, player_name, mlbid, idfg, position, grade, analysis;
         """
         return self.db.execute(
             query,
@@ -140,7 +140,8 @@ class PlayerDataAccess(PlayerDataAccessInterface):
                 player.get_mlbid(),
                 player.get_idfg(),
                 player.get_position(),
-                player.get_grade()
+                player.get_grade(),
+                player.get_analysis()
             ),
             fetchone=True,
         )

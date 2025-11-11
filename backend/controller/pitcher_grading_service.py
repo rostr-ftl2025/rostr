@@ -21,3 +21,58 @@ class PitcherGradingService:
         except Exception as e:
             print(f"Error calculating pitcher grade: {e}")
             return 0.0
+        
+    @staticmethod
+    def analyze_pitcher(stats: dict, grade: float) -> str:
+        k = stats.get("K%")*100
+        ip = stats.get("IP")
+        era = stats.get("ERA")
+
+        # Determine tier
+        if grade >= 80:
+            tier = "Elite"
+        elif grade >= 70:
+            tier = "Top"
+        elif grade >= 60:
+            tier = "Solid"
+        elif grade >= 45:
+            tier = "Replacement"
+        else:
+            tier = "Poor"
+
+        # Build natural-language analysis lines
+        lines = []
+
+        # K%
+        if k >= 30:
+            lines.append(f"Very strong strikeout rate ({k} K%).")
+        elif k >= 25:
+            lines.append(f"Strong strikeout production ({k} K%).")
+        elif k >= 20:
+            lines.append(f"Average strikeout production ({k} K%).")
+        else:
+            lines.append(f"Below-average strikeout ability ({k} K%).")
+
+        # IP
+        if ip >= 150:
+            lines.append(f"High workload and strong durability ({ip} IP).")
+        elif ip >= 100:
+            lines.append(f"Moderate innings volume ({ip} IP).")
+        else:
+            lines.append(f"Low workload ({ip} IP), may have limited weekly impact.")
+
+        # ERA
+        if era <= 3:
+            lines.append(f"Excellent run prevention (ERA {era}).")
+        elif era <= 4:
+            lines.append(f"Decent ERA ({era}), not elite but serviceable.")
+        else:
+            lines.append(f"Poor ERA ({era}), risky for ratios.")
+
+        # Summary
+        summary = (
+            f"{tier} Tier:\n"
+            + "\n".join(lines)
+        )
+
+        return summary

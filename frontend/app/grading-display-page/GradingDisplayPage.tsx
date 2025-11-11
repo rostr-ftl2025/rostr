@@ -4,6 +4,7 @@ interface Pitcher {
   player_name: string;
   position: string;
   grade?: number | string;
+  analysis?: string;
 }
 
 export default function GradingDisplayPage() {
@@ -14,6 +15,7 @@ export default function GradingDisplayPage() {
 
   const teamId = search.get("teamId");
   const [pitchers, setPitchers] = useState<Pitcher[]>([]);
+  const [expanded, setExpanded] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,6 +91,7 @@ export default function GradingDisplayPage() {
               <th className="py-2 px-4 font-semibold">Name</th>
               <th className="py-2 px-4 font-semibold">Position</th>
               <th className="py-2 px-4 font-semibold text-right">Grade</th>
+              <th className="py-2 px-4 font-semibold text-right w-32">Analysis</th>
             </tr>
           </thead>
           <tbody>
@@ -100,16 +103,46 @@ export default function GradingDisplayPage() {
               </tr>
             ) : (
               pitchers.map((p, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition"
-                >
-                  <td className="py-2 px-4">{p.player_name}</td>
-                  <td className="py-2 px-4">{p.position}</td>
-                  <td className="py-2 px-4 text-right font-semibold text-[#562424]">
-                    {p.grade ?? "N/A"}
-                  </td>
-                </tr>
+                <>
+                  {/* MAIN ROW */}
+                  <tr
+                    key={index}
+                    className="border-b border-gray-100 hover:bg-gray-50 transition"
+                  >
+                    <td className="py-2 px-4">{p.player_name}</td>
+                    <td className="py-2 px-4">{p.position}</td>
+                    <td className="py-2 px-4 text-right font-semibold text-[#562424]">
+                      {p.grade ?? "N/A"}
+                    </td>
+
+                    {/* Expand/Collapse button */}
+                    <td className="py-2 px-4 text-right">
+                      {p.analysis ? (
+                        <button
+                          className="text-[#562424] hover:underline"
+                          onClick={() =>
+                            setExpanded(expanded === index ? null : index)
+                          }
+                        >
+                          {expanded === index ? "Hide" : "View"}
+                        </button>
+                      ) : (
+                        <span className="text-gray-400">N/A</span>
+                      )}
+                    </td>
+                  </tr>
+
+                  {/* EXPANDED ANALYSIS ROW */}
+                  {expanded === index && p.analysis && (
+                    <tr className="bg-gray-50">
+                      <td colSpan={4} className="px-4 py-4">
+                        <pre className="whitespace-pre-wrap text-sm text-gray-700">
+                          {p.analysis}
+                        </pre>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))
             )}
           </tbody>

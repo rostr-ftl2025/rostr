@@ -1,11 +1,12 @@
 class PlayerEntity:
-    def __init__(self, team_id: int, player_name: str, mlbid: int, idfg: int, position: str, grade: float):
+    def __init__(self, team_id: int, player_name: str, mlbid: int, idfg: int, position: str, grade: float, analysis: str):
         self.__team_id = team_id
         self.__player_name = player_name
         self.__mlbid = mlbid
         self.__idfg = idfg
         self.__position = position
         self.__grade = grade
+        self.__analysis = analysis
 
     def get_team_id(self) -> int:
         return self.__team_id
@@ -24,6 +25,9 @@ class PlayerEntity:
     
     def get_grade(self) -> float:
         return self.__grade
+    
+    def get_analysis(self) -> str:
+        return self.__analysis
 
     def set_player_name(self, player_name: str) -> None:
         self.__player_name = player_name

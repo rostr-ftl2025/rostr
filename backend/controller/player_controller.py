@@ -99,6 +99,9 @@ class PlayerController:
             # Calculate grade
             grade = PitcherGradingService.calculate_pitcher_grade(stats)
 
+            #Generate grade analysis
+            analysis = PitcherGradingService.analyze_pitcher(stats, grade)
+
             # Create entity
             player_entity = PlayerEntity(
                 team_id=team_id,
@@ -106,7 +109,8 @@ class PlayerController:
                 mlbid=mlbid,
                 idfg=idfg,
                 position=position,
-                grade = grade
+                grade = grade,
+                analysis = analysis
             )
 
             # Use interface (SQL or other)

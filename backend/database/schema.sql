@@ -21,5 +21,6 @@ CREATE TABLE players (
     idfg VARCHAR(50),
     position VARCHAR(50),
     grade FLOAT,
+    analysis TEXT,
     FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
 );

@@ -11,17 +11,30 @@ interface PitcherData {
   L: number
 }
 
+interface Player {
+  player_name: string
+  mlbid?: string
+  idfg: string
+  position: string
+}
+
 interface Props {
   teamId: number
+  players: Player[]
   onRosterChange?: () => void
 }
 
-export default function PitcherSearchCard({ teamId, onRosterChange }: Props) {
+export default function PitcherSearchCard({ teamId, players, onRosterChange }: Props) {
   const [name, setName] = useState("")
   const [results, setResults] = useState<PitcherData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set())
+
+  // derive addedIds from players passed in (keeps UI in sync when TeamMaker updates)
+  useEffect(() => {
+    setAddedIds(new Set(players.map((p) => p.idfg)))
+  }, [players])
 
   useEffect(() => {
     const doFetch = async () => {
@@ -54,6 +67,7 @@ export default function PitcherSearchCard({ teamId, onRosterChange }: Props) {
         idfg: player.IDfg,
         position: "P",
       })
+      // optimistically mark as added locally so UI updates immediately
       setAddedIds((prev) => new Set(prev).add(player.IDfg))
       if (onRosterChange) onRosterChange()
     } catch (e) {
@@ -93,7 +107,7 @@ export default function PitcherSearchCard({ teamId, onRosterChange }: Props) {
           </thead>
           <tbody>
             {results.map((row) => {
-              const isAdded = addedIds.has(row.IDfg)
+              const isAdded = addedIds.has(row.IDfg.toString())
               return (
                 <tr key={row.IDfg} className="border-t">
                   <td className="px-3 py-2 font-medium">{row.Name}</td>

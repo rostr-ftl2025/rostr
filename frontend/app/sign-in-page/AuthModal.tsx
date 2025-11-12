@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import type { FormEvent } from "react";
-import { API_URL } from "~/config";
-import { getUserFromJWT } from "~/utils/getToken";
+import { useState } from "react";
+import { handleSubmit } from "./api/handleSubmit";
 
 interface AuthModalProps {
   mode?: "signin" | "signup";
@@ -15,55 +13,6 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [userInfo, setUserInfo] = useState<{ username?: string; userID?: string } | null>(null);
-
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setMessage("");
-    setLoading(true);
-
-    // Dynamic endpoint
-    const endpoint = mode === "signin" ? "/api/users/signin" : "/api/users/signup";
-
-    try {
-      const res = await fetch(`${API_URL}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: username.trim(),
-          password: password.trim(),
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setMessage(
-          mode === "signin"
-            ? "Signed in successfully!"
-            : "Account created successfully!"
-        );
-        if (mode === "signup") {
-          setUsername("");
-          setPassword("");
-        }
-        // Save JWT and extract user info after sign in
-        if (mode === "signin" && data.token) {
-          localStorage.setItem("jwtToken", data.token);
-          const info = getUserFromJWT(data.token);
-          setUserInfo(info);
-          if (info?.userID) {
-            window.location.assign("/team-maker");
-          }
-        }
-      } else {
-        setMessage(data.error || "Something went wrong");
-      }
-    } catch {
-      setMessage("Network error");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 w-96 transition-all duration-300">
@@ -102,7 +51,21 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
         {mode === "signin" ? "Sign In" : "Sign Up"}
       </h2>
 
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
+      <form
+        onSubmit={(e) =>
+          handleSubmit(e, {
+            mode,
+            username,
+            password,
+            setMessage,
+            setLoading,
+            setUsername,
+            setPassword,
+            setUserInfo,
+          })
+        }
+        className="flex flex-col space-y-3"
+      >
         <input
           className="border rounded-lg px-3 py-2"
           placeholder="Username"

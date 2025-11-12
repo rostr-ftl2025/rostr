@@ -17,42 +17,47 @@ class UserDataAccess(UserDataAccessInterface):
     def __init__(self, db: Database):
         self.db = db
 
-    def create(self, user: UserEntity) -> dict:
+    def create(self, username: str, password: Optional[bytes] = None) -> UserEntity:
         query = """
         INSERT INTO users (username, password)
         VALUES (%s, %s)
-        RETURNING id, username;
+        RETURNING username;
         """
-        return self.db.execute(
-            query,
-            (user.get_username(), user.get_password()),
-            fetchone=True,
-        )
+        row = self.db.execute(query, (username, password), fetchone=True)
+        if not row:
+            raise Exception("Failed to create user")
+        # Do not return secret; construct a UserEntity with password omitted
+        return UserEntity(row.get("username") or username, None)
 
-    def read(self, username: str) -> Optional[dict]:
-        query = "SELECT * FROM users WHERE username = %s;"
-        return self.db.execute(query, (username,), fetchone=True)
+    def read(self, username: str) -> Optional[UserEntity]:
+        query = "SELECT id, username, password FROM users WHERE username = %s;"
+        row = self.db.execute(query, (username,), fetchone=True)
+        if not row:
+            return None
+        return UserEntity(row.get("username"), row.get("password"), row.get("id"))
 
-    def update(self, user: UserEntity) -> dict:
+    def update(self, username: str, password: Optional[bytes]) -> Optional[UserEntity]:
         query = """
         UPDATE users
         SET password = %s
         WHERE username = %s
-        RETURNING id, username, password;
+        RETURNING username;
         """
-        return self.db.execute(
-            query,
-            (user.get_password(), user.get_username()),
-            fetchone=True,
-        )
+        row = self.db.execute(query, (password, username), fetchone=True)
+        if not row:
+            return None
+        return UserEntity(row.get("username"), None)
 
-    def delete(self, username: str) -> dict:
+    def delete(self, username: str) -> Optional[UserEntity]:
         query = """
         DELETE FROM users
         WHERE username = %s
-        RETURNING id, username;
+        RETURNING username;
         """
-        return self.db.execute(query, (username,), fetchone=True)
+        row = self.db.execute(query, (username,), fetchone=True)
+        if not row:
+            return None
+        return UserEntity(row.get("username"), None)
 
 
 # -------------------------
@@ -106,7 +111,7 @@ class TeamDataAccess(TeamDataAccessInterface):
 
     def get_all_players(self, team_id: int):
         query = """
-        SELECT player_name, mlbid, idfg, position
+        SELECT player_name, mlbid, idfg, position, grade, analysis
         FROM players
         WHERE team_id = %s;
         """
@@ -123,9 +128,9 @@ class PlayerDataAccess(PlayerDataAccessInterface):
 
     def create(self, player: PlayerEntity) -> dict:
         query = """
-        INSERT INTO players (team_id, player_name, mlbid, idfg, position, grade)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        RETURNING id, team_id, player_name, mlbid, idfg, position, grade;
+        INSERT INTO players (team_id, player_name, mlbid, idfg, position, grade, analysis)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        RETURNING id, team_id, player_name, mlbid, idfg, position, grade, analysis;
         """
         return self.db.execute(
             query,
@@ -135,7 +140,8 @@ class PlayerDataAccess(PlayerDataAccessInterface):
                 player.get_mlbid(),
                 player.get_idfg(),
                 player.get_position(),
-                player.get_grade()
+                player.get_grade(),
+                player.get_analysis()
             ),
             fetchone=True,
         )
@@ -162,13 +168,14 @@ class PlayerDataAccess(PlayerDataAccessInterface):
             fetchone=True,
         )
 
-    def delete(self, player_name: str) -> dict:
+    def delete(self, player_name: str, team_id: int) -> dict:
         query = """
         DELETE FROM players
         WHERE player_name = %s
-        RETURNING id, player_name;
+        AND team_id = %s
+        RETURNING idfg, team_id;
         """
-        return self.db.execute(query, (player_name,), fetchone=True)
+        return self.db.execute(query, (player_name, team_id), fetchone=True)
 
     # New: list all players for a team
     def list_by_team(self, team_id: int) -> List[dict]:

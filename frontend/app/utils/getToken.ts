@@ -5,7 +5,7 @@ export function getUserFromJWT(token: string): { username?: string; userID?: str
     const decoded = JSON.parse(atob(payload));
     return {
       username: decoded.username,
-      userID: decoded.userID,
+      userID: decoded.userID
     };
   } catch {
     return null;

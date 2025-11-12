@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react"
-import { fetchTeamPlayers, removePlayerFromTeam } from "./api/teamRoster"
+import React, { useState } from "react"
+import { removePlayerFromTeam } from "./api/teamRoster"
 import { classNames } from "./utils"
 
 interface Player {
@@ -11,37 +11,25 @@ interface Player {
 
 interface Props {
   teamId: number
+  players: Player[]
+  onRosterChange?: () => void
 }
 
-export default function PitcherRoster({ teamId }: Props) {
-  const [players, setPlayers] = useState<Player[]>([])
+export default function PitcherRoster({ teamId, players, onRosterChange }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!teamId) return
-    const fetchPlayers = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const res = await fetchTeamPlayers(teamId)
-        setPlayers(res)
-      } catch (e: any) {
-        setError(e.message || "Failed to fetch players")
-        setPlayers([])
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchPlayers()
-  }, [teamId])
-
   const handleRemove = async (playerName: string) => {
+    setLoading(true)
+    setError(null)
     try {
       await removePlayerFromTeam(teamId, playerName)
-      setPlayers((prev) => prev.filter((p) => p.player_name !== playerName))
+      // notify parent to refresh authoritative list
+      if (onRosterChange) onRosterChange()
     } catch (e: any) {
       setError(e.message || "Failed to remove player")
+    } finally {
+      setLoading(false)
     }
   }
 

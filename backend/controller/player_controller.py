@@ -128,10 +128,10 @@ class PlayerController:
             return jsonify({"error": "Player name required"}), 400
 
         try:
-            result = self.player_data_access.delete(player_name)
+            result = self.player_data_access.delete(player_name, team_id)
             if not result:
                 return jsonify({"error": "Player not found"}), 404
-            return jsonify({"message": f"Removed player {player_name}"}), 200
+            return jsonify({"idfg": result["idfg"]}), 200
 
         except Exception as e:
             return jsonify({"error": str(e)}), 400

@@ -168,13 +168,14 @@ class PlayerDataAccess(PlayerDataAccessInterface):
             fetchone=True,
         )
 
-    def delete(self, player_name: str) -> dict:
+    def delete(self, player_name: str, team_id: int) -> dict:
         query = """
         DELETE FROM players
         WHERE player_name = %s
-        RETURNING id, player_name;
+        AND team_id = %s
+        RETURNING idfg, team_id;
         """
-        return self.db.execute(query, (player_name,), fetchone=True)
+        return self.db.execute(query, (player_name, team_id), fetchone=True)
 
     # New: list all players for a team
     def list_by_team(self, team_id: int) -> List[dict]:

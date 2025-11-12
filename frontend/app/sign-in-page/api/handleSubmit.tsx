@@ -25,7 +25,7 @@ export async function handleSubmit(
   }
 ): Promise<void> {
   e.preventDefault();
-  setMessage("");
+  setMessage("Loading...");
   setLoading(true);
 
   try {
@@ -61,8 +61,10 @@ export async function handleSubmit(
     } else {
       setMessage(data.error || "Something went wrong");
     }
-  } catch {
-    setMessage("Network error");
+  } catch (err: unknown) {
+    const messageText =
+      err instanceof Error ? err.message : typeof err === "string" ? err : String(err);
+    setMessage(messageText || "Network error");
   } finally {
     setLoading(false);
   }

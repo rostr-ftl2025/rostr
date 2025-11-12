@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import PitcherSearchCard from "./PitcherSearchCard"
 import PitcherRoster from "./PitcherRoster"
-import { createTeam, deleteTeam, fetchUserTeams } from "./api/teamRoster"
+import { createTeam, deleteTeam, fetchUserTeams, fetchTeamPlayers } from "./api/teamRoster"
 import { classNames } from "./utils"
 import { getUserFromJWT } from "~/utils/getToken"
 import SignOutButton from "~/components/sign-out-button"
@@ -12,6 +12,13 @@ interface Team {
   team_name: string;
 }
 
+interface Player {
+  player_name: string
+  mlbid?: string
+  idfg: string
+  position: string
+}
+
 export default function TeamMaker() {
   const [userId, setUserId] = useState<number | null>(null)
   const [checkedAuth, setCheckedAuth] = useState(false)
@@ -20,6 +27,7 @@ export default function TeamMaker() {
   const [newTeamName, setNewTeamName] = useState("")
   const [message, setMessage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [players, setPlayers] = useState<Player[]>([])
   const [rosterRefreshFlag, setRosterRefreshFlag] = useState(0)
 
   // Get userId from JWT on mount
@@ -51,6 +59,27 @@ export default function TeamMaker() {
     fetchTeams();
   }, [userId]);
 
+  // Fetch players for selected team when selectedTeamId or refresh flag changes
+  const fetchPlayersFor = async (teamIdParam?: number | null) => {
+    const id = teamIdParam ?? selectedTeamId
+    if (!id) {
+      setPlayers([])
+      return
+    }
+    try {
+      const res = await fetchTeamPlayers(id)
+      setPlayers(res)
+    } catch (e) {
+      console.error("Failed to fetch team players", e)
+      setPlayers([])
+    }
+  }
+
+  useEffect(() => {
+    fetchPlayersFor()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTeamId, rosterRefreshFlag])
+
   const handleCreateTeam = async () => {
     if (!userId) return;
     if (!newTeamName.trim()) {
@@ -64,7 +93,10 @@ export default function TeamMaker() {
       setNewTeamName("");
       const updatedTeams = await fetchUserTeams(userId);
       setTeams(updatedTeams);
-      setSelectedTeamId(updatedTeams[updatedTeams.length - 1]?.team_id ?? null);
+      const newSelected = updatedTeams[updatedTeams.length - 1]?.team_id ?? null;
+      setSelectedTeamId(newSelected);
+      // Immediately fetch players for the new team
+      await fetchPlayersFor(newSelected);
       setMessage("Team created successfully.");
     } catch (e: any) {
       setMessage(e.message || "Failed to create team.");
@@ -81,7 +113,10 @@ export default function TeamMaker() {
       await deleteTeam(selectedTeamId);
       const updatedTeams = userId ? await fetchUserTeams(userId) : [];
       setTeams(updatedTeams);
-      setSelectedTeamId(updatedTeams[0]?.team_id ?? null);
+      const newSelected = updatedTeams[0]?.team_id ?? null;
+      setSelectedTeamId(newSelected);
+      // Fetch players for the newly selected team (or clear)
+      await fetchPlayersFor(newSelected);
       setRosterRefreshFlag((f) => f + 1);
       setMessage("Team deleted successfully.");
     } catch (e: any) {
@@ -93,12 +128,12 @@ export default function TeamMaker() {
 
   // ⭐ Navigate to grading display page
   const handleShowGrade = () => {
-  if (!selectedTeamId) {
-    alert("Please select a team first.");
-    return;
-  }
-  window.location.href = `/grading-display?teamId=${selectedTeamId}`;
-};
+    if (!selectedTeamId) {
+      alert("Please select a team first.");
+      return;
+    }
+    window.location.href = `/grading-display?teamId=${selectedTeamId}`;
+  };
 
   return (
     <div className="min-h-screen bg-[#F5DBD5] px-4 py-8 text-gray-900">
@@ -182,11 +217,16 @@ export default function TeamMaker() {
           <div className="lg:col-span-2">
             <PitcherSearchCard
               teamId={selectedTeamId ?? 0}
+              players={players}
               onRosterChange={() => setRosterRefreshFlag((f) => f + 1)}
             />
           </div>
           <div>
-            <PitcherRoster key={rosterRefreshFlag} teamId={selectedTeamId ?? 0} />
+            <PitcherRoster
+              teamId={selectedTeamId ?? 0}
+              players={players}
+              onRosterChange={() => setRosterRefreshFlag((f) => f + 1)}
+            />
           </div>
         </div>
       </div>

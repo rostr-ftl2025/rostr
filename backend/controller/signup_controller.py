@@ -17,5 +17,5 @@ class SignupController:
             user_data = self.signup_interactor.signup(username, hashed_password)
             return jsonify(user_data), 201
         except Exception as e:
-            return jsonify({"error", str(e)}), 400
+            return jsonify({"error": str(e)}), 400
 

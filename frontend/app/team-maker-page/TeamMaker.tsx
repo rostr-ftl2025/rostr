@@ -126,7 +126,7 @@ export default function TeamMaker() {
     }
   };
 
-  // ⭐ Navigate to grading display page
+  // Navigate to grading display page
   const handleShowGrade = () => {
     if (!selectedTeamId) {
       alert("Please select a team first.");
@@ -196,7 +196,7 @@ export default function TeamMaker() {
                 Delete Team
               </button>
 
-              {/* ⭐ Show Grade Button */}
+              {/* Show Grade Button */}
               <button
                 onClick={handleShowGrade}
                 className="rounded-xl bg-[#562424] text-white px-4 py-2 text-sm font-semibold shadow hover:bg-[#734343]"
@@ -204,7 +204,7 @@ export default function TeamMaker() {
                 Show Grade
               </button>
 
-              {/* ⭐ Trade Analyzer Button */}
+              {/* Trade Analyzer Button */}
 <button
   onClick={() => {
     if (!selectedTeamId) {

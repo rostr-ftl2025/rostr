@@ -7,6 +7,7 @@ import time
 
 
 class PitcherRecommenderService:
+    '''
     WEIGHTS = {
         "pitching+": 0.30, # Overall Pitching performance (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
         "stuff+": 0.25, # Overall Quality of pitches (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
@@ -84,7 +85,129 @@ class PitcherRecommenderService:
         df_sorted["rank"] = range(1, len(df_sorted) + 1)
 
         return df_sorted[["rank", "name", "team", "score"]].reset_index(drop=True)
+    '''
+    # Default (standard) weights
+    BASE_WEIGHTS = {
+        "pitching+": 0.30,
+        "stuff+": 0.25,
+        "k-bb%": 0.20,
+        "xfip-": -0.15,
+        "barrel%": -0.10,
+        "hardhit%": -0.10,
+        "gb%": 0.05,
+        "swstr%": 0.05,
+        "wpa/li": 0.05
+    }
 
+    # Additional user preference profiles
+    PROFILES = {
+        "standard": BASE_WEIGHTS,
+        "strikeout": {
+            "pitching+": 0.20,
+            "stuff+": 0.20,
+            "k-bb%": 0.35,
+            "xfip-": -0.10,
+            "barrel%": -0.05,
+            "hardhit%": -0.05,
+            "gb%": 0.05,
+            "swstr%": 0.20,
+            "wpa/li": 0.00
+        },
+        "control": {
+            "pitching+": 0.25,
+            "stuff+": 0.10,
+            "k-bb%": 0.15,
+            "xfip-": -0.25,
+            "barrel%": -0.15,
+            "hardhit%": -0.15,
+            "gb%": 0.10,
+            "swstr%": 0.05,
+            "wpa/li": 0.10
+        },
+        "groundball": {
+            "pitching+": 0.20,
+            "stuff+": 0.15,
+            "k-bb%": 0.10,
+            "xfip-": -0.10,
+            "barrel%": -0.05,
+            "hardhit%": -0.05,
+            "gb%": 0.30,
+            "swstr%": 0.05,
+            "wpa/li": 0.10
+        },
+        "clutch": {
+            "pitching+": 0.30,
+            "stuff+": 0.15,
+            "k-bb%": 0.15,
+            "xfip-": -0.10,
+            "barrel%": -0.05,
+            "hardhit%": -0.05,
+            "gb%": 0.05,
+            "swstr%": 0.10,
+            "wpa/li": 0.25
+        },
+        "sabermetrics": {
+            "pitching+": 0.10,
+            "stuff+": 0.15,
+            "k-bb%": 0.25,
+            "xfip-": -0.35,
+            "barrel%": -0.05,
+            "hardhit%": -0.05,
+            "gb%": 0.00,
+            "swstr%": 0.15,
+            "wpa/li": 0.00
+        },
+    }
+
+    @staticmethod
+    def norm(df: pd.DataFrame, cols: list):
+        """Normalize selected columns between 0 and 1."""
+        scaler = MinMaxScaler()
+        df[cols] = scaler.fit_transform(df[cols])
+        return df
+    
+    @staticmethod
+    def compute_weighted_stats(df: pd.DataFrame, weights: dict):
+        """Compute a weighted score for each pitcher."""
+        scores = np.zeros(len(df))
+        for stat, weight in weights.items():
+            vals = df[stat].values.copy()
+            # For negatively weighted metrics (e.g., xfip-, barrel%), lower is better
+            if weight < 0:
+                vals = np.ones_like(vals, dtype=float) - vals
+            scores += vals * abs(weight)
+        return scores
+
+    @staticmethod
+    def recommend_starting_pitchers(team_pitchers: list[dict], top_n=5, profile="standard"):
+        """
+        Recommend the top N starting pitchers from the user's current roster.
+        The weighting changes based on the selected fantasy manager profile.
+        """
+
+        # Choose profile weights
+        weights = PitcherRecommenderService.PROFILES.get(profile, PitcherRecommenderService.BASE_WEIGHTS)
+
+        # Convert to DataFrame
+        df = pd.DataFrame(team_pitchers)
+        features = list(weights.keys())
+
+        # Ensure all metrics exist in the DataFrame
+        for f in features:
+            if f not in df.columns:
+                df[f] = 0.0
+
+        # Normalize within team
+        df = PitcherRecommenderService.norm(df, features)
+
+        # Compute weighted score using selected profile
+        df["score"] = PitcherRecommenderService.compute_weighted_stats(df, weights)
+
+        # Sort and rank
+        df_sorted = df.sort_values(by="score", ascending=False).head(top_n)
+        df_sorted["rank"] = range(1, len(df_sorted) + 1)
+
+        return df_sorted[["rank", "name", "team", "score"]].reset_index(drop=True)
 
 
 '''
@@ -190,5 +313,5 @@ candidates = [
 #print(f"Execution time: {end_time - start_time:.6f} seconds")
 
 rec = PitcherRecommenderService()
-recommendations = rec.recommend_starting_pitchers(current_team)
+recommendations = rec.recommend_starting_pitchers(current_team, 5, "control_lover")
 print(recommendations)

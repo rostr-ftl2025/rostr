@@ -105,6 +105,9 @@ class TeamController:
     
     def recommend_lineup(self, team_id):
         try:
+            # Get profile from query string (default to "standard")
+            profile = request.args.get("profile", "standard")
+
             # Get all players on this team
             players = self.team_data_access.get_all_players(team_id)
             if not players:
@@ -142,8 +145,8 @@ class TeamController:
             if not enriched_pitchers:
                 return jsonify({"error": "No matching MLB stats found for team players"}), 404
 
-            # Generate lineup recommendation
-            recommendations = PitcherRecommenderService.recommend_starting_pitchers(enriched_pitchers)
+            # Generate lineup recommendation using the selected profile
+            recommendations = PitcherRecommenderService.recommend_starting_pitchers(enriched_pitchers, 5, profile)
 
             # Convert DataFrame to list of dicts with consistent key names
             records = recommendations.to_dict(orient="records")

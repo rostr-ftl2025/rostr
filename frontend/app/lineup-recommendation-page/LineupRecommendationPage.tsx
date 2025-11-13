@@ -15,6 +15,7 @@ export default function LineupRecommendationPage() {
       : new URLSearchParams();
 
   const teamId = search.get("teamId");
+  const selectedProfile = search.get("profile");
   const [lineup, setLineup] = useState<Pitcher[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +28,7 @@ export default function LineupRecommendationPage() {
     }
 
     const fetchLineup = () => {
-      fetch(`${API_URL}/api/teams/${teamId}/recommend-lineup`)
+      fetch(`${API_URL}/api/teams/${teamId}/recommend-lineup?profile=${selectedProfile}`)
         .then((res) =>
           res.ok
             ? res.json()
@@ -39,7 +40,7 @@ export default function LineupRecommendationPage() {
     };
 
     fetchLineup();
-  }, [teamId]);
+  }, [teamId, selectedProfile]);
 
   if (loading) {
     return (

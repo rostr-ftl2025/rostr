@@ -19,6 +19,17 @@ export default function GradingDisplayPage() {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showProfileSelect, setShowProfileSelect] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState("standard");
+
+  const profiles = [
+    { key: "standard", label: "Standard (Balanced)" },
+    { key: "strikeout", label: "Strikeout" },
+    { key: "control", label: "Control" },
+    { key: "groundball", label: "Groundball" },
+    { key: "clutch", label: "Clutch" },
+    { key: "sabermetrics", label: "Sabermetrics" },
+  ];
 
   useEffect(() => {
     if (!teamId) {
@@ -226,22 +237,59 @@ export default function GradingDisplayPage() {
         </div>
       </div>
 
-      <div className="mt-8 flex gap-4">
-        <a
-          href={`/lineup-recommendation?teamId=${teamId}`}
-          className="rounded-xl bg-sky-400 text-white border border-sky-400 m-2 px-4 py-2 text-sm font-semibold shadow hover:bg-sky-500 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
-        >
-          Suggest Lineup
-        </a>
+      <div className="mt-8 flex flex-col items-center gap-4">
+        {!showProfileSelect ? (
+          <>
+            <button
+              onClick={() => setShowProfileSelect(true)}
+              className="rounded-xl bg-sky-400 text-white border border-sky-400 px-6 py-2 text-sm font-semibold shadow hover:bg-sky-500 transition-all"
+            >
+              Suggest Lineup
+            </button>
 
-        <a
-          href="/team-maker"
-          className="rounded-xl bg-gray-200 text-black m-2 px-4 py-2 text-sm font-semibold shadow hover:bg-gray-300 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
-        >
-          Back to Team Maker
-        </a>
+            <a
+              href="/team-maker"
+              className="rounded-xl bg-gray-200 text-black px-6 py-2 text-sm font-semibold shadow hover:bg-gray-300 transition-all"
+            >
+              Back to Team Maker
+            </a>
+          </>
+        ) : (
+          <div className="bg-sky-50 border rounded-2xl shadow p-4 flex flex-col items-center space-y-3">
+            <label htmlFor="profile" className="font-semibold text-gray-800">
+              Choose Your Lineup Strategy:
+            </label>
+            <select
+              id="profile"
+              value={selectedProfile}
+              onChange={(e) => setSelectedProfile(e.target.value)}
+              className="border rounded-lg p-2 bg-white text-gray-800 focus:outline-none"
+            >
+              {profiles.map((p) => (
+                <option key={p.key} value={p.key}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+
+            <div className="flex gap-3 mt-3">
+              <a
+                href={`/lineup-recommendation?teamId=${teamId}&profile=${selectedProfile}`}
+                className="rounded-xl bg-sky-400 text-white border border-sky-400 px-4 py-2 text-sm font-semibold shadow hover:bg-sky-500"
+              >
+                View Recommended Lineup
+              </a>
+
+              <button
+                onClick={() => setShowProfileSelect(false)}
+                className="rounded-xl bg-gray-200 text-black px-4 py-2 text-sm font-semibold shadow hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-
     </div>
   );
 }

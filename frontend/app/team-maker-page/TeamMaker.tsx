@@ -226,7 +226,6 @@ export default function TeamMaker() {
 
             </div>
           </div>
-          ````
 
           {message && (
             <div className="mt-2 rounded-lg bg-gray-50 p-2 text-sm text-gray-700">

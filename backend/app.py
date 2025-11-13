@@ -15,7 +15,8 @@ from controller import (
     SignupController,
     SigninController,
     TeamController,
-    PlayerController
+    PlayerController,
+    TradeController
 )
 
 from database.data_access_postgresql import (
@@ -65,12 +66,15 @@ signin_controller = SigninController(signin_interactor, app)
 user_blueprint = UserBlueprint(signup_controller, signin_controller)
 team_controller = TeamController(team_data_access)
 player_controller = PlayerController(player_data_access)
+trade_controller = TradeController(player_data_access)
+
 
 
 # Register Flask blueprints
 app.register_blueprint(user_blueprint.bp)
 app.register_blueprint(team_controller.bp)
 app.register_blueprint(player_controller.bp)
+app.register_blueprint(trade_controller.bp)
 
 
 @app.route("/")

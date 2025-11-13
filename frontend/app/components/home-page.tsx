@@ -1,19 +1,57 @@
+import React, { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { BarChart3, Users, Target, Zap } from 'lucide-react';
 import type { Page } from '../routes/home';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { AuthModal } from '../sign-in-page/AuthModal';
+import { getUserFromJWT } from '~/utils/getToken';
 
 interface HomePageProps {
   onNavigate: (page: Page) => void;
 }
 
 export function HomePage({ onNavigate }: HomePageProps) {
+  const [showAuthForm, setShowAuthForm] = useState(false);
+  const [initialMode, setInitialMode] = useState<'signin' | 'signup'>('signin');
+  const [userInfo, setUserInfo] = useState<{ username?: string; userID?: string } | null>(null);
+
   const handleNavigate = (page: Page) => {
     if (typeof onNavigate === 'function') {
       onNavigate(page);
     }
   };
+
+  // Check JWT on page load (like SignInPage)
+  useEffect(() => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      const info = getUserFromJWT(token);
+      setUserInfo(info);
+    }
+  }, []);
+
+  // If not authenticated -> show modal, otherwise navigate to grading page (optionally with teamId)
+  const handleGradeClick = (teamId?: number) => {
+    const token = localStorage.getItem('jwtToken');
+    const info = getUserFromJWT(token ?? '');
+    if (info?.userID) {
+      const target = teamId ? `/grading-display?teamId=${teamId}` : '/grading-display';
+      window.location.href = target;
+    } else {
+      setInitialMode('signin');
+      setShowAuthForm(true);
+    }
+  };
+
+  // New: when the auth modal should be shown, render only the modal in a full-screen container
+  if (showAuthForm) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95">
+        <AuthModal mode={initialMode} onClose={() => setShowAuthForm(false)} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col font-sans">
@@ -32,8 +70,8 @@ export function HomePage({ onNavigate }: HomePageProps) {
               Grade your roster. Optimize your lineup. Dominate your league.
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
-              <Button size="lg" className="text-lg px-12 h-16 rounded-full shadow-lg" asChild>
-                <a href="/grading-display?teamId=1">Grade My Roster</a>
+              <Button size="lg" className="text-lg px-12 h-16 rounded-full shadow-lg" onClick={() => handleGradeClick()}>
+                Grade My Roster
               </Button>
               <Button
                 size="lg"
@@ -217,11 +255,20 @@ export function HomePage({ onNavigate }: HomePageProps) {
               Stop guessing. Start winning.<br />Join 50,000+ managers using rostr.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <Button size="lg" className="text-xl px-14 h-20 rounded-full shadow-xl hover:shadow-2xl transition-shadow font-semibold" asChild>
-                <a href="/grading-display?teamId=1">Grade My Roster Free</a>
+              <Button
+                size="lg"
+                className="text-xl px-14 h-20 rounded-full shadow-xl hover:shadow-2xl transition-shadow font-semibold"
+                onClick={() => handleGradeClick(1)}
+              >
+                Grade My Roster Free
               </Button>
-              <Button size="lg" variant="outline" className="text-xl px-14 h-20 rounded-full shadow-xl hover:shadow-2xl transition-shadow font-semibold" asChild>
-                <a href="/grading-display?teamId=1">View Grades</a>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-xl px-14 h-20 rounded-full shadow-xl hover:shadow-2xl transition-shadow font-semibold"
+                onClick={() => handleGradeClick(1)}
+              >
+                View Grades
               </Button>
             </div>
           </div>

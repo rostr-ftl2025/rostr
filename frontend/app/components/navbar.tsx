@@ -42,13 +42,6 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
           >
             About
           </button>
-          <Button 
-            onClick={() => onNavigate('auth')}
-            variant={currentPage === 'auth' ? 'default' : 'outline'}
-            className="ml-2"
-          >
-            Get Started
-          </Button>
         </div>
       </div>
     </nav>

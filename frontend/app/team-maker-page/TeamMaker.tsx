@@ -136,7 +136,7 @@ export default function TeamMaker() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5DBD5] px-4 py-8 text-gray-900">
+    <div className="min-h-screen bg-white px-4 py-8 text-gray-900">
       <div className="mx-auto max-w-6xl space-y-6">
         <h1 className="text-3xl font-bold tracking-wide">
           Rostr<span className="text-[#850027]">.</span> Team Maker — Pitchers
@@ -171,6 +171,8 @@ export default function TeamMaker() {
                 onChange={(e) => setNewTeamName(e.target.value)}
                 className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#850027]"
               />
+
+              {/* Create Team button — white background, black text */}
               <button
                 onClick={handleCreateTeam}
                 disabled={loading}
@@ -178,11 +180,13 @@ export default function TeamMaker() {
                   "rounded-xl px-4 py-2 text-sm font-semibold shadow",
                   loading
                     ? "bg-gray-200 text-gray-400"
-                    : "bg-[#562424] text-white hover:bg-[#734343]"
+                    : "bg-white text-black border border-gray-300 hover:bg-gray-50"
                 )}
               >
                 Create Team
               </button>
+
+              {/* Delete Team button — white background, black text */}
               <button
                 onClick={handleDeleteTeam}
                 disabled={loading || !selectedTeamId}
@@ -190,16 +194,16 @@ export default function TeamMaker() {
                   "rounded-xl px-4 py-2 text-sm font-semibold shadow",
                   loading || !selectedTeamId
                     ? "bg-gray-200 text-gray-400"
-                    : "bg-rose-600 text-white hover:bg-rose-700"
+                    : "bg-white text-black border border-gray-300 hover:bg-gray-50"
                 )}
               >
                 Delete Team
               </button>
 
-              {/* ⭐ Show Grade Button */}
+              {/* Show Grade button — white background, black text */}
               <button
                 onClick={handleShowGrade}
-                className="rounded-xl bg-[#562424] text-white px-4 py-2 text-sm font-semibold shadow hover:bg-[#734343]"
+                className="rounded-xl bg-white text-black border border-gray-300 px-4 py-2 text-sm font-semibold shadow hover:bg-gray-50"
               >
                 Show Grade
               </button>

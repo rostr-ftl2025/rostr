@@ -142,7 +142,9 @@ export default function TeamMaker() {
           Rostr<span className="text-[#850027]">.</span> Team Maker — Pitchers
         </h1>
 
-        <SignOutButton />
+        <div className="inline-block hover:cursor-pointer">
+          <SignOutButton />
+        </div>
 
         <div className="rounded-2xl bg-white p-4 shadow space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
@@ -172,38 +174,38 @@ export default function TeamMaker() {
                 className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#850027]"
               />
 
-              {/* Create Team button — white background, black text */}
+              {/* Create Team button — primary (light blue) */}
               <button
                 onClick={handleCreateTeam}
                 disabled={loading}
                 className={classNames(
-                  "rounded-xl px-4 py-2 text-sm font-semibold shadow",
+                  "rounded-xl px-4 py-2 text-sm font-semibold shadow transition-opacity duration-200 ease-in-out",
                   loading
                     ? "bg-gray-200 text-gray-400"
-                    : "bg-white text-black border border-gray-300 hover:bg-gray-50"
+                    : "bg-sky-400 text-white border border-sky-400 hover:bg-sky-500 hover:opacity-90 hover:cursor-pointer"
                 )}
               >
                 Create Team
               </button>
 
-              {/* Delete Team button — white background, black text */}
+              {/* Delete Team button — destructive (red) */}
               <button
                 onClick={handleDeleteTeam}
                 disabled={loading || !selectedTeamId}
                 className={classNames(
-                  "rounded-xl px-4 py-2 text-sm font-semibold shadow",
+                  "rounded-xl px-4 py-2 text-sm font-semibold shadow transition-opacity duration-200 ease-in-out",
                   loading || !selectedTeamId
                     ? "bg-gray-200 text-gray-400"
-                    : "bg-white text-black border border-gray-300 hover:bg-gray-50"
+                    : "bg-red-500 text-white border border-red-500 hover:bg-red-600 hover:opacity-90 hover:cursor-pointer"
                 )}
               >
                 Delete Team
               </button>
-
-              {/* Show Grade button — white background, black text */}
+              
+              {/* Show Grade button — primary (light blue) */}
               <button
                 onClick={handleShowGrade}
-                className="rounded-xl bg-white text-black border border-gray-300 px-4 py-2 text-sm font-semibold shadow hover:bg-gray-50"
+                className="rounded-xl bg-sky-400 text-white border border-sky-400 px-4 py-2 text-sm font-semibold shadow hover:bg-sky-500 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
               >
                 Show Grade
               </button>

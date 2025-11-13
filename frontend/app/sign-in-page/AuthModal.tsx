@@ -22,7 +22,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
             onClick={() => setMode("signin")}
             className={`px-4 py-2 rounded-l-lg font-semibold border border-black bg-white text-black hover:bg-black hover:text-white transition-colors ${
               mode === "signin" ? "ring-2 ring-black" : ""
-            }`}
+            } hover:cursor-pointer`}
           >
             Sign In
           </button>
@@ -30,14 +30,14 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
             onClick={() => setMode("signup")}
             className={`px-4 py-2 rounded-r-lg font-semibold border border-black bg-white text-black hover:bg-black hover:text-white transition-colors ${
               mode === "signup" ? "ring-2 ring-black" : ""
-            }`}
+            } hover:cursor-pointer`}
           >
             Sign Up
           </button>
         </div>
         <button
           onClick={onClose}
-          className="px-2 py-1 border border-black rounded bg-white text-black hover:bg-black hover:text-white transition-colors"
+          className="px-2 py-1 border border-black rounded bg-white text-black hover:bg-black hover:text-white transition-colors hover:cursor-pointer"
         >
           x
         </button>
@@ -78,7 +78,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
           required
         />
         <button
-          className="py-2 rounded-lg font-semibold bg-white text-black border border-black hover:bg-black hover:text-white disabled:opacity-50 transition-colors"
+          className="py-2 rounded-lg font-semibold bg-sky-400 text-white border border-sky-400 hover:bg-sky-500 disabled:opacity-50 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
           type="submit"
           disabled={loading}
         >

@@ -120,10 +120,10 @@ export default function PitcherSearchCard({ teamId, players, onRosterChange }: P
                       onClick={() => handleAdd(row)}
                       disabled={isAdded}
                       className={classNames(
-                        "rounded-lg px-3 py-1 text-sm font-semibold shadow transition-colors",
+                        "rounded-lg px-3 py-1 text-sm font-semibold shadow transition-opacity duration-200 ease-in-out",
                         isAdded
                           ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                          : "bg-[#562424] text-white hover:bg-[#734343]"
+                          : "bg-sky-400 text-white hover:bg-sky-500 hover:opacity-90 hover:cursor-pointer"
                       )}
                     >
                       {isAdded ? "Added" : "Add"}

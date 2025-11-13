@@ -1,5 +1,7 @@
 // src/routes/grading-display/+page.tsx (or +route.tsx depending on your setup)
-import GradingDisplayPage from "~/components/GradingDisplayPage";
+
+import GradingDisplayPage from "~/grading-display-page/GradingDisplayPage";
+
 
 export function meta() {
   return [

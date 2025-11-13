@@ -36,8 +36,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
     const token = localStorage.getItem('jwtToken');
     const info = getUserFromJWT(token ?? '');
     if (info?.userID) {
-      const target = teamId ? `/grading-display?teamId=${teamId}` : '/grading-display';
-      window.location.href = target;
+      window.location.href = "/team-maker";
     } else {
       setInitialMode('signin');
       setShowAuthForm(true);
@@ -70,13 +69,17 @@ export function HomePage({ onNavigate }: HomePageProps) {
               Grade your roster. Optimize your lineup. Dominate your league.
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
-              <Button size="lg" className="text-lg px-12 h-16 rounded-full shadow-lg" onClick={() => handleGradeClick()}>
+              <Button
+                size="lg"
+                className="text-lg px-12 h-16 rounded-full shadow-lg bg-sky-400 text-white hover:bg-sky-500 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
+                onClick={() => handleGradeClick()}
+              >
                 Grade My Roster
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="text-lg px-12 h-16 rounded-full"
+                className="text-lg px-12 h-16 rounded-full transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer hover:bg-gray-100"
                 onClick={() => handleNavigate('about')}
               >
                 See How It Works
@@ -257,7 +260,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             <div className="flex flex-col sm:flex-row justify-center gap-6">
               <Button
                 size="lg"
-                className="text-xl px-14 h-20 rounded-full shadow-xl hover:shadow-2xl transition-shadow font-semibold"
+                className="text-xl px-14 h-20 rounded-full shadow-xl bg-sky-400 text-white hover:bg-sky-500 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer font-semibold"
                 onClick={() => handleGradeClick(1)}
               >
                 Grade My Roster Free
@@ -265,7 +268,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-xl px-14 h-20 rounded-full shadow-xl hover:shadow-2xl transition-shadow font-semibold"
+                className="text-xl px-14 h-20 rounded-full shadow-xl transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer hover:bg-gray-100 font-semibold"
                 onClick={() => handleGradeClick(1)}
               >
                 View Grades

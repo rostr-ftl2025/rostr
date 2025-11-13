@@ -1,11 +1,12 @@
+// src/routes/grading-display/+page.tsx (or +route.tsx depending on your setup)
+
 import GradingDisplayPage from "~/grading-display-page/GradingDisplayPage";
-import type { Route } from "./+types/home";
 
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "Team Grade" },
-    { name: "description", content: "Displays the calculated grade." },
+    { name: "description", content: "Displays the calculated grade for your roster." },
   ];
 }
 

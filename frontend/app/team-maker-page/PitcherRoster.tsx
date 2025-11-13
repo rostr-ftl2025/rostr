@@ -48,7 +48,7 @@ export default function PitcherRoster({ teamId, players, onRosterChange }: Props
           </div>
           <button
             onClick={() => handleRemove(p.player_name)}
-            className="rounded-lg bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-gray-200"
+            className="rounded-lg bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
           >
             Remove
           </button>

@@ -76,7 +76,7 @@ export default function LineupRecommendationPage() {
             <tr className="border-b border-gray-200">
               <th className="py-2 px-4 font-semibold text-center">Rank</th>
               <th className="py-2 px-4 font-semibold">Name</th>
-              <th className="py-2 px-4 font-semibold">Position</th>
+              <th className="py-2 px-4 font-semibold">Suggested Position</th>
               <th className="py-2 px-4 font-semibold text-right">Score</th>
             </tr>
           </thead>

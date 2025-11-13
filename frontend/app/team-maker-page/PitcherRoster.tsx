@@ -34,7 +34,7 @@ export default function PitcherRoster({ teamId, players, onRosterChange }: Props
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 rounded-2xl bg-sky-100 p-4 shadow">
       <h2 className="text-lg font-semibold">Roster ({players.length})</h2>
       {loading && <div className="text-gray-500">Loading…</div>}
       {error && <div className="text-red-600">{error}</div>}
@@ -48,14 +48,14 @@ export default function PitcherRoster({ teamId, players, onRosterChange }: Props
           </div>
           <button
             onClick={() => handleRemove(p.player_name)}
-            className="rounded-lg bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-gray-200"
+            className="rounded-lg bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
           >
             Remove
           </button>
         </div>
       ))}
       {players.length === 0 && !loading && !error && (
-        <div className="rounded-xl border border-dashed bg-white/50 p-4 text-center text-sm text-gray-500">
+        <div className="rounded-xl border border-dashed bg-sky-100 p-4 text-center text-sm text-gray-500">
           Your roster is empty. Add pitchers from the left.
         </div>
       )}

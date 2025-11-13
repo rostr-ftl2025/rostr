@@ -4,5 +4,6 @@ export default [
     index("routes/home.tsx"),
     route("team-maker", "routes/team-maker.tsx"),
     route("grading-display", "routes/grading-display.tsx"),
-    route("trade-evaluator", "routes/trade-evaluator.tsx")
+    route("trade-evaluator", "routes/trade-evaluator.tsx"),
+    route("lineup-recommendation", "routes/lineup-recommendation.tsx")
 ] satisfies RouteConfig;

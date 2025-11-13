@@ -20,28 +20,24 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
         <div className="flex space-x-2">
           <button
             onClick={() => setMode("signin")}
-            className={`px-4 py-2 rounded-l-lg font-semibold ${
-              mode === "signin"
-                ? "bg-[#562424] text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
+            className={`px-4 py-2 rounded-l-lg font-semibold border border-black bg-white text-black hover:bg-black hover:text-white transition-colors ${
+              mode === "signin" ? "ring-2 ring-black" : ""
+            } hover:cursor-pointer`}
           >
             Sign In
           </button>
           <button
             onClick={() => setMode("signup")}
-            className={`px-4 py-2 rounded-r-lg font-semibold ${
-              mode === "signup"
-                ? "bg-[#562424] text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
+            className={`px-4 py-2 rounded-r-lg font-semibold border border-black bg-white text-black hover:bg-black hover:text-white transition-colors ${
+              mode === "signup" ? "ring-2 ring-black" : ""
+            } hover:cursor-pointer`}
           >
             Sign Up
           </button>
         </div>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 text-lg"
+          className="px-2 py-1 border border-black rounded bg-white text-black hover:bg-black hover:text-white transition-colors hover:cursor-pointer"
         >
           x
         </button>
@@ -82,7 +78,7 @@ export function AuthModal({ mode: initialMode = "signin", onClose }: AuthModalPr
           required
         />
         <button
-          className={"py-2 rounded-lg font-semibold text-white bg-[#562424] hover:bg-[#734343] disabled:opacity-50"}
+          className="py-2 rounded-lg font-semibold bg-sky-400 text-white border border-sky-400 hover:bg-sky-500 disabled:opacity-50 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
           type="submit"
           disabled={loading}
         >

@@ -100,13 +100,13 @@ class TeamDataAccess(TeamDataAccessInterface):
         )
         return result
 
-    def delete(self, team_name: str):
+    def delete(self, team_id: int):
         query = """
         DELETE FROM teams
-        WHERE team_name = %s
+        WHERE id = %s
         RETURNING id, team_name;
         """
-        result = self.db.execute(query, (team_name,), fetchone=True)
+        result = self.db.execute(query, (team_id,), fetchone=True)
         return result
 
     def get_all_players(self, team_id: int):

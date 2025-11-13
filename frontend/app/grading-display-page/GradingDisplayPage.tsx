@@ -107,7 +107,7 @@ export default function GradingDisplayPage() {
               pitchers.map((p, index) => (
                 <React.Fragment key={index}>
                   <tr
-                    className="border-t bg-white hover:cursor-pointer"
+                    className="border-t bg-white hover:cursor-pointer hover:bg-sky-100"
                     onClick={() => setExpanded(expanded === index ? null : index)}
                   >
                     <td className="px-3 py-2 font-medium">{p.player_name}</td>
@@ -129,9 +129,9 @@ export default function GradingDisplayPage() {
                   {expanded === index && p.analysis && (
                     <tr className="bg-gray-50">
                       <td colSpan={4} className="px-3 py-4">
-                        <pre className="whitespace-pre-wrap text-sm text-gray-700">
+                        <p className="whitespace-pre-wrap text-sm text-gray-700">
                           {p.analysis}
-                        </pre>
+                        </p>
                       </td>
                     </tr>
                   )}

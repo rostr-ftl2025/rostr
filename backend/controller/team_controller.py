@@ -15,7 +15,7 @@ class TeamController:
 
         # Register routes
         self.bp.add_url_rule("/api/create-team", view_func=self.create_team, methods=["POST"])
-        self.bp.add_url_rule("/api/delete-team/<string:team_name>", view_func=self.delete_team, methods=["DELETE"])
+        self.bp.add_url_rule("/api/delete-team/<int:team_id>", view_func=self.delete_team, methods=["DELETE"])
         self.bp.add_url_rule("/api/team-search/<int:user_id>", view_func=self.get_user_teams, methods=["GET"])
         self.bp.add_url_rule("/api/teams/<int:team_id>/players", view_func=self.get_team_players, methods=["GET"])
         self.bp.add_url_rule("/api/teams/<int:team_id>/recommend-lineup", view_func=self.recommend_lineup, methods=["GET"])
@@ -45,15 +45,15 @@ class TeamController:
     # ----------------------------------------------------
     # DELETE TEAM
     # ----------------------------------------------------
-    def delete_team(self, team_name):
-        if not team_name:
-            return jsonify({"error": "Team name required"}), 400
+    def delete_team(self, team_id):
+        if not team_id:
+            return jsonify({"error": "Team ID required"}), 400
 
         try:
-            deleted = self.team_data_access.delete(team_name)
+            deleted = self.team_data_access.delete(team_id)
             if not deleted:
                 return jsonify({"error": "Team not found"}), 404
-            return jsonify({"message": f"Deleted team '{team_name}'"}), 200
+            return jsonify({"message": f"Deleted team '{team_id}'"}), 200
 
         except Exception as e:
             return jsonify({"error": str(e)}), 400

@@ -1,6 +1,5 @@
-import GradingDisplayPage from "~/grading-display-page/GradingDisplayPage";
-import type { Route } from "./+types/home";
-
+import GradingDisplayPage from "~/components/GradingDisplayPage";
+import type { Route } from "./+types/grading-display";
 
 export function meta({}: Route.MetaArgs) {
   return [

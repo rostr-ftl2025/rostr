@@ -1,7 +1,7 @@
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { BarChart3, Users, Target, Zap } from 'lucide-react';
-import type { Page } from '../App';
+import type { Page } from '../routes/home';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface HomePageProps {
@@ -277,3 +277,5 @@ export function HomePage({ onNavigate }: HomePageProps) {
     </div>
   );
 }
+
+

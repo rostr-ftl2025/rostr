@@ -9,6 +9,15 @@ interface HomePageProps {
 }
 
 export function HomePage({ onNavigate }: HomePageProps) {
+  const handleNavigate = (page: Page) => {
+    console.log('Navigating to:', page);
+    if (typeof onNavigate === 'function') {
+      onNavigate(page);
+    } else {
+      console.error('onNavigate is not a function:', onNavigate);
+    }
+  };
+
   return (
     <div className="flex flex-col" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       {/* Hero Section */}
@@ -29,10 +38,10 @@ export function HomePage({ onNavigate }: HomePageProps) {
               Grade your roster. Optimize your lineup. Dominate your league.
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
-              <Button size="lg" className="text-lg px-12 h-16 rounded-full shadow-lg" onClick={() => onNavigate('auth')}>
+              <Button size="lg" className="text-lg px-12 h-16 rounded-full shadow-lg" onClick={() => handleNavigate('auth')}>
                 Grade My Roster
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-12 h-16 rounded-full" onClick={() => onNavigate('about')}>
+              <Button size="lg" variant="outline" className="text-lg px-12 h-16 rounded-full" onClick={() => handleNavigate('about')}>
                 See How It Works
               </Button>
             </div>
@@ -257,7 +266,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             <Button 
               size="lg" 
               className="text-xl px-14 h-20 rounded-full shadow-xl hover:shadow-2xl transition-shadow" 
-              onClick={() => onNavigate('auth')}
+              onClick={() => handleNavigate('auth')}
               style={{ fontWeight: 600 }}
             >
               Grade My Roster Free

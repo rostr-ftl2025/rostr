@@ -76,7 +76,7 @@ export default function PitcherSearchCard({ teamId, players, onRosterChange }: P
   }
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow">
+    <div className="rounded-2xl bg-sky-100 p-4 shadow">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col">
           <label className="mb-1 text-xs font-medium text-gray-600">Pitcher Name</label>
@@ -93,9 +93,9 @@ export default function PitcherSearchCard({ teamId, players, onRosterChange }: P
       </div>
       {error && <div className="mt-3 rounded-lg bg-rose-50 p-2 text-sm text-rose-700">{error}</div>}
 
-      <div className="overflow-hidden rounded-2xl border bg-white shadow mt-4">
+      <div className="overflow-hidden rounded-2xl border bg-sky-100 shadow mt-4">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-sky-200">
             <tr>
               <th className="px-3 py-2">Name</th>
               <th className="px-3 py-2">Team</th>
@@ -109,7 +109,7 @@ export default function PitcherSearchCard({ teamId, players, onRosterChange }: P
             {results.map((row) => {
               const isAdded = addedIds.has(row.IDfg.toString())
               return (
-                <tr key={row.IDfg} className="border-t">
+                <tr key={row.IDfg} className="border-t bg-white">
                   <td className="px-3 py-2 font-medium">{row.Name}</td>
                   <td className="px-3 py-2 text-gray-700">{row.Team}</td>
                   <td className="px-3 py-2 text-gray-700">{row.Age}</td>
@@ -120,7 +120,7 @@ export default function PitcherSearchCard({ teamId, players, onRosterChange }: P
                       onClick={() => handleAdd(row)}
                       disabled={isAdded}
                       className={classNames(
-                        "rounded-lg px-3 py-1 text-sm font-semibold shadow transition-opacity duration-200 ease-in-out",
+                        "rounded-lg bg-w px-3 py-1 text-sm font-semibold shadow transition-opacity duration-200 ease-in-out",
                         isAdded
                           ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                           : "bg-sky-400 text-white hover:bg-sky-500 hover:opacity-90 hover:cursor-pointer"
@@ -134,7 +134,7 @@ export default function PitcherSearchCard({ teamId, players, onRosterChange }: P
             })}
             {!loading && results.length === 0 && !error && (
               <tr>
-                <td className="px-3 py-6 text-center text-gray-500" colSpan={6}>
+                <td className="px-3 py-6 text-center text-gray-500 bg-white" colSpan={6}>
                   Start typing a name to search.
                 </td>
               </tr>

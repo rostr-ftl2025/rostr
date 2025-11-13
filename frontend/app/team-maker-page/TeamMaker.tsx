@@ -219,22 +219,29 @@ export default function TeamMaker() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <PitcherSearchCard
-              teamId={selectedTeamId ?? 0}
-              players={players}
-              onRosterChange={() => setRosterRefreshFlag((f) => f + 1)}
-            />
+        {/* Replace unconditional grid with conditional rendering based on selectedTeamId */}
+        {selectedTeamId !== null ? (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <PitcherSearchCard
+                teamId={selectedTeamId ?? 0}
+                players={players}
+                onRosterChange={() => setRosterRefreshFlag((f) => f + 1)}
+              />
+            </div>
+            <div>
+              <PitcherRoster
+                teamId={selectedTeamId ?? 0}
+                players={players}
+                onRosterChange={() => setRosterRefreshFlag((f) => f + 1)}
+              />
+            </div>
           </div>
-          <div>
-            <PitcherRoster
-              teamId={selectedTeamId ?? 0}
-              players={players}
-              onRosterChange={() => setRosterRefreshFlag((f) => f + 1)}
-            />
+        ) : (
+          <div className="rounded-lg bg-gray-50 p-4 text-sm text-gray-600">
+            Please select or create a team to manage pitchers.
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -206,11 +206,18 @@ export default function TeamMaker() {
 
               {/* ⭐ Trade Analyzer Button */}
 <button
-  onClick={() => (window.location.href = "/trade-evaluator")}
+  onClick={() => {
+    if (!selectedTeamId) {
+      alert("Please select a team first.")
+      return
+    }
+    window.location.href = `/trade-evaluator?teamId=${selectedTeamId}`
+  }}
   className="rounded-xl bg-[#562424] text-white px-4 py-2 text-sm font-semibold shadow hover:bg-[#734343]"
 >
   Trade Analyzer
 </button>
+
             </div>
           </div>
           ````

@@ -34,7 +34,8 @@ class PlayerController:
         matches = rapidfuzz.process.extract(
             searched_name,
             self.all_pitcher_data["Name"],
-            score_cutoff=0.7
+            score_cutoff=0.7,
+            limit=1000
         )
 
         matched_players_data = self.all_pitcher_data[

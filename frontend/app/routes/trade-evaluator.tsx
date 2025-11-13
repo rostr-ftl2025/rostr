@@ -1,5 +1,5 @@
 import TradeEvaluator from "~/trade-evaluator-page/TradeEvaluator"
-import type { Route } from "./+types/home"
+import type { Route } from "./+types/trade-evaluator"
 
 export function meta({}: Route.MetaArgs) {
   return [

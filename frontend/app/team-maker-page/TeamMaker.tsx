@@ -203,8 +203,17 @@ export default function TeamMaker() {
               >
                 Show Grade
               </button>
+
+              {/* ⭐ Trade Analyzer Button */}
+<button
+  onClick={() => (window.location.href = "/trade-evaluator")}
+  className="rounded-xl bg-[#562424] text-white px-4 py-2 text-sm font-semibold shadow hover:bg-[#734343]"
+>
+  Trade Analyzer
+</button>
             </div>
           </div>
+          ````
 
           {message && (
             <div className="mt-2 rounded-lg bg-gray-50 p-2 text-sm text-gray-700">

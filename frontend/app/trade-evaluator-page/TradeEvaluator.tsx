@@ -258,7 +258,7 @@ export default function TradeEvaluator() {
     sideBPlayers.length === 0
 
   return (
-    <div className="min-h-screen bg-[#F5DBD5] text-gray-900 p-6">
+    <div className="min-h-screen bg-white text-gray-900 p-6">
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Trade Evaluator</h1>
@@ -304,7 +304,6 @@ export default function TradeEvaluator() {
                       <th className="px-3 py-2">Select</th>
                       <th className="px-3 py-2">Name</th>
                       <th className="px-3 py-2">Pos</th>
-                      <th className="px-3 py-2">ID</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -321,9 +320,6 @@ export default function TradeEvaluator() {
                           </td>
                           <td className="px-3 py-2 font-medium">{p.player_name}</td>
                           <td className="px-3 py-2 text-gray-700">{p.position}</td>
-                          <td className="px-3 py-2 text-gray-500 text-[10px]">
-                            {p.idfg}
-                          </td>
                         </tr>
                       )
                     })}
@@ -386,6 +382,7 @@ export default function TradeEvaluator() {
           </div>
         )}
       </div>
+      
     </div>
   )
 }

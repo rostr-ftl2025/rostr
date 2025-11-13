@@ -75,6 +75,14 @@ export default function GradingDisplayPage() {
         ).toFixed(1)
       : "N/A";
 
+  const handleSuggestLineup = () => {
+    if (!teamId) {
+      alert("Please select a team first.");
+      return;
+    }
+    window.location.href = `/lineup-recommendation?teamId=${teamId}`;
+  };
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-[#F5DBD5] py-10 text-gray-900">
       <h1 className="text-4xl font-bold mb-4">Pitcher Grades</h1>
@@ -235,6 +243,13 @@ export default function GradingDisplayPage() {
       >
         Back to Team Maker
       </a>
+
+      <button
+        onClick={handleSuggestLineup}
+        className="mt-4 bg-green-700 text-white px-4 py-2 rounded-xl hover:bg-green-800 transition"
+      >
+        Suggest Lineup
+      </button>
     </div>
   );
 }

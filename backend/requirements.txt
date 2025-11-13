@@ -5,3 +5,4 @@ python-dotenv
 psycopg[binary]
 bcrypt
 rapidfuzz
+scikit-learn

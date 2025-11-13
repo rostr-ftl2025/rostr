@@ -60,6 +60,30 @@ class PitcherRecommenderService:
 
         return df_candidates.sort_values(by="final_score", ascending=False).head(top_n)
 
+    @staticmethod
+    def recommend_starting_pitchers(team_pitchers: list[dict], top_n=5):
+        """
+        Recommend the top N starting pitchers from the user's current roster.
+        Ranking is based on the weighted grading formula and advanced metrics.
+        """
+
+        # Convert team list to DataFrame
+        df = pd.DataFrame(team_pitchers)
+        features = list(PitcherRecommenderService.WEIGHTS.keys())
+
+        # Normalize within team (important so all stats are comparable)
+        df = PitcherRecommenderService.norm(df, features)
+
+        # Compute overall weighted score (like your base_score)
+        df["score"] = PitcherRecommenderService.compute_weighted_stats(df)
+
+        # Sort descending — higher score means better pitcher
+        df_sorted = df.sort_values(by="score", ascending=False).head(top_n)
+
+        # Add rank column (1 = best)
+        df_sorted["rank"] = range(1, len(df_sorted) + 1)
+
+        return df_sorted[["rank", "name", "team", "score"]].reset_index(drop=True)
 
 
 
@@ -145,7 +169,10 @@ class PitcherRecommenderServiceFast:
 # Delete after done testing
 current_team = [
     {"name": "Gerrit Cole", "team": "NYY", "pitching+": 110, "stuff+": 105, "k-bb%": 26, "xfip-": 80, "barrel%": 5.5, "hardhit%": 32, "gb%": 44, "swstr%": 15, "wpa/li": 2.1},
-    {"name": "Framber Valdez", "team": "HOU", "pitching+": 102, "stuff+": 95, "k-bb%": 18, "xfip-": 90, "barrel%": 4.5, "hardhit%": 30, "gb%": 66, "swstr%": 12, "wpa/li": 1.5}
+    {"name": "Framber Valdez", "team": "HOU", "pitching+": 102, "stuff+": 95, "k-bb%": 18, "xfip-": 90, "barrel%": 4.5, "hardhit%": 30, "gb%": 66, "swstr%": 12, "wpa/li": 1.5},
+    {"name": "Tyler Glasnow", "team": "LAD", "pitching+": 115, "stuff+": 112, "k-bb%": 29, "xfip-": 72, "barrel%": 6.0, "hardhit%": 29, "gb%": 38, "swstr%": 17, "wpa/li": 2.8},
+    {"name": "Marcus Stroman", "team": "NYY", "pitching+": 101, "stuff+": 90, "k-bb%": 15, "xfip-": 88, "barrel%": 4.2, "hardhit%": 28, "gb%": 57, "swstr%": 10, "wpa/li": 1.2},
+    {"name": "Logan Webb", "team": "SF", "pitching+": 108, "stuff+": 100, "k-bb%": 21, "xfip-": 83, "barrel%": 4.8, "hardhit%": 33, "gb%": 61, "swstr%": 13, "wpa/li": 1.9}
 ]
 
 candidates = [
@@ -156,8 +183,12 @@ candidates = [
 
 
 
-start_time = time.perf_counter()
+#start_time = time.perf_counter()
+#rec = PitcherRecommenderService()
+#print(rec.recommend_pitchers(current_team, candidates, top_n=3))
+#end_time = time.perf_counter()
+#print(f"Execution time: {end_time - start_time:.6f} seconds")
+
 rec = PitcherRecommenderService()
-print(rec.recommend_pitchers(current_team, candidates, top_n=3))
-end_time = time.perf_counter()
-print(f"Execution time: {end_time - start_time:.6f} seconds")
+recommendations = rec.recommend_starting_pitchers(current_team)
+print(recommendations)

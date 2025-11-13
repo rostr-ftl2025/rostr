@@ -56,7 +56,7 @@ class TeamDataAccessInterface(ABC):
         pass
 
     @abstractmethod
-    def delete(self, team_name: str) -> dict:
+    def delete(self, team_id: int) -> dict:
         pass
 
     @abstractmethod

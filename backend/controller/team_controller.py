@@ -146,23 +146,26 @@ class TeamController:
                 return jsonify({"error": "No matching MLB stats found for team players"}), 404
 
             # Generate lineup recommendation using the selected profile
-            recommendations = PitcherRecommenderService.recommend_starting_pitchers(enriched_pitchers, 5, profile)
+            df, explanation = PitcherRecommenderService.recommend_starting_pitchers(enriched_pitchers, 5, profile)
 
             # Convert DataFrame to list of dicts with consistent key names
-            records = recommendations.to_dict(orient="records")
+            records = df.to_dict(orient="records")
 
             # Add 'position' and make sure keys are frontend-friendly
             formatted = [
                 {
                     "rank": int(r["rank"]),
                     "name": r["name"],
-                    "position": "SP",  # since all are pitchers
+                    "position": "SP", 
                     "score": round(float(r["score"]), 2),
                 }
                 for r in records
             ]
 
-            return jsonify(formatted), 200
+            return jsonify({
+                "lineup": formatted,
+                "explanation": explanation
+            }), 200
 
         except Exception as e:
             import traceback

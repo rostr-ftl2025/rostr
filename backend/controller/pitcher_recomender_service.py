@@ -159,13 +159,47 @@ class PitcherRecommenderService:
         },
     }
 
+    EXPLANATIONS = {
+        "standard": (
+            "You selected the standard strategy, so the recommended lineup prioritizes a balanced mix of "
+            "overall pitching quality, strikeout ability, contact management, and consistency. "
+            "This approach highlights the best all-around performers on your roster."
+        ),
+        "strikeout": (
+            "You selected the strikeout strategy, so the recommended lineup prioritizes pitchers with "
+            "high K-BB%, strong Stuff+, and elite swinging-strike rates. "
+            "This approach focuses on maximizing raw dominance and whiff potential."
+        ),
+        "control": (
+            "You selected the control strategy, so the recommended lineup prioritizes pitchers who excel "
+            "at limiting walks, suppressing hard contact, and producing strong run-prevention metrics such as xFIP-. "
+            "This approach favors stability, reliability, and efficient innings."
+        ),
+        "groundball": (
+            "You selected the groundball strategy, so the recommended lineup prioritizes pitchers with strong "
+            "groundball rates, soft-contact profiles, and barrel suppression. "
+            "This approach emphasizes inducing grounders and minimizing dangerous contact."
+        ),
+        "clutch": (
+            "You selected the clutch strategy, so the recommended lineup prioritizes pitchers who perform well "
+            "in high-leverage moments, supported by strong WPA/LI and reliable command. "
+            "This approach highlights arms who excel under pressure and in tight matchups."
+        ),
+        "sabermetrics": (
+            "You selected the sabermetrics strategy, so the recommended lineup prioritizes analytically efficient "
+            "pitchers who excel in run-prevention metrics like xFIP-, while also valuing K-BB% and swinging-strike rate. "
+            "This approach emphasizes sustainable, data-backed effectiveness."
+        ),
+    }
+
+
     @staticmethod
     def norm(df: pd.DataFrame, cols: list):
         """Normalize selected columns between 0 and 1."""
         scaler = MinMaxScaler()
         df[cols] = scaler.fit_transform(df[cols])
         return df
-    
+     
     @staticmethod
     def compute_weighted_stats(df: pd.DataFrame, weights: dict):
         """Compute a weighted score for each pitcher."""
@@ -207,7 +241,13 @@ class PitcherRecommenderService:
         df_sorted = df.sort_values(by="score", ascending=False).head(top_n)
         df_sorted["rank"] = range(1, len(df_sorted) + 1)
 
-        return df_sorted[["rank", "name", "team", "score"]].reset_index(drop=True)
+        #Get explanation
+        explanation = PitcherRecommenderService.EXPLANATIONS.get(
+            profile,
+            PitcherRecommenderService.EXPLANATIONS["standard"]
+        )
+
+        return df_sorted[["rank", "name", "team", "score"]].reset_index(drop=True), explanation
 
 
 '''

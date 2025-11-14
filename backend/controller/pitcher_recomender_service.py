@@ -103,59 +103,59 @@ class PitcherRecommenderService:
     PROFILES = {
         "standard": BASE_WEIGHTS,
         "strikeout": {
-            "pitching+": 0.20,
-            "stuff+": 0.20,
-            "k-bb%": 0.35,
-            "xfip-": -0.10,
-            "barrel%": -0.05,
-            "hardhit%": -0.05,
-            "gb%": 0.05,
-            "swstr%": 0.20,
-            "wpa/li": 0.00
+            "pitching+": 0.05,
+            "stuff+": 0.40,      # key
+            "k-bb%": 0.80,       # key
+            "xfip-": -0.05,
+            "barrel%": -0.03,
+            "hardhit%": -0.03,
+            "gb%": 0.02,
+            "swstr%": 0.40,      # key
+            "wpa/li": 0.02,
         },
         "control": {
-            "pitching+": 0.25,
-            "stuff+": 0.10,
-            "k-bb%": 0.15,
-            "xfip-": -0.25,
-            "barrel%": -0.15,
-            "hardhit%": -0.15,
+            "pitching+": 0.10,
+            "stuff+": 0.05,
+            "k-bb%": 0.20,       # supporting
+            "xfip-": -0.80,      # key negative stat
+            "barrel%": -0.50,    # key negative stat
+            "hardhit%": -0.50,   # key negative stat
             "gb%": 0.10,
             "swstr%": 0.05,
-            "wpa/li": 0.10
+            "wpa/li": 0.10,
         },
         "groundball": {
-            "pitching+": 0.20,
-            "stuff+": 0.15,
-            "k-bb%": 0.10,
-            "xfip-": -0.10,
-            "barrel%": -0.05,
-            "hardhit%": -0.05,
-            "gb%": 0.30,
+            "pitching+": 0.05,
+            "stuff+": 0.10,
+            "k-bb%": 0.05,
+            "xfip-": -0.05,
+            "barrel%": -0.40,     # key
+            "hardhit%": -0.40,    # key
+            "gb%": 0.80,          # key
             "swstr%": 0.05,
-            "wpa/li": 0.10
+            "wpa/li": 0.05,
         },
         "clutch": {
-            "pitching+": 0.30,
-            "stuff+": 0.15,
-            "k-bb%": 0.15,
-            "xfip-": -0.10,
+            "pitching+": 0.20,
+            "stuff+": 0.10,
+            "k-bb%": 0.10,
+            "xfip-": -0.05,
             "barrel%": -0.05,
             "hardhit%": -0.05,
             "gb%": 0.05,
             "swstr%": 0.10,
-            "wpa/li": 0.25
+            "wpa/li": 0.80,       # key
         },
         "sabermetrics": {
-            "pitching+": 0.10,
-            "stuff+": 0.15,
-            "k-bb%": 0.25,
-            "xfip-": -0.35,
+            "pitching+": 0.05,
+            "stuff+": 0.10,
+            "k-bb%": 0.40,       # key
+            "xfip-": -0.80,      # key
             "barrel%": -0.05,
             "hardhit%": -0.05,
-            "gb%": 0.00,
-            "swstr%": 0.15,
-            "wpa/li": 0.00
+            "gb%": 0.02,
+            "swstr%": 0.40,      # key
+            "wpa/li": 0.02,
         },
     }
 

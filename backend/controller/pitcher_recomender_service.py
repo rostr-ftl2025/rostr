@@ -275,5 +275,5 @@ candidates = [
 #print(f"Execution time: {end_time - start_time:.6f} seconds")
 
 rec = PitcherRecommenderService()
-recommendations = rec.recommend_starting_pitchers(current_team, 5, "control_lover")
+recommendations = rec.recommend_starting_pitchers(current_team)
 print(recommendations)

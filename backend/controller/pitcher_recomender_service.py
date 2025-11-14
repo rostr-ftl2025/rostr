@@ -7,8 +7,9 @@ import time
 
 
 class PitcherRecommenderService:
-    '''
-    WEIGHTS = {
+
+    # Default (standard) weights
+    BASE_WEIGHTS = {
         "pitching+": 0.30, # Overall Pitching performance (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
         "stuff+": 0.25, # Overall Quality of pitches (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
         "k-bb%": 0.20, # Strikeout minus Walk percentage
@@ -18,85 +19,6 @@ class PitcherRecommenderService:
         "gb%": 0.05, # Ground Ball percentage
         "swstr%": 0.05, # Whiffs per pitch
         "wpa/li": 0.05 # Clutch performance metric (https://library.fangraphs.com/misc/wpa-li/)
-    }
-
-    @staticmethod
-    def norm(df: pd.DataFrame, cols: list):
-        scaler = MinMaxScaler()
-        df[cols] = scaler.fit_transform(df[cols])
-        return df
-    
-    @staticmethod
-    def compute_weighted_stats(df: pd.DataFrame):
-        scores = np.zeros(len(df))
-        for stat, weight in PitcherRecommenderService.WEIGHTS.items():
-            vals = df[stat].values.copy()
-            if weight < 0:
-                vals = np.ones_like(vals, dtype=float) - vals
-            scores += vals * abs(weight)
-        return scores
-
-    @staticmethod
-    def diversity_penalty(df_candidates: pd.DataFrame, df_team: pd.DataFrame, alpha=0.4):
-        features = list(PitcherRecommenderService.WEIGHTS.keys())
-        sim_matrix = cosine_similarity(df_candidates[features], df_team[features])
-        max_sim = sim_matrix.max(axis=1)
-        penalty = -alpha * max_sim 
-        return penalty
-
-    @staticmethod
-    def recommend_pitchers(current_team: list[dict], candidates: list[dict], top_n=5, alpha=0.4):
-        df_team = pd.DataFrame(current_team)
-        df_candidates = pd.DataFrame(candidates)
-        features = list(PitcherRecommenderService.WEIGHTS.keys())
-        full = pd.concat([df_team, df_candidates])
-        full = PitcherRecommenderService.norm(full, features)
-        df_team = full.iloc[:len(df_team)].reset_index(drop=True)
-        df_candidates = full.iloc[len(df_team):].reset_index(drop=True)
-
-        df_candidates["base_score"] = PitcherRecommenderService.compute_weighted_stats(df_candidates)
-
-        penalty = PitcherRecommenderService.diversity_penalty(df_candidates, df_team, alpha)
-        df_candidates["final_score"] = df_candidates["base_score"] + penalty
-
-        return df_candidates.sort_values(by="final_score", ascending=False).head(top_n)
-
-    @staticmethod
-    def recommend_starting_pitchers(team_pitchers: list[dict], top_n=5):
-        """
-        Recommend the top N starting pitchers from the user's current roster.
-        Ranking is based on the weighted grading formula and advanced metrics.
-        """
-
-        # Convert team list to DataFrame
-        df = pd.DataFrame(team_pitchers)
-        features = list(PitcherRecommenderService.WEIGHTS.keys())
-
-        # Normalize within team (important so all stats are comparable)
-        df = PitcherRecommenderService.norm(df, features)
-
-        # Compute overall weighted score (like your base_score)
-        df["score"] = PitcherRecommenderService.compute_weighted_stats(df)
-
-        # Sort descending — higher score means better pitcher
-        df_sorted = df.sort_values(by="score", ascending=False).head(top_n)
-
-        # Add rank column (1 = best)
-        df_sorted["rank"] = range(1, len(df_sorted) + 1)
-
-        return df_sorted[["rank", "name", "team", "score"]].reset_index(drop=True)
-    '''
-    # Default (standard) weights
-    BASE_WEIGHTS = {
-        "pitching+": 0.30,
-        "stuff+": 0.25,
-        "k-bb%": 0.20,
-        "xfip-": -0.15,
-        "barrel%": -0.10,
-        "hardhit%": -0.10,
-        "gb%": 0.05,
-        "swstr%": 0.05,
-        "wpa/li": 0.05
     }
 
     # Additional user preference profiles

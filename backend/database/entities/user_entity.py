@@ -5,6 +5,7 @@ class UserEntity:
         self.__id = id
         self.__username = username
         self.__password = password
+        self.opponent_team_id: Optional[int] = None
 
     def get_id(self) -> Optional[int]:
         return self.__id
@@ -23,3 +24,9 @@ class UserEntity:
 
     def set_password(self, password: Optional[bytes]) -> None:
         self.__password = password
+
+    def get_opponent_team_id(self) -> Optional[int]:
+        return self.opponent_team_id
+    
+    def set_opponent_team_id(self, opponent_team_id: Optional[int]) -> None:
+        self.opponent_team_id = opponent_team_id

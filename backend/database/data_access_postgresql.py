@@ -30,11 +30,13 @@ class UserDataAccess(UserDataAccessInterface):
         return UserEntity(row.get("username") or username, None)
 
     def read(self, username: str) -> Optional[UserEntity]:
-        query = "SELECT id, username, password FROM users WHERE username = %s;"
+        query = "SELECT id, username, password, opponent_team_id FROM users WHERE username = %s;"
         row = self.db.execute(query, (username,), fetchone=True)
         if not row:
             return None
-        return UserEntity(row.get("username"), row.get("password"), row.get("id"))
+        user = UserEntity(row.get("username"), row.get("password"), row.get("id"))
+        user.opponent_team_id = row.get("opponent_team_id")
+        return user
 
     def update(self, username: str, password: Optional[bytes]) -> Optional[UserEntity]:
         query = """
@@ -58,6 +60,27 @@ class UserDataAccess(UserDataAccessInterface):
         if not row:
             return None
         return UserEntity(row.get("username"), None)
+
+    def assign_opponent_team(self, username: str, opponent_team_id: int) -> Optional[UserEntity]:
+        """Assign an opponent team to a user"""
+        query = """
+        UPDATE users
+        SET opponent_team_id = %s
+        WHERE username = %s
+        RETURNING username, opponent_team_id;
+        """
+        row = self.db.execute(query, (opponent_team_id, username), fetchone=True)
+        if not row:
+            return None
+        return UserEntity(row.get("username"), None)
+    
+    def get_opponent_team_id(self, username: str) -> Optional[int]:
+        """Get the opponent team ID assigned to a user"""
+        query = "SELECT opponent_team_id FROM users WHERE username = %s;"
+        row = self.db.execute(query, (username,), fetchone=True)
+        if not row:
+            return None
+        return row.get("opponent_team_id")
 
 
 # -------------------------
@@ -117,6 +140,69 @@ class TeamDataAccess(TeamDataAccessInterface):
         """
         results = self.db.execute(query, (team_id,), fetchall=True)
         return results
+
+    def create_opponent_user_and_team(self) -> dict:
+        """Create a new 'Opponent User' with a randomly generated team"""
+        import random
+        from pybaseball import pitching_stats
+        
+        # Generate unique opponent username
+        opponent_username = f"OpponentUser_{random.randint(100000, 999999)}"
+        
+        # Create opponent user
+        user_query = """
+        INSERT INTO users (username, password)
+        VALUES (%s, %s)
+        RETURNING id;
+        """
+        # Use a random password hash since this user won't login
+        import bcrypt
+        random_password = bcrypt.hashpw(b"opponent_password", bcrypt.gensalt())
+        user_row = self.db.execute(user_query, (opponent_username, random_password), fetchone=True)
+        opponent_user_id = user_row.get("id")
+        
+        # Create opponent team
+        team_query = """
+        INSERT INTO teams (user_id, team_name)
+        VALUES (%s, %s)
+        RETURNING id, team_name, user_id;
+        """
+        team_row = self.db.execute(team_query, (opponent_user_id, "Opponent Team"), fetchone=True)
+        opponent_team_id = team_row.get("id")
+        
+        # Fetch pitching stats and randomly select 5 pitchers
+        stats = pitching_stats(2025)
+        stats.columns = [c.strip().lower() for c in stats.columns]
+        
+        # Filter for starters with sufficient innings
+        qualified = stats[stats["ip"] >= 50]
+        if len(qualified) < 5:
+            qualified = stats.head(10)
+        
+        # Randomly select 5 pitchers
+        selected = qualified.sample(n=min(5, len(qualified)))
+        
+        # Add players to the team
+        for _, row in selected.iterrows():
+            player_query = """
+            INSERT INTO players (team_id, player_name, mlbid, idfg, position, grade, analysis)
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
+            """
+            self.db.execute(player_query, (
+                opponent_team_id,
+                row["name"],
+                None,  # mlbid
+                None,  # idfg
+                "SP",  # position
+                None,  # grade (to be calculated)
+                None   # analysis (to be calculated)
+            ), fetchone=False)
+        
+        return {
+            "opponent_user_id": opponent_user_id,
+            "opponent_team_id": opponent_team_id,
+            "opponent_username": opponent_username
+        }
 
 
 # -------------------------

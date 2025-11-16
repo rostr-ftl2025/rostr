@@ -11,7 +11,7 @@ class SignupController:
         data = request.get_json()
         username = data.get("username")
         password = data.get("password")
-        hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode("utf-8")
+        hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
         try:
             user_data = self.signup_interactor.signup(username, hashed_password)

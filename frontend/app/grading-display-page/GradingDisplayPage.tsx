@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { API_URL } from "~/config";
+import { getUserFromJWT } from "~/utils/getToken";
 
 interface Pitcher {
   player_name: string;
@@ -21,6 +22,7 @@ export default function GradingDisplayPage() {
   const [error, setError] = useState<string | null>(null);
   const [showProfileSelect, setShowProfileSelect] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState("standard");
+  const [opponentTeamId, setOpponentTeamId] = useState<string | null>(null);
 
   const profiles = [
     { key: "standard", label: "Standard (Balanced)" },
@@ -32,6 +34,15 @@ export default function GradingDisplayPage() {
   ];
 
   useEffect(() => {
+    // Get opponent team ID from JWT token
+    const token = localStorage.getItem("jwtToken");
+    if (token) {
+      const userData = getUserFromJWT(token);
+      if (userData?.opponentTeamID) {
+        setOpponentTeamId(userData.opponentTeamID);
+      }
+    }
+
     if (!teamId) {
       setError("No team selected.");
       setLoading(false);
@@ -246,6 +257,15 @@ export default function GradingDisplayPage() {
             >
               Suggest Lineup
             </button>
+
+            {opponentTeamId && (
+              <a
+                href={`/opponent-weaknesses?opponentTeamId=${opponentTeamId}&userTeamId=${teamId}`}
+                className="rounded-xl bg-red-600 text-white border border-red-600 px-6 py-2 text-sm font-semibold shadow hover:bg-red-700 transition-all"
+              >
+                View Opponent Team
+              </a>
+            )}
 
             <a
               href="/team-maker"

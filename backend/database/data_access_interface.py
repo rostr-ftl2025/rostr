@@ -38,6 +38,20 @@ class UserDataAccessInterface(ABC):
         """
         pass
 
+    @abstractmethod
+    def assign_opponent_team(self, username: str, opponent_team_id: int) -> Optional[UserEntity]:
+        """
+        Assign an opponent team to a user.
+        """
+        pass
+
+    @abstractmethod
+    def get_opponent_team_id(self, username: str) -> Optional[int]:
+        """
+        Get the opponent team ID assigned to a user.
+        """
+        pass
+
 
 # -------------------------
 # Team Interface
@@ -61,6 +75,14 @@ class TeamDataAccessInterface(ABC):
 
     @abstractmethod
     def get_all_players(self, team_id: int) -> List[dict]:
+        pass
+
+    @abstractmethod
+    def create_opponent_user_and_team(self) -> dict:
+        """
+        Create a new opponent user with a randomly generated team.
+        Returns dict with opponent_user_id, opponent_team_id, and opponent_username.
+        """
         pass
 
 

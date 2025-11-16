@@ -21,6 +21,7 @@ class SigninController:
                 {
                     "username": user["username"],
                     "userID": user["id"],
+                    "opponentTeamID": user.get("opponent_team_id"),
                     "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
                 },
                 self.app.config["SECRET_KEY"],

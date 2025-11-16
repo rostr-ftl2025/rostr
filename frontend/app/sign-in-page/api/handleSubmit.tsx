@@ -28,6 +28,9 @@ export async function handleSubmit(
   setMessage("Loading...");
   setLoading(true);
 
+  console.log('API_URL:', API_URL);
+  console.log('Attempting request to:', `${API_URL}/api/users/${mode}`);
+
   try {
     const res = await fetch(`${API_URL}/api/users/${mode}`, {
       method: "POST",
@@ -38,7 +41,9 @@ export async function handleSubmit(
       }),
     });
 
+    console.log('Response status:', res.status);
     const data = await res.json();
+    console.log('Response data:', data);
 
     if (res.ok) {
       setMessage(
@@ -62,9 +67,11 @@ export async function handleSubmit(
       setMessage(data.error || "Something went wrong");
     }
   } catch (err: unknown) {
+    console.error('Fetch error:', err);
     const messageText =
       err instanceof Error ? err.message : typeof err === "string" ? err : String(err);
     setMessage(messageText || "Network error");
+    console.log('Error details:', messageText);
   } finally {
     setLoading(false);
   }

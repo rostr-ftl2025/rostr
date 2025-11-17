@@ -1,7 +1,7 @@
-# rostr
+# Rostr.
 
-
-
+## Description
+Rostr is a full-stack fantasy baseball analytics platform that helps users optimize weekly lineups through automated data ingestion, opponent analysis, and actionable performance insights. The system integrates real-time MLB statistics, predictive indicators, and head-to-head matchup profiling to guide roster decisions with minimal manual input.
 
 ## How to run (development mode)
 

@@ -1,5 +1,6 @@
 import LineupRecommendationPage from "~/lineup-recommendation-page/LineupRecommendationPage";
 import type { Route } from "./+types/home";
+import { Navbar } from "~/components/navbar";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -9,5 +10,13 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function LineupRecommendationRoute() {
-  return <LineupRecommendationPage />;
+    return (
+  
+  
+      <>
+        <Navbar />
+        <LineupRecommendationPage />
+      </>
+  
+    );
 }

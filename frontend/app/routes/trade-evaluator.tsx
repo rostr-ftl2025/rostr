@@ -1,5 +1,6 @@
 import TradeEvaluator from "~/trade-evaluator-page/TradeEvaluator"
 import type { Route } from "./+types/trade-evaluator"
+import { Navbar } from "~/components/navbar";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -9,5 +10,13 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function TradeEvaluatorRoute() {
-  return <TradeEvaluator />
+    return (
+  
+  
+      <>
+        <Navbar />
+        <TradeEvaluator />
+      </>
+  
+    );
 }

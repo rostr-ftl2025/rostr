@@ -4,8 +4,6 @@ import PitcherRoster from "./PitcherRoster"
 import { createTeam, deleteTeam, fetchUserTeams, fetchTeamPlayers } from "./api/teamRoster"
 import { classNames } from "./utils"
 import { getUserFromJWT } from "~/utils/getToken"
-import SignOutButton from "~/components/sign-out-button"
-import { Link } from "react-router-dom"
 
 interface Team {
   team_id: number;
@@ -136,15 +134,10 @@ export default function TeamMaker() {
   };
 
   return (
+
+
     <div className="min-h-screen bg-white px-4 py-8 text-gray-900">
       <div className="mx-auto max-w-6xl space-y-6">
-        <h1 className="text-3xl font-bold tracking-wide">
-          Rostr<span className="text-[#850027]">.</span> Team Maker — Pitchers
-        </h1>
-
-        <div className="inline-block hover:cursor-pointer">
-          <SignOutButton />
-        </div>
 
         <div className="rounded-2xl bg-sky-100 p-4 shadow space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
@@ -259,5 +252,7 @@ export default function TeamMaker() {
         )}
       </div>
     </div>
+
+
   );
 }

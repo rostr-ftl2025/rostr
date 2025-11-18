@@ -35,7 +35,7 @@ export default function Home() {
   
   return (
     <div className="min-h-screen bg-background">
-      <Navbar currentPage={currentPage} onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} />
+      <Navbar onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} />
       {currentPage === 'home' && <HomePage onNavigate={setCurrentPage} onOpenAuth={handleOpenAuth} />}
       {currentPage === 'auth' && <AuthModal initialMode={authMode} onGoToHomeSection={goToHomeSection} onClose={() => setCurrentPage('home')} />}
     </div>

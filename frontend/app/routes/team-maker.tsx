@@ -1,5 +1,6 @@
 import TeamMaker from "~/team-maker-page/TeamMaker";
 import type { Route } from "./+types/home";
+import { Navbar } from "~/components/navbar";
 
 
 export function meta({}: Route.MetaArgs) {
@@ -10,5 +11,13 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function TeamMakerRoute() {
-  return <TeamMaker />;
+  return (
+
+
+    <>
+      <Navbar />
+      <TeamMaker />
+    </>
+
+  );
 }

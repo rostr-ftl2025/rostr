@@ -1,21 +1,49 @@
+import React, { useEffect, useState } from "react";
 import type { Page } from "~/routes/home";
+import { getUserFromJWT } from "~/utils/getToken";
+import SignOutButton from "~/components/sign-out-button";
 
 interface NavbarProps {
-  currentPage: Page;
-  onNavigate: (page: Page) => void;
+  onNavigate?: (page: Page) => void;
   onOpenAuth?: (mode: "signin" | "signup") => void;
-  onGradeClick?: () => void;
 }
 
-export function Navbar({ currentPage, onNavigate, onOpenAuth, onGradeClick }: NavbarProps) {
+export function Navbar({ onNavigate, onOpenAuth }: NavbarProps) {
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    const info = getUserFromJWT(token ?? "");
+    setIsSignedIn(!!info?.userID);
+  }, []);
+
+  if (isSignedIn) {
+    return (
+      <nav className="sticky top-0 bg-[#070738] z-50 px-10">
+        <div className="container flex mx-auto justify-between text-white py-5">
+          <button
+            onClick={() => window.location.reload()}
+            className="flex hover:opacity-80 transition-opacity cursor-pointer"
+          >
+            <span className="tracking-tight text-4xl font-extrabold">rostr.</span>
+          </button>
+
+          <div className="inline-block">
+            <SignOutButton />
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
-    <nav className="sticky top-0 bg-[#070738] z-50">
+    <nav className="sticky top-0 bg-[#070738] z-50 px-10">
       <div className="container flex mx-auto justify-between text-white py-5">
         <button
           onClick={() => window.location.reload()}
           className="flex hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <span className="tracking-tight text-4xl font-extrabold">Rostr.</span>
+          <span className="tracking-tight text-4xl font-extrabold">rostr.</span>
         </button>
 
         <div className="flex gap-10 text-lg font-medium">
@@ -32,7 +60,7 @@ export function Navbar({ currentPage, onNavigate, onOpenAuth, onGradeClick }: Na
               } else {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }
-              onNavigate("home");
+              onNavigate?.("home");
             }}
           >
             Home
@@ -41,7 +69,7 @@ export function Navbar({ currentPage, onNavigate, onOpenAuth, onGradeClick }: Na
             className="hover:opacity-80 transition-all cursor-pointer"
             onClick={() => {
               // Switch to home page then scroll to section after render
-              onNavigate("home");
+              onNavigate?.("home");
               setTimeout(() => {
                 const sectionId = "about";
                 const el = document.getElementById(sectionId);
@@ -61,7 +89,7 @@ export function Navbar({ currentPage, onNavigate, onOpenAuth, onGradeClick }: Na
           <button
             className="hover:opacity-80 transition-all cursor-pointer"
             onClick={() => {
-              onNavigate("home");
+              onNavigate?.("home");
               setTimeout(() => {
                 const sectionId = "how-it-works";
                 const el = document.getElementById(sectionId);
@@ -81,7 +109,7 @@ export function Navbar({ currentPage, onNavigate, onOpenAuth, onGradeClick }: Na
           <button
             onClick={() => {
               if (onOpenAuth) onOpenAuth('signin');
-              else onNavigate('auth');
+              else onNavigate?.('auth');
             }}
             className="hover:opacity-80 transition-all cursor-pointer"
           >
@@ -90,7 +118,7 @@ export function Navbar({ currentPage, onNavigate, onOpenAuth, onGradeClick }: Na
           <button
             onClick={() => {
               if (onOpenAuth) onOpenAuth('signup');
-              else onNavigate('auth');
+              else onNavigate?.('auth');
             }}
             className="px-6 py-2 rounded-full bg-white text-[#070738] hover:opacity-80 transition-all duration-200 cursor-pointer"
           >

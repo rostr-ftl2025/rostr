@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { HomePage } from "~/components/home-page";
-import { AuthModal } from "~/components/auth-page";
+import { HomePage } from "~/homepage/home-page";
+import { AuthModal } from "~/sign-in-page/AuthModal";
 import { Navbar } from "~/components/navbar";
 import type { Route } from "./+types/home";
 

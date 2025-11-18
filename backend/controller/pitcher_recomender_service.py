@@ -276,4 +276,4 @@ candidates = [
 
 rec = PitcherRecommenderService()
 recommendations = rec.recommend_starting_pitchers(current_team)
-print(recommendations)
+# print(recommendations)

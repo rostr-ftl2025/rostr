@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { BarChart3, Users, Target, Zap } from 'lucide-react';
 import type { Page } from '../routes/home';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import { AuthModal } from '~/components/auth-page';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { AuthModal } from '~/sign-in-page/AuthModal';
 import { getUserFromJWT } from '~/utils/getToken';
 
 interface HomePageProps {
@@ -48,8 +48,10 @@ export function HomePage({ onNavigate, onOpenAuth }: HomePageProps) {
   // When the auth modal should be shown, render only the modal in a full-screen container
   if (showAuthForm) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95">
-        <AuthModal {...({ mode: initialMode, onClose: () => setShowAuthForm(false) } as any)} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+        <div className="w-full max-w-md">
+          <AuthModal {...({ mode: initialMode, onClose: () => setShowAuthForm(false) } as any)} />
+        </div>
       </div>
     );
   }
@@ -246,14 +248,7 @@ export function HomePage({ onNavigate, onOpenAuth }: HomePageProps) {
       </section>
 
       <footer className="py-15 bottom-0 bg-[#070738]">
-        <div className="container flex mx-auto justify-between text-white py-5">
-          <button
-            onClick={() => window.location.href = "mailto:rui.weng@mail.utoronto.ca"}
-            className="px-4 py-2 text-xl text-white font-medium hover:opacity-80 transition-all cursor-pointer"
-          >
-            Contact Us
-          </button>
-
+        <div className="container mx-auto flex justify-end text-white py-5">
           <button
             onClick={() => window.location.reload()}
             className="flex hover:opacity-80 transition-opacity cursor-pointer"

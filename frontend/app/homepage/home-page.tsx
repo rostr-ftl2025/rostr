@@ -29,6 +29,10 @@ export function HomePage({ onNavigate, onOpenAuth }: HomePageProps) {
     if (token) {
       const info = getUserFromJWT(token);
       setUserInfo(info);
+      // If signed in, immediately redirect to team-maker
+      if (typeof window !== 'undefined' && info?.userID) {
+        window.location.href = '/team-maker';
+      }
     }
   }, []);
 

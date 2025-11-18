@@ -38,9 +38,14 @@ class PlayerController:
             limit=1000
         )
 
-        matched_players_data = self.all_pitcher_data[
-            self.all_pitcher_data["Name"].isin([data[0] for data in matches])
-        ]
+        # Preserve the match order returned by rapidfuzz
+        matched_names = [m[0] for m in matches]
+
+        # Filter and then sort according to matched_names order
+        matched_players_data = self.all_pitcher_data[self.all_pitcher_data["Name"].isin(matched_names)].copy()
+        order_map = {name: idx for idx, name in enumerate(matched_names)}
+        matched_players_data["__match_order"] = matched_players_data["Name"].map(order_map)
+        matched_players_data = matched_players_data.sort_values("__match_order").drop(columns="__match_order")
 
         data_as_array = matched_players_data[
             ["IDfg", "Name", "Team", "Age", "W", "L"]

@@ -98,22 +98,6 @@ export default function LineupRecommendationPage() {
           </tbody>
         </table>
       </div>
-
-      <div className="mt-8 flex gap-4">
-        <a
-          href={`/grading-display?teamId=${teamId}`}
-          className="rounded-xl bg-sky-400 text-white border border-sky-400 m-2 px-4 py-2 text-sm font-semibold shadow hover:bg-sky-500 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
-        >
-          Back to Grades
-        </a>
-
-        <a
-          href="/team-maker"
-          className="rounded-xl bg-gray-200 text-black m-2 px-4 py-2 text-sm font-semibold shadow hover:bg-gray-300 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
-        >
-          Back to Team Maker
-        </a>
-      </div>
     </div>
   );
 }

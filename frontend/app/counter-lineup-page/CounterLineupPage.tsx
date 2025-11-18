@@ -28,14 +28,14 @@ export default function CounterLineupPage() {
       : new URLSearchParams();
 
   const opponentTeamId = search.get("opponentTeamId");
-  const userTeamId = search.get("userTeamId");
+  const teamId = search.get("teamId");
 
   const [lineupData, setLineupData] = useState<CounterLineupData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!opponentTeamId || !userTeamId) {
+    if (!opponentTeamId || !teamId) {
       setError("Missing team IDs.");
       setLoading(false);
       return;
@@ -44,7 +44,7 @@ export default function CounterLineupPage() {
     const fetchCounterLineup = async () => {
       try {
         const res = await fetch(
-          `${API_URL}/api/opponent/${opponentTeamId}/counter-lineup/${userTeamId}`
+          `${API_URL}/api/opponent/${opponentTeamId}/counter-lineup/${teamId}`
         );
         if (!res.ok) throw new Error("Failed to fetch counter lineup");
         const data = await res.json();
@@ -57,7 +57,7 @@ export default function CounterLineupPage() {
     };
 
     fetchCounterLineup();
-  }, [opponentTeamId, userTeamId]);
+  }, [opponentTeamId, teamId]);
 
   if (loading) {
     return (
@@ -159,24 +159,10 @@ export default function CounterLineupPage() {
 
       <div className="mt-8 flex flex-col items-center gap-4">
         <a
-          href={`/opponent-weaknesses?opponentTeamId=${opponentTeamId}&userTeamId=${userTeamId}`}
+          href={`/opponent-weaknesses?opponentTeamId=${opponentTeamId}&teamId=${teamId}`}
           className="rounded-xl bg-red-600 text-white border border-red-600 px-6 py-2 text-sm font-semibold shadow hover:bg-red-700 transition-all"
         >
           View Opponent Weaknesses
-        </a>
-
-        <a
-          href={`/grading-display?teamId=${userTeamId}`}
-          className="rounded-xl bg-sky-400 text-white border border-sky-400 px-6 py-2 text-sm font-semibold shadow hover:bg-sky-500 transition-all"
-        >
-          Back to My Team
-        </a>
-
-        <a
-          href="/team-maker"
-          className="rounded-xl bg-gray-200 text-black px-6 py-2 text-sm font-semibold shadow hover:bg-gray-300 transition-all"
-        >
-          Back to Team Maker
         </a>
       </div>
     </div>

@@ -21,7 +21,7 @@ export default function OpponentWeaknessesPage() {
       : new URLSearchParams();
 
   const opponentTeamId = search.get("opponentTeamId");
-  const userTeamId = search.get("userTeamId");
+  const teamId = search.get("teamId");
   
   const [opponentData, setOpponentData] = useState<OpponentData | null>(null);
   const [expanded, setExpanded] = useState<number | null>(null);
@@ -159,28 +159,14 @@ export default function OpponentWeaknessesPage() {
       </div>
 
       <div className="mt-8 flex flex-col items-center gap-4">
-        {userTeamId && (
+        {teamId && (
           <a
-            href={`/counter-lineup?opponentTeamId=${opponentTeamId}&userTeamId=${userTeamId}`}
+            href={`/counter-lineup?opponentTeamId=${opponentTeamId}&teamId=${teamId}`}
             className="rounded-xl bg-green-600 text-white border border-green-600 px-6 py-2 text-sm font-semibold shadow hover:bg-green-700 transition-all"
           >
             Build Counter Lineup
           </a>
         )}
-
-        <a
-          href={`/grading-display?teamId=${userTeamId}`}
-          className="rounded-xl bg-gray-200 text-black px-6 py-2 text-sm font-semibold shadow hover:bg-gray-300 transition-all"
-        >
-          Back to My Team
-        </a>
-
-        <a
-          href="/team-maker"
-          className="rounded-xl bg-gray-200 text-black px-6 py-2 text-sm font-semibold shadow hover:bg-gray-300 transition-all"
-        >
-          Back to Team Maker
-        </a>
       </div>
     </div>
   );

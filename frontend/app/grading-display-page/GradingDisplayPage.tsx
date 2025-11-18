@@ -257,22 +257,6 @@ export default function GradingDisplayPage() {
             >
               Suggest Lineup
             </button>
-
-            {opponentTeamId && (
-              <a
-                href={`/opponent-weaknesses?opponentTeamId=${opponentTeamId}&userTeamId=${teamId}`}
-                className="rounded-xl bg-red-600 text-white border border-red-600 px-6 py-2 text-sm font-semibold shadow hover:bg-red-700 transition-all"
-              >
-                View Opponent Team
-              </a>
-            )}
-
-            <a
-              href="/team-maker"
-              className="rounded-xl bg-gray-200 text-black px-6 py-2 text-sm font-semibold shadow hover:bg-gray-300 transition-all"
-            >
-              Back to Team Maker
-            </a>
           </>
         ) : (
           <div className="bg-sky-50 border rounded-2xl shadow p-4 flex flex-col items-center space-y-3">

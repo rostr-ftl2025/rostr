@@ -262,12 +262,6 @@ export default function TradeEvaluator() {
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Trade Evaluator</h1>
-          <a
-            href="/team-maker"
-            className="text-sm text-[#562424] hover:underline font-semibold"
-          >
-            ← Back to Team Maker
-          </a>
         </div>
 
         {!teamId && (
@@ -281,6 +275,43 @@ export default function TradeEvaluator() {
           Choose which players from your team are involved in the trade (Side A), then
           search and add the opposing players (Side B).
         </p>
+
+
+
+        {error && (
+          <div className="text-red-600 text-sm mt-2">
+            {error}
+          </div>
+        )}
+
+        {result && (
+          <div className="bg-white rounded-2xl shadow p-4 mt-6 space-y-2">
+            <h2 className="text-xl font-bold">Trade Summary</h2>
+            <p>Side A Total: {result.sideA.total_grade.toFixed(2)}</p>
+            <p>Side B Total: {result.sideB.total_grade.toFixed(2)}</p>
+            <p>Difference: {result.diff.toFixed(2)}</p>
+            <p>Winner: {result.winner}</p>
+            {result.suggestion && (
+              <p className="text-sm text-gray-700">{result.suggestion}</p>
+            )}
+          </div>
+        )}
+
+
+        <button
+          onClick={handleEvaluate}
+          disabled={evaluateDisabled}
+          className={
+            "rounded-xl px-4 py-2 text-sm font-semibold shadow " +
+            (evaluateDisabled
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+              : "bg-[#562424] text-white hover:bg-[#734343]")
+          }
+        >
+          {loading ? "Analyzing..." : "Evaluate Trade"}
+        </button>
+
+
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* SIDE A: your team */}
@@ -350,37 +381,6 @@ export default function TradeEvaluator() {
           <SideBSearch players={sideBPlayers} setPlayers={setSideBPlayers} />
         </div>
 
-        <button
-          onClick={handleEvaluate}
-          disabled={evaluateDisabled}
-          className={
-            "rounded-xl px-4 py-2 text-sm font-semibold shadow " +
-            (evaluateDisabled
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-              : "bg-[#562424] text-white hover:bg-[#734343]")
-          }
-        >
-          {loading ? "Analyzing..." : "Evaluate Trade"}
-        </button>
-
-        {error && (
-          <div className="text-red-600 text-sm mt-2">
-            {error}
-          </div>
-        )}
-
-        {result && (
-          <div className="bg-white rounded-2xl shadow p-4 mt-6 space-y-2">
-            <h2 className="text-xl font-bold">Trade Summary</h2>
-            <p>Side A Total: {result.sideA.total_grade.toFixed(2)}</p>
-            <p>Side B Total: {result.sideB.total_grade.toFixed(2)}</p>
-            <p>Difference: {result.diff.toFixed(2)}</p>
-            <p>Winner: {result.winner}</p>
-            {result.suggestion && (
-              <p className="text-sm text-gray-700">{result.suggestion}</p>
-            )}
-          </div>
-        )}
       </div>
       
     </div>

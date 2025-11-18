@@ -4,6 +4,7 @@ import PitcherRoster from "./PitcherRoster"
 import { createTeam, deleteTeam, fetchUserTeams, fetchTeamPlayers } from "./api/teamRoster"
 import { classNames } from "./utils"
 import { getUserFromJWT } from "~/utils/getToken"
+import SignOutButton from "~/components/sign-out-button"
 
 interface Team {
   team_id: number;
@@ -132,6 +133,23 @@ export default function TeamMaker() {
     }
     window.location.href = `/grading-display?teamId=${selectedTeamId}`;
   };
+
+  // Persist selectedTeamId to URL so Navbar can pick it up when navigating
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (selectedTeamId !== null) {
+        params.set("teamId", String(selectedTeamId));
+      } else {
+        params.delete("teamId");
+      }
+      const newSearch = params.toString();
+      const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ""}`;
+      window.history.replaceState({}, "", newUrl);
+    } catch (e) {
+      // ignore if window not available or other edge cases
+    }
+  }, [selectedTeamId]);
 
   return (
 

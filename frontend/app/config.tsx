@@ -1,2 +1,5 @@
-export const API_URL = "http://localhost:5006";
-// export const API_URL = import.meta.env.VITE_API_URL;
+// For browser (client-side), use localhost
+// For SSR (server-side), use container name
+export const API_URL = typeof window !== 'undefined' 
+  ? "http://localhost:5006" 
+  : "http://backend:5006";

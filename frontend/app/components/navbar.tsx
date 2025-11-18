@@ -1,46 +1,100 @@
-import { Button } from './ui/button';
-import { Trophy } from 'lucide-react';
-import type { Page } from '../App';
+import type { Page } from "~/routes/home";
 
 interface NavbarProps {
   currentPage: Page;
   onNavigate: (page: Page) => void;
+  onOpenAuth?: (mode: "signin" | "signup") => void;
+  onGradeClick?: () => void;
 }
 
-export function Navbar({ currentPage, onNavigate }: NavbarProps) {
+export function Navbar({ currentPage, onNavigate, onOpenAuth, onGradeClick }: NavbarProps) {
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-        <button 
-          onClick={() => onNavigate('home')}
-          className="flex items-center gap-3 hover:opacity-70 transition-opacity group"
+    <nav className="sticky top-0 bg-[#070738] z-50">
+      <div className="container flex mx-auto justify-between text-white py-5">
+        <button
+          onClick={() => window.location.reload()}
+          className="flex hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <Trophy className="h-5 w-5 text-primary" />
-          </div>
-          <span className="text-2xl tracking-tight">Rostr.</span>
+          <span className="tracking-tight text-4xl font-extrabold">Rostr.</span>
         </button>
-        
-        <div className="flex items-center gap-8">
+
+        <div className="flex gap-10 text-lg font-medium">
           <button
-            onClick={() => onNavigate('home')}
-            className={`transition-colors ${
-              currentPage === 'home' 
-                ? 'text-foreground' 
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className="hover:opacity-80 transition-all cursor-pointer"
+            onClick={() => {
+              const el = document.getElementById("home");
+              if (el) {
+                // Account for sticky navbar height so section isn't hidden
+                const nav = document.querySelector('nav');
+                const navHeight = nav ? nav.getBoundingClientRect().height : 0;
+                const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 8;
+                window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+              onNavigate("home");
+            }}
           >
             Home
           </button>
           <button
-            onClick={() => onNavigate('about')}
-            className={`transition-colors ${
-              currentPage === 'about' 
-                ? 'text-foreground' 
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className="hover:opacity-80 transition-all cursor-pointer"
+            onClick={() => {
+              // Switch to home page then scroll to section after render
+              onNavigate("home");
+              setTimeout(() => {
+                const sectionId = "about";
+                const el = document.getElementById(sectionId);
+                if (el) {
+                  const nav = document.querySelector("nav");
+                  const navHeight = nav ? nav.getBoundingClientRect().height : 0;
+                  const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 8;
+                  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+                } else {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }, 50);
+            }}
           >
             About
+          </button>
+          <button
+            className="hover:opacity-80 transition-all cursor-pointer"
+            onClick={() => {
+              onNavigate("home");
+              setTimeout(() => {
+                const sectionId = "how-it-works";
+                const el = document.getElementById(sectionId);
+                if (el) {
+                  const nav = document.querySelector("nav");
+                  const navHeight = nav ? nav.getBoundingClientRect().height : 0;
+                  const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 8;
+                  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+                } else {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }, 50);
+            }}
+          >
+            How It Works
+          </button>
+          <button
+            onClick={() => {
+              if (onOpenAuth) onOpenAuth('signin');
+              else onNavigate('auth');
+            }}
+            className="hover:opacity-80 transition-all cursor-pointer"
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => {
+              if (onOpenAuth) onOpenAuth('signup');
+              else onNavigate('auth');
+            }}
+            className="px-6 py-2 rounded-full bg-white text-[#070738] hover:opacity-80 transition-all duration-200 cursor-pointer"
+          >
+            Sign Up
           </button>
         </div>
       </div>

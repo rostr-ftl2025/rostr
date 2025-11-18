@@ -16,7 +16,8 @@ from controller import (
     SigninController,
     TeamController,
     PlayerController,
-    TradeController
+    TradeController,
+    OpponentController
 )
 
 from database.data_access_postgresql import (
@@ -53,8 +54,8 @@ player_data_access = PlayerDataAccess(db)
 
 
 # Register interactors
-signup_interactor = SignupInteractor(user_data_access)
-signin_interactor = SigninInteractor(user_data_access,)
+signup_interactor = SignupInteractor(user_data_access, team_data_access)
+signin_interactor = SigninInteractor(user_data_access, team_data_access)
 
 
 # Register controllers
@@ -67,7 +68,7 @@ user_blueprint = UserBlueprint(signup_controller, signin_controller)
 team_controller = TeamController(team_data_access)
 player_controller = PlayerController(player_data_access)
 trade_controller = TradeController(player_data_access)
-
+opponent_controller = OpponentController(team_data_access)
 
 
 # Register Flask blueprints
@@ -75,6 +76,7 @@ app.register_blueprint(user_blueprint.bp)
 app.register_blueprint(team_controller.bp)
 app.register_blueprint(player_controller.bp)
 app.register_blueprint(trade_controller.bp)
+app.register_blueprint(opponent_controller.bp)
 
 
 @app.route("/")

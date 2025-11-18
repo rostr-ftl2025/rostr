@@ -1,7 +1,8 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
-    password BYTEA NOT NULL
+    password BYTEA NOT NULL,
+    opponent_team_id INT
 );
 
 

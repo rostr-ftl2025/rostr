@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Connection Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>ROSTR API Connection Test</h1>
+    <div id="results"></div>
+    <hr>
+    <button onclick="testBackend()">Test Backend Health</button>
+    <button onclick="testSignup()">Test Signup</button>
+    <button onclick="testSignin()">Test Signin</button>
+
+    <script>
+        const API_URL = "http://localhost:5006";
+        const results = document.getElementById('results');
+
+        function log(message, isError = false) {
+            const p = document.createElement('p');
+            p.className = isError ? 'error' : 'success';
+            p.textContent = message;
+            results.appendChild(p);
+        }
+
+        async function testBackend() {
+            results.innerHTML = '';
+            log('Testing backend connection...');
+            try {
+                const response = await fetch(`${API_URL}/`);
+                const text = await response.text();
+                log(`✅ Backend: ${text}`);
+            } catch (err) {
+                log(`❌ Backend Error: ${err.message}`, true);
+            }
+        }
+
+        async function testSignup() {
+            results.innerHTML = '';
+            const username = 'testuser_' + Math.floor(Math.random() * 1000);
+            log(`Testing signup with username: ${username}...`);
+            try {
+                const response = await fetch(`${API_URL}/api/users/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password: 'test123' })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    log(`✅ Signup Success: ${data.username}`);
+                } else {
+                    log(`❌ Signup Error: ${data.error}`, true);
+                }
+            } catch (err) {
+                log(`❌ Network Error: ${err.message}`, true);
+            }
+        }
+
+        async function testSignin() {
+            results.innerHTML = '';
+            log('Testing signin with vritidahiya...');
+            try {
+                const response = await fetch(`${API_URL}/api/users/signin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'vritidahiya', password: '123' })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    log(`✅ Signin Success: Got JWT token`);
+                    log(`Token: ${data.token.substring(0, 50)}...`);
+                } else {
+                    log(`❌ Signin Error: ${data.error}`, true);
+                }
+            } catch (err) {
+                log(`❌ Network Error: ${err.message}`, true);
+            }
+        }
+
+        // Auto-test on load
+        window.onload = () => {
+            testBackend();
+        };
+    </script>
+</body>
+</html>

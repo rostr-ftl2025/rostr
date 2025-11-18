@@ -1,172 +1,105 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Button } from './ui/button';
-import { Trophy } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { handleSubmit } from "~/sign-in-page/api/handleSubmit";
 
-export function AuthPage() {
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [signupName, setSignupName] = useState('');
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
+interface AuthModalProps {
+  initialMode?: "signin" | "signup";
+  onClose: () => void;
+  onGoToHomeSection?: (sectionId: 'about' | 'how-it-works') => void;
+}
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Login logic will be implemented with Supabase
-    console.log('Login:', { loginEmail, loginPassword });
-  };
+export function AuthModal({ initialMode = "signup", onClose, onGoToHomeSection }: AuthModalProps) {
+  const [mode, setMode] = useState<"signin" | "signup">(initialMode);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [userInfo, setUserInfo] = useState<{ username?: string; userID?: string } | null>(null);
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Signup logic will be implemented with Supabase
-    console.log('Signup:', { signupName, signupEmail, signupPassword });
-  };
+  // Update mode when initialMode prop changes (from navbar clicks)
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shadow-lg">
-              <Trophy className="h-8 w-8 text-primary" />
-            </div>
-          </div>
-          <h1 className="mb-4 text-4xl tracking-tight">Welcome to rostr.</h1>
-          <p className="text-muted-foreground text-lg">
-            Your championship roster starts here
-          </p>
+    <div className="bg-white rounded-2xl shadow-lg p-8 w-96 transition-all duration-300">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setMode("signin")}
+            className={`px-4 py-2 rounded-l-lg font-semibold border border-black bg-white text-black hover:bg-black hover:text-white transition-colors ${
+              mode === "signin" ? "ring-2 ring-black" : ""
+            } hover:cursor-pointer`}
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => setMode("signup")}
+            className={`px-4 py-2 rounded-r-lg font-semibold border border-black bg-white text-black hover:bg-black hover:text-white transition-colors ${
+              mode === "signup" ? "ring-2 ring-black" : ""
+            } hover:cursor-pointer`}
+          >
+            Sign Up
+          </button>
         </div>
-
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 h-12">
-            <TabsTrigger value="login" className="text-base">Sign In</TabsTrigger>
-            <TabsTrigger value="signup" className="text-base">Sign Up</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="login">
-            <Card className="border-2 shadow-lg">
-              <CardHeader className="space-y-2 pb-8">
-                <CardTitle className="text-2xl">Sign In</CardTitle>
-                <CardDescription className="text-base">
-                  Get back to dominating your league
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleLogin} className="space-y-6">
-                  <div className="space-y-3">
-                    <Label htmlFor="login-email" className="text-base">Email</Label>
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      required
-                      className="h-12 text-base"
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <Label htmlFor="login-password" className="text-base">Password</Label>
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      required
-                      className="h-12 text-base"
-                    />
-                  </div>
-                  <Button type="submit" className="w-full h-12 text-base rounded-full">
-                    Sign In
-                  </Button>
-                  <div className="text-center pt-2">
-                    <button
-                      type="button"
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="signup">
-            <Card className="border-2 shadow-lg">
-              <CardHeader className="space-y-2 pb-8">
-                <CardTitle className="text-2xl">Create Account</CardTitle>
-                <CardDescription className="text-base">
-                  Join 50,000+ winning managers
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSignup} className="space-y-5">
-                  <div className="space-y-3">
-                    <Label htmlFor="signup-name" className="text-base">Full Name</Label>
-                    <Input
-                      id="signup-name"
-                      type="text"
-                      placeholder="John Doe"
-                      value={signupName}
-                      onChange={(e) => setSignupName(e.target.value)}
-                      required
-                      className="h-12 text-base"
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <Label htmlFor="signup-email" className="text-base">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={signupEmail}
-                      onChange={(e) => setSignupEmail(e.target.value)}
-                      required
-                      className="h-12 text-base"
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <Label htmlFor="signup-password" className="text-base">Password</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={signupPassword}
-                      onChange={(e) => setSignupPassword(e.target.value)}
-                      required
-                      className="h-12 text-base"
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <Label htmlFor="signup-confirm-password" className="text-base">Confirm Password</Label>
-                    <Input
-                      id="signup-confirm-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={signupConfirmPassword}
-                      onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                      required
-                      className="h-12 text-base"
-                    />
-                  </div>
-                  <Button type="submit" className="w-full h-12 text-base rounded-full">
-                    Start Winning
-                  </Button>
-                  <p className="text-xs text-center text-muted-foreground pt-2">
-                    By signing up, you agree to our Terms & Privacy Policy
-                  </p>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        <button
+          onClick={onClose}
+          className="px-2 py-1 border border-black rounded bg-white text-black hover:bg-black hover:text-white transition-colors hover:cursor-pointer"
+        >
+          x
+        </button>
       </div>
+      <h2 className="text-2xl font-semibold mb-4 text-gray-700 text-center">
+        {mode === "signin" ? "Sign In" : "Sign Up"}
+      </h2>
+
+      <form
+        onSubmit={(e) =>
+          handleSubmit(e, {
+            mode,
+            username,
+            password,
+            setMessage,
+            setLoading,
+            setUsername,
+            setPassword,
+            setUserInfo,
+          })
+        }
+        className="flex flex-col space-y-3"
+      >
+        <input
+          className="border rounded-lg px-3 py-2"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          className="border rounded-lg px-3 py-2"
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button
+          className="py-2 rounded-lg font-semibold bg-sky-400 text-white border border-sky-400 hover:bg-sky-500 disabled:opacity-50 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
+          type="submit"
+          disabled={loading}
+        >
+          {loading
+            ? mode === "signin"
+              ? "Signing In..."
+              : "Creating..."
+            : mode === "signin"
+            ? "Sign In"
+            : "Sign Up"}
+        </button>
+
+        {message && (
+          <p className="text-center text-sm text-gray-600">{message}</p>
+        )}
+      </form>
     </div>
   );
 }

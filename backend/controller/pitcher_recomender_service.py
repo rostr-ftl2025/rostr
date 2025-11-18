@@ -7,7 +7,9 @@ import time
 
 
 class PitcherRecommenderService:
-    WEIGHTS = {
+
+    # Default (standard) weights
+    BASE_WEIGHTS = {
         "pitching+": 0.30, # Overall Pitching performance (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
         "stuff+": 0.25, # Overall Quality of pitches (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
         "k-bb%": 0.20, # Strikeout minus Walk percentage
@@ -19,72 +21,155 @@ class PitcherRecommenderService:
         "wpa/li": 0.05 # Clutch performance metric (https://library.fangraphs.com/misc/wpa-li/)
     }
 
+    # Additional user preference profiles
+    PROFILES = {
+        "standard": BASE_WEIGHTS,
+        "strikeout": {
+            "pitching+": 0.05,
+            "stuff+": 0.40,      # key
+            "k-bb%": 0.80,       # key
+            "xfip-": -0.05,
+            "barrel%": -0.03,
+            "hardhit%": -0.03,
+            "gb%": 0.02,
+            "swstr%": 0.40,      # key
+            "wpa/li": 0.02,
+        },
+        "control": {
+            "pitching+": 0.10,
+            "stuff+": 0.05,
+            "k-bb%": 0.20,       # supporting
+            "xfip-": -0.80,      # key negative stat
+            "barrel%": -0.50,    # key negative stat
+            "hardhit%": -0.50,   # key negative stat
+            "gb%": 0.10,
+            "swstr%": 0.05,
+            "wpa/li": 0.10,
+        },
+        "groundball": {
+            "pitching+": 0.05,
+            "stuff+": 0.10,
+            "k-bb%": 0.05,
+            "xfip-": -0.05,
+            "barrel%": -0.40,     # key
+            "hardhit%": -0.40,    # key
+            "gb%": 0.80,          # key
+            "swstr%": 0.05,
+            "wpa/li": 0.05,
+        },
+        "clutch": {
+            "pitching+": 0.20,
+            "stuff+": 0.10,
+            "k-bb%": 0.10,
+            "xfip-": -0.05,
+            "barrel%": -0.05,
+            "hardhit%": -0.05,
+            "gb%": 0.05,
+            "swstr%": 0.10,
+            "wpa/li": 0.80,       # key
+        },
+        "sabermetrics": {
+            "pitching+": 0.05,
+            "stuff+": 0.10,
+            "k-bb%": 0.40,       # key
+            "xfip-": -0.80,      # key
+            "barrel%": -0.05,
+            "hardhit%": -0.05,
+            "gb%": 0.02,
+            "swstr%": 0.40,      # key
+            "wpa/li": 0.02,
+        },
+    }
+
+    EXPLANATIONS = {
+        "standard": (
+            "You selected the standard strategy, so the recommended lineup prioritizes a balanced mix of "
+            "overall pitching quality, strikeout ability, contact management, and consistency. "
+            "This approach highlights the best all-around performers on your roster."
+        ),
+        "strikeout": (
+            "You selected the strikeout strategy, so the recommended lineup prioritizes pitchers with "
+            "high K-BB%, strong Stuff+, and elite swinging-strike rates. "
+            "This approach focuses on maximizing raw dominance and whiff potential."
+        ),
+        "control": (
+            "You selected the control strategy, so the recommended lineup prioritizes pitchers who excel "
+            "at limiting walks, suppressing hard contact, and producing strong run-prevention metrics such as xFIP-. "
+            "This approach favors stability, reliability, and efficient innings."
+        ),
+        "groundball": (
+            "You selected the groundball strategy, so the recommended lineup prioritizes pitchers with strong "
+            "groundball rates, soft-contact profiles, and barrel suppression. "
+            "This approach emphasizes inducing grounders and minimizing dangerous contact."
+        ),
+        "clutch": (
+            "You selected the clutch strategy, so the recommended lineup prioritizes pitchers who perform well "
+            "in high-leverage moments, supported by strong WPA/LI and reliable command. "
+            "This approach highlights arms who excel under pressure and in tight matchups."
+        ),
+        "sabermetrics": (
+            "You selected the sabermetrics strategy, so the recommended lineup prioritizes analytically efficient "
+            "pitchers who excel in run-prevention metrics like xFIP-, while also valuing K-BB% and swinging-strike rate. "
+            "This approach emphasizes sustainable, data-backed effectiveness."
+        ),
+    }
+
+
     @staticmethod
     def norm(df: pd.DataFrame, cols: list):
+        """Normalize selected columns between 0 and 1."""
         scaler = MinMaxScaler()
         df[cols] = scaler.fit_transform(df[cols])
         return df
-    
+     
     @staticmethod
-    def compute_weighted_stats(df: pd.DataFrame):
+    def compute_weighted_stats(df: pd.DataFrame, weights: dict):
+        """Compute a weighted score for each pitcher."""
         scores = np.zeros(len(df))
-        for stat, weight in PitcherRecommenderService.WEIGHTS.items():
+        for stat, weight in weights.items():
             vals = df[stat].values.copy()
+            # For negatively weighted metrics (e.g., xfip-, barrel%), lower is better
             if weight < 0:
                 vals = np.ones_like(vals, dtype=float) - vals
             scores += vals * abs(weight)
         return scores
 
     @staticmethod
-    def diversity_penalty(df_candidates: pd.DataFrame, df_team: pd.DataFrame, alpha=0.4):
-        features = list(PitcherRecommenderService.WEIGHTS.keys())
-        sim_matrix = cosine_similarity(df_candidates[features], df_team[features])
-        max_sim = sim_matrix.max(axis=1)
-        penalty = -alpha * max_sim 
-        return penalty
-
-    @staticmethod
-    def recommend_pitchers(current_team: list[dict], candidates: list[dict], top_n=5, alpha=0.4):
-        df_team = pd.DataFrame(current_team)
-        df_candidates = pd.DataFrame(candidates)
-        features = list(PitcherRecommenderService.WEIGHTS.keys())
-        full = pd.concat([df_team, df_candidates])
-        full = PitcherRecommenderService.norm(full, features)
-        df_team = full.iloc[:len(df_team)].reset_index(drop=True)
-        df_candidates = full.iloc[len(df_team):].reset_index(drop=True)
-
-        df_candidates["base_score"] = PitcherRecommenderService.compute_weighted_stats(df_candidates)
-
-        penalty = PitcherRecommenderService.diversity_penalty(df_candidates, df_team, alpha)
-        df_candidates["final_score"] = df_candidates["base_score"] + penalty
-
-        return df_candidates.sort_values(by="final_score", ascending=False).head(top_n)
-
-    @staticmethod
-    def recommend_starting_pitchers(team_pitchers: list[dict], top_n=5):
+    def recommend_starting_pitchers(team_pitchers: list[dict], top_n=5, profile="standard"):
         """
         Recommend the top N starting pitchers from the user's current roster.
-        Ranking is based on the weighted grading formula and advanced metrics.
+        The weighting changes based on the selected fantasy manager profile.
         """
 
-        # Convert team list to DataFrame
-        df = pd.DataFrame(team_pitchers)
-        features = list(PitcherRecommenderService.WEIGHTS.keys())
+        # Choose profile weights
+        weights = PitcherRecommenderService.PROFILES.get(profile, PitcherRecommenderService.BASE_WEIGHTS)
 
-        # Normalize within team (important so all stats are comparable)
+        # Convert to DataFrame
+        df = pd.DataFrame(team_pitchers)
+        features = list(weights.keys())
+
+        # Ensure all metrics exist in the DataFrame
+        for f in features:
+            if f not in df.columns:
+                df[f] = 0.0
+
+        # Normalize within team
         df = PitcherRecommenderService.norm(df, features)
 
-        # Compute overall weighted score (like your base_score)
-        df["score"] = PitcherRecommenderService.compute_weighted_stats(df)
+        # Compute weighted score using selected profile
+        df["score"] = PitcherRecommenderService.compute_weighted_stats(df, weights)
 
-        # Sort descending — higher score means better pitcher
+        # Sort and rank
         df_sorted = df.sort_values(by="score", ascending=False).head(top_n)
-
-        # Add rank column (1 = best)
         df_sorted["rank"] = range(1, len(df_sorted) + 1)
 
-        return df_sorted[["rank", "name", "team", "score"]].reset_index(drop=True)
+        #Get explanation
+        explanation = PitcherRecommenderService.EXPLANATIONS.get(
+            profile,
+            PitcherRecommenderService.EXPLANATIONS["standard"]
+        )
 
+        return df_sorted[["rank", "name", "team", "score"]].reset_index(drop=True), explanation
 
 
 '''

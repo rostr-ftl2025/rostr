@@ -10,15 +10,31 @@ class PitcherRecommenderService:
 
     # Default (standard) weights
     BASE_WEIGHTS = {
-        "pitching+": 0.30, # Overall Pitching performance (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
-        "stuff+": 0.25, # Overall Quality of pitches (https://library.fangraphs.com/pitching/stuff-location-and-pitching-primer/)
-        "k-bb%": 0.20, # Strikeout minus Walk percentage
-        "xfip-": -0.15, # Pure pitching effectiveness, FIP-Fielding Independent Pitching (lower is better)
-        "barrel%": -0.10, # % of batted balls hit the ideal exit velocity/launch angle combination for a HR or OB play
-        "hardhit%": -0.10, # % of batted balls with an exit velocity of 95+ mph
-        "gb%": 0.05, # Ground Ball percentage
-        "swstr%": 0.05, # Whiffs per pitch
-        "wpa/li": 0.05 # Clutch performance metric (https://library.fangraphs.com/misc/wpa-li/)
+        "pitching+": 0.30, 
+        # Overall pitching performance, adjusting for context (ballpark, opponents, catcher, etc.)
+        # Primary indicator of pitcher talent --- most stable, context-adjusted
+        "stuff+": 0.25, 
+        # Overall quality of a pitcher's raw pitches --- velocity, movement, shape.
+        # Highly predictive and less luck-driven.
+        # Complements Pitching+ by focusing specifically on pitch rawness.
+        "k-bb%": 0.20, 
+        # Strikeout minus Walk percentage
+        # Tied to fantasy production (strikeouts) and reliability (avoiding walks → fewer blowups)
+        "xfip-": -0.15, 
+        # Estimate a pitcher’s expected ERA by removing home-run luck and focusing only on repeatable skills (strikeouts, walks, fly balls). 
+        # More stable and more predictive than ERA
+        "barrel%": -0.10, 
+        # % of batted balls hit the ideal exit velocity/launch angle combination for a HR or OB play
+        "hardhit%": -0.10, 
+        # % of batted balls with an exit velocity of 95+ mph
+        "gb%": 0.05, 
+        # Ground Ball percentage
+        # Ground-ball pitchers generally avoid home runs and barrels, but doesn’t guarantee dominance
+        "swstr%": 0.05, 
+        # Swinging strike rate. Measures how often hitters miss pitches 
+        # An important factor behind strikeouts
+        "wpa/li": 0.05 
+        # Wins probability added by a player, adjusted to remove leverage effects (i.e. pressure).
     }
 
     # Additional user preference profiles

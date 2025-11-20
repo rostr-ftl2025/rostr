@@ -86,7 +86,7 @@ function SideBSearch({ players, setPlayers }: SideBSearchProps) {
   return (
     <div className="rounded-2xl bg-white p-4 shadow space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Side B (Other Team)</h2>
+        <h2 className="text-lg font-semibold">Other Team</h2>
         <p className="text-xs text-gray-500">Search and add pitchers.</p>
       </div>
 
@@ -303,8 +303,8 @@ export default function TradeEvaluator() {
         </div>
 
         <p className="text-sm text-gray-700">
-          Choose which players from your team are involved in the trade (Side A), then
-          search and add the opposing players (Side B). The evaluation will be explained
+          Choose which players from your team are involved in the trade (My Team), then
+          search and add the opposing players (Other Team). The evaluation will be explained
           through the lens of your selected fantasy strategy.
         </p>
 
@@ -317,8 +317,8 @@ export default function TradeEvaluator() {
         {result && (
           <div className="bg-white rounded-2xl shadow p-4 mt-6 space-y-2">
             <h2 className="text-xl font-bold">Trade Summary</h2>
-            <p>Side A Total: {result.sideA.total_grade.toFixed(2)}</p>
-            <p>Side B Total: {result.sideB.total_grade.toFixed(2)}</p>
+            <p>My Team Total: {result.sideA.total_grade.toFixed(2)}</p>
+            <p>Other Team Total: {result.sideB.total_grade.toFixed(2)}</p>
             <p>Difference: {result.diff.toFixed(2)}</p>
             {typeof result.fairness_pct === "number" && (
               <p>Fairness: {result.fairness_pct.toFixed(1)}%</p>
@@ -356,10 +356,10 @@ export default function TradeEvaluator() {
         </button>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* SIDE A: your team */}
+          {/*  My Team: your team */}
           <div className="rounded-2xl bg-white p-4 shadow space-y-3">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Side A (Your Team)</h2>
+              <h2 className="text-lg font-semibold">Your Team</h2>
               {loadingTeam && (
                 <span className="text-xs text-gray-500">Loading team...</span>
               )}
@@ -419,7 +419,7 @@ export default function TradeEvaluator() {
             </div>
           </div>
 
-          {/* SIDE B: search */}
+          {/* Other Team: search */}
           <SideBSearch players={sideBPlayers} setPlayers={setSideBPlayers} />
         </div>
 

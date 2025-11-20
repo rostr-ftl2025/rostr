@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { API_URL } from "~/config"
 import { fetchTeamPlayers, fetchPitchers } from "~/team-maker-page/api/teamRoster"
 
 interface Player {
@@ -246,7 +247,7 @@ export default function TradeEvaluator() {
     setError(null)
     setResult(null)
     try {
-      const res = await fetch("http://localhost:5006/api/trade/evaluate", {
+      const res = await fetch(`${API_URL}/api/trade/evaluate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

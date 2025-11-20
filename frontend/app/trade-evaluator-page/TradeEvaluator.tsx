@@ -422,13 +422,6 @@ export default function TradeEvaluator() {
           {/* Other Team: search */}
           <SideBSearch players={sideBPlayers} setPlayers={setSideBPlayers} />
         </div>
-
-        <a
-          href="/team-maker"
-          className="inline-block text-sm font-semibold text-[#562424] hover:underline"
-        >
-          ← Back to Team Maker
-        </a>
       </div>
     </div>
   )

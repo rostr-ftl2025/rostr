@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react"
-// 🔽 adjust this path to match your project structure
-// same module that exports fetchUserTeams/fetchTeamPlayers/fetchPitchers
 import { fetchTeamPlayers, fetchPitchers } from "~/team-maker-page/api/teamRoster"
 
 interface Player {
@@ -24,13 +22,25 @@ interface TradeResult {
   sideB: { total_grade: number }
   diff: number
   winner: string
+  fairness_pct?: number
   suggestion?: string
+  profile?: string
+  profile_explanation?: string
 }
 
 interface SideBSearchProps {
   players: PitcherData[]
   setPlayers: React.Dispatch<React.SetStateAction<PitcherData[]>>
 }
+
+const PROFILE_OPTIONS = [
+  { value: "standard", label: "Standard (balanced)" },
+  { value: "strikeout", label: "Strikeout-heavy" },
+  { value: "control", label: "Control & ratios" },
+  { value: "groundball", label: "Groundball / contact" },
+  { value: "clutch", label: "Clutch / WPA" },
+  { value: "sabermetrics", label: "Sabermetrics / xFIP" },
+]
 
 function SideBSearch({ players, setPlayers }: SideBSearchProps) {
   const [name, setName] = useState("")
@@ -195,6 +205,8 @@ export default function TradeEvaluator() {
   const [loading, setLoading] = useState(false)
   const [loadingTeam, setLoadingTeam] = useState(false)
 
+  const [profile, setProfile] = useState<string>("standard") // 🔥 NEW
+
   // Read teamId from ?teamId=...
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -240,6 +252,7 @@ export default function TradeEvaluator() {
         body: JSON.stringify({
           sideA: selectedSideAPlayers.map((p) => p.player_name),
           sideB: sideBPlayers.map((p) => p.Name),
+          profile, // 🔥 send profile
         }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -271,12 +284,29 @@ export default function TradeEvaluator() {
           </div>
         )}
 
+        {/* 🔥 Strategy selection */}
+        <div className="rounded-2xl bg-gray-50 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm font-semibold text-gray-800">
+            Fantasy Strategy / Profile
+          </div>
+          <select
+            value={profile}
+            onChange={(e) => setProfile(e.target.value)}
+            className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#850027]"
+          >
+            {PROFILE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <p className="text-sm text-gray-700">
           Choose which players from your team are involved in the trade (Side A), then
-          search and add the opposing players (Side B).
+          search and add the opposing players (Side B). The evaluation will be explained
+          through the lens of your selected fantasy strategy.
         </p>
-
-
 
         {error && (
           <div className="text-red-600 text-sm mt-2">
@@ -290,13 +320,27 @@ export default function TradeEvaluator() {
             <p>Side A Total: {result.sideA.total_grade.toFixed(2)}</p>
             <p>Side B Total: {result.sideB.total_grade.toFixed(2)}</p>
             <p>Difference: {result.diff.toFixed(2)}</p>
+            {typeof result.fairness_pct === "number" && (
+              <p>Fairness: {result.fairness_pct.toFixed(1)}%</p>
+            )}
             <p>Winner: {result.winner}</p>
             {result.suggestion && (
               <p className="text-sm text-gray-700">{result.suggestion}</p>
             )}
+            {result.profile_explanation && (
+              <div className="mt-3 border-t pt-2 text-xs text-gray-700">
+                <div className="font-semibold mb-1">
+                  Strategy:{" "}
+                  {
+                    PROFILE_OPTIONS.find((p) => p.value === result.profile)
+                      ?.label ?? result.profile
+                  }
+                </div>
+                <p>{result.profile_explanation}</p>
+              </div>
+            )}
           </div>
         )}
-
 
         <button
           onClick={handleEvaluate}
@@ -310,8 +354,6 @@ export default function TradeEvaluator() {
         >
           {loading ? "Analyzing..." : "Evaluate Trade"}
         </button>
-
-
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* SIDE A: your team */}
@@ -381,8 +423,13 @@ export default function TradeEvaluator() {
           <SideBSearch players={sideBPlayers} setPlayers={setSideBPlayers} />
         </div>
 
+        <a
+          href="/team-maker"
+          className="inline-block text-sm font-semibold text-[#562424] hover:underline"
+        >
+          ← Back to Team Maker
+        </a>
       </div>
-      
     </div>
   )
 }

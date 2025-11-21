@@ -74,13 +74,13 @@ export default function LineupRecommendationPage() {
       <h1 className="text-4xl font-bold mb-6">Recommended Starting Lineup</h1>
 
       {/* Explanation Section */}
-      <p className="max-w-3xl text-center text-gray-700 leading-relaxed mb-10 mx-auto px-4">
+      <p className="max-w-3xl text-center text-lg text-gray-700 leading-relaxed mb-10 mx-auto px-4">
         {explanation}
       </p>
 
-      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border bg-sky-100 shadow mb-16">
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border bg-sky-100 shadow mb-16">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-sky-200">
+          <thead className="bg-sky-200 text-lg">
             <tr>
               <th className="px-3 py-2 font-semibold text-center">Rank</th>
               <th className="px-3 py-2 font-semibold">Name</th>
@@ -90,9 +90,9 @@ export default function LineupRecommendationPage() {
           <tbody>
             {lineup.map((p, index) => (
               <tr key={index} className="border-t bg-white">
-                <td className="px-3 py-2 text-center font-bold text-[#562424]">{index + 1}</td>
-                <td className="px-3 py-2 font-medium">{p.name}</td>
-                <td className="px-3 py-2 text-gray-700">{p.position}</td>
+                <td className="px-4 py-3 text-center text-base font-bold text-[#562424]">{index + 1}</td>
+                <td className="px-4 py-3 text-base font-medium">{p.name}</td>
+                <td className="px-4 py-3 text-base text-gray-700">{p.position}</td>
               </tr>
             ))}
           </tbody>

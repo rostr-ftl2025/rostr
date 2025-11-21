@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
-// 🔽 adjust this path to match your project structure
-// same module that exports fetchUserTeams/fetchTeamPlayers/fetchPitchers
+import { API_URL } from "~/config"
 import { fetchTeamPlayers, fetchPitchers } from "~/team-maker-page/api/teamRoster"
 
 interface Player {
@@ -24,13 +23,25 @@ interface TradeResult {
   sideB: { total_grade: number }
   diff: number
   winner: string
+  fairness_pct?: number
   suggestion?: string
+  profile?: string
+  profile_explanation?: string
 }
 
 interface SideBSearchProps {
   players: PitcherData[]
   setPlayers: React.Dispatch<React.SetStateAction<PitcherData[]>>
 }
+
+const PROFILE_OPTIONS = [
+  { value: "standard", label: "Standard (balanced)" },
+  { value: "strikeout", label: "Strikeout-heavy" },
+  { value: "control", label: "Control & ratios" },
+  { value: "groundball", label: "Groundball / contact" },
+  { value: "clutch", label: "Clutch / WPA" },
+  { value: "sabermetrics", label: "Sabermetrics / xFIP" },
+]
 
 function SideBSearch({ players, setPlayers }: SideBSearchProps) {
   const [name, setName] = useState("")
@@ -74,9 +85,9 @@ function SideBSearch({ players, setPlayers }: SideBSearchProps) {
   const isAdded = (idfg: string) => players.some((p) => p.IDfg === idfg)
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow space-y-4">
+    <div className="rounded-2xl p-4 shadow space-y-4 bg-sky-100">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Side B (Other Team)</h2>
+        <h2 className="text-lg font-semibold">Other Team</h2>
         <p className="text-xs text-gray-500">Search and add pitchers.</p>
       </div>
 
@@ -128,7 +139,7 @@ function SideBSearch({ players, setPlayers }: SideBSearchProps) {
       {/* Search results table */}
       <div className="overflow-hidden rounded-2xl border bg-white shadow">
         <table className="min-w-full text-left text-xs">
-          <thead className="bg-gray-50">
+          <thead className="bg-sky-200">
             <tr>
               <th className="px-3 py-2">Name</th>
               <th className="px-3 py-2">Team</th>
@@ -195,6 +206,8 @@ export default function TradeEvaluator() {
   const [loading, setLoading] = useState(false)
   const [loadingTeam, setLoadingTeam] = useState(false)
 
+  const [profile, setProfile] = useState<string>("standard") // 🔥 NEW
+
   // Read teamId from ?teamId=...
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -234,12 +247,13 @@ export default function TradeEvaluator() {
     setError(null)
     setResult(null)
     try {
-      const res = await fetch("http://localhost:5006/api/trade/evaluate", {
+      const res = await fetch(`${API_URL}/api/trade/evaluate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sideA: selectedSideAPlayers.map((p) => p.player_name),
           sideB: sideBPlayers.map((p) => p.Name),
+          profile, // 🔥 send profile
         }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -271,12 +285,29 @@ export default function TradeEvaluator() {
           </div>
         )}
 
+        {/* 🔥 Strategy selection */}
+        <div className="rounded-2xl bg-gray-100 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm font-semibold text-gray-800">
+            Fantasy Strategy / Profile
+          </div>
+          <select
+            value={profile}
+            onChange={(e) => setProfile(e.target.value)}
+            className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#850027]"
+          >
+            {PROFILE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <p className="text-sm text-gray-700">
-          Choose which players from your team are involved in the trade (Side A), then
-          search and add the opposing players (Side B).
+          Choose which players from your team are involved in the trade (My Team), then
+          search and add the opposing players (Other Team). The evaluation will be explained
+          through the lens of your selected fantasy strategy.
         </p>
-
-
 
         {error && (
           <div className="text-red-600 text-sm mt-2">
@@ -287,16 +318,30 @@ export default function TradeEvaluator() {
         {result && (
           <div className="bg-white rounded-2xl shadow p-4 mt-6 space-y-2">
             <h2 className="text-xl font-bold">Trade Summary</h2>
-            <p>Side A Total: {result.sideA.total_grade.toFixed(2)}</p>
-            <p>Side B Total: {result.sideB.total_grade.toFixed(2)}</p>
+            <p>My Team Total: {result.sideA.total_grade.toFixed(2)}</p>
+            <p>Other Team Total: {result.sideB.total_grade.toFixed(2)}</p>
             <p>Difference: {result.diff.toFixed(2)}</p>
+            {typeof result.fairness_pct === "number" && (
+              <p>Fairness: {result.fairness_pct.toFixed(1)}%</p>
+            )}
             <p>Winner: {result.winner}</p>
             {result.suggestion && (
               <p className="text-sm text-gray-700">{result.suggestion}</p>
             )}
+            {result.profile_explanation && (
+              <div className="mt-3 border-t pt-2 text-xs text-gray-700">
+                <div className="font-semibold mb-1">
+                  Strategy:{" "}
+                  {
+                    PROFILE_OPTIONS.find((p) => p.value === result.profile)
+                      ?.label ?? result.profile
+                  }
+                </div>
+                <p>{result.profile_explanation}</p>
+              </div>
+            )}
           </div>
         )}
-
 
         <button
           onClick={handleEvaluate}
@@ -311,13 +356,11 @@ export default function TradeEvaluator() {
           {loading ? "Analyzing..." : "Evaluate Trade"}
         </button>
 
-
-
         <div className="grid md:grid-cols-2 gap-6">
-          {/* SIDE A: your team */}
-          <div className="rounded-2xl bg-white p-4 shadow space-y-3">
+          {/*  My Team: your team */}
+          <div className="rounded-2xl p-4 shadow space-y-3 bg-sky-100">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Side A (Your Team)</h2>
+              <h2 className="text-lg font-semibold">Your Team</h2>
               {loadingTeam && (
                 <span className="text-xs text-gray-500">Loading team...</span>
               )}
@@ -329,8 +372,8 @@ export default function TradeEvaluator() {
               </p>
             ) : (
               <div className="max-h-80 overflow-y-auto rounded-xl border border-gray-100">
-                <table className="min-w-full text-left text-xs">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full text-left text-xs bg-white">
+                  <thead className="bg-sky-200">
                     <tr>
                       <th className="px-3 py-2">Select</th>
                       <th className="px-3 py-2">Name</th>
@@ -377,12 +420,10 @@ export default function TradeEvaluator() {
             </div>
           </div>
 
-          {/* SIDE B: search */}
+          {/* Other Team: search */}
           <SideBSearch players={sideBPlayers} setPlayers={setSideBPlayers} />
         </div>
-
       </div>
-      
     </div>
   )
 }

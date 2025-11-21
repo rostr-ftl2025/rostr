@@ -108,9 +108,9 @@ export default function GradingDisplayPage() {
         <span className="text-[#562424] font-bold">{avgGrade}</span>
       </p>
 
-      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border bg-sky-100 shadow mb-16">
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border bg-sky-100 shadow mb-16">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-sky-200">
+          <thead className="bg-sky-200 text-lg">
             <tr>
               <th className="px-3 py-2 font-semibold">Name</th>
               <th className="px-3 py-2 font-semibold">Position</th>
@@ -132,12 +132,12 @@ export default function GradingDisplayPage() {
                     className="border-t bg-white hover:cursor-pointer hover:bg-sky-100"
                     onClick={() => setExpanded(expanded === index ? null : index)}
                   >
-                    <td className="px-3 py-2 font-medium">{p.player_name}</td>
-                    <td className="px-3 py-2 text-gray-700">{p.position}</td>
-                    <td className="px-3 py-2 text-gray-700 text-right font-semibold text-[#562424]">
+                    <td className="px-4 py-3 text-base font-medium">{p.player_name}</td>
+                    <td className="px-4 py-3 text-base">{p.position}</td>
+                    <td className="px-4 py-3 text-gray-700 text-right text-base font-semibold text-[#562424]">
                       {p.grade ?? "N/A"}
                     </td>
-                    <td className="px-3 py-2 text-right">
+                    <td className="px-4 py-3 text-right text-base">
                       {p.analysis ? (
                         <a className="text-[#562424] hover:underline">
                           {expanded === index ? "Hide" : "View"}
@@ -151,7 +151,7 @@ export default function GradingDisplayPage() {
                   {expanded === index && p.analysis && (
                     <tr className="bg-gray-50">
                       <td colSpan={4} className="px-3 py-4">
-                        <p className="whitespace-pre-wrap text-sm text-gray-700">
+                        <p className="whitespace-pre-wrap text-lg leading-relaxed text-gray-800">
                           {p.analysis}
                         </p>
                       </td>
@@ -170,7 +170,7 @@ export default function GradingDisplayPage() {
         <div className="flex-1">
           <h2 className="text-2xl font-bold mb-4">Pitcher Grade Scale</h2>
           <div className="overflow-hidden rounded-2xl border bg-sky-100 shadow">
-        <table className="min-w-full text-left text-sm">
+        <table className="min-w-full text-left text-base">
           <thead className="bg-sky-200">
             <tr>
           <th className="px-3 py-2">Tier</th>
@@ -213,7 +213,7 @@ export default function GradingDisplayPage() {
         <div className="flex-1">
           <h2 className="text-2xl font-bold mb-4">Team Average Grade Scale</h2>
           <div className="overflow-hidden rounded-2xl border bg-sky-100 shadow">
-        <table className="min-w-full text-left text-sm">
+        <table className="min-w-full text-left text-base">
           <thead className="bg-sky-200">
             <tr>
           <th className="px-3 py-2">Team Tier</th>

@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 from database.data_access_interface import PlayerDataAccessInterface
 from controller.pitcher_grading_service import PitcherGradingService
-
-# Optional: pull fresh stats when needed
+from controller.pitcher_recomender_service import PitcherRecommenderService
 from pybaseball import pitching_stats
+
 
 class TradeController:
     def __init__(self, player_data_access: PlayerDataAccessInterface):
@@ -13,11 +13,18 @@ class TradeController:
 
         # Cache season stats so we can produce analysis text consistently
         self.season = 2025
-        self.season_df = pitching_stats(self.season)  # Name, K%, IP, ERA, ...
+        # Optional: wrap in try/except so the server still starts if pybaseball breaks
+        try:
+            self.season_df = pitching_stats(self.season)  # Name, K%, IP, ERA, ...
+        except Exception as e:
+            print(f"[TradeController] Failed to load pitching_stats({self.season}): {e}")
+            self.season_df = None
 
     def _find_stats_by_name(self, name: str):
         """Return {'K%': float0to1, 'IP': float, 'ERA': float} or None."""
-        # pybaseball returns K% as 0.xx (fraction), not % integer; your service expects 0.xx too.
+        if self.season_df is None:
+            return None
+
         df = self.season_df
         row = df[df["Name"].str.lower() == str(name).strip().lower()]
         if row.empty:
@@ -30,14 +37,16 @@ class TradeController:
 
     def _grade_player(self, name: str):
         """
-        Try DB first (if grade stored). If absent, compute from season stats.
-        Returns dict with player_name, position?, grade, analysis
+        Compute grade from 2025 stats using your PitcherGradingService.
+        Returns dict with player_name, grade, analysis.
         """
-        # Try to locate by name in DB (optional—depends on DAO features)
-        # If you have a direct get_by_name, use it; otherwise skip DB and compute from stats.
         stats = self._find_stats_by_name(name)
         if stats is None:
-            return {"player_name": name, "grade": 0.0, "analysis": f"No 2025 stats found for {name}."}
+            return {
+                "player_name": name,
+                "grade": 0.0,
+                "analysis": f"No 2025 stats found for {name}.",
+            }
 
         grade = PitcherGradingService.calculate_pitcher_grade(stats)
         analysis = PitcherGradingService.analyze_pitcher(stats, grade)
@@ -58,12 +67,15 @@ class TradeController:
         Body:
         {
           "sideA": ["Kevin Gausman", "Gerrit Cole"],
-          "sideB": ["Zac Gallen"]
+          "sideB": ["Zac Gallen"],
+          "profile": "standard" | "strikeout" | "control" | ...
         }
         """
         body = request.get_json(silent=True) or {}
         sideA = body.get("sideA", [])
         sideB = body.get("sideB", [])
+        profile = body.get("profile", "standard")  # 🔥 NEW
+
         if not isinstance(sideA, list) or not isinstance(sideB, list):
             return jsonify({"error": "sideA and sideB must be arrays of names"}), 400
 
@@ -83,11 +95,18 @@ class TradeController:
         elif winner == "B" and (-diff) > target_diff:
             suggestion = f"Side A needs ~{abs(diff + target_diff):.2f} grade to make this ~95% fair."
 
+        profile_explanation = PitcherRecommenderService.EXPLANATIONS.get(
+            profile,
+            PitcherRecommenderService.EXPLANATIONS["standard"],
+        )
+
         return jsonify({
             "sideA": {"players": A_players, "total_grade": A_total},
             "sideB": {"players": B_players, "total_grade": B_total},
             "diff": diff,
             "fairness_pct": fairness_pct,
             "winner": winner,
-            "suggestion": suggestion
+            "suggestion": suggestion,
+            "profile": profile,
+            "profile_explanation": profile_explanation,  # 🔥 NEW
         }), 200

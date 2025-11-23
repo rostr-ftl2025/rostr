@@ -1,4 +1,4 @@
-from database.data_access_interface import UserDataAccessInterface, TeamDataAccessInterface
+from ..database.data_access_interface import UserDataAccessInterface, TeamDataAccessInterface
 import bcrypt
 
 class SigninInteractor:

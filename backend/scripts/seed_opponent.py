@@ -11,8 +11,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from dotenv import load_dotenv
-from database import Database
-from database.data_access_postgresql import TeamDataAccess
+from ..database import Database
+from ..database.data_access_postgresql import TeamDataAccess
 
 load_dotenv()
 

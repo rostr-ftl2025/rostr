@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from interactors import SignupInteractor
+from ..interactors import SignupInteractor
 import bcrypt
 
 

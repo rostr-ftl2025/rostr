@@ -6,3 +6,4 @@ psycopg[binary]
 bcrypt
 rapidfuzz
 scikit-learn
+pytest

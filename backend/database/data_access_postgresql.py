@@ -1,9 +1,9 @@
 from typing import List, Optional
-from database import Database
-from database.entities.user_entity import UserEntity
-from database.entities.team_entity import TeamEntity
-from database.entities.player_entity import PlayerEntity
-from database.data_access_interface import (
+from .database import Database
+from .entities.user_entity import UserEntity
+from .entities.team_entity import TeamEntity
+from .entities.player_entity import PlayerEntity
+from .data_access_interface import (
     UserDataAccessInterface,
     TeamDataAccessInterface,
     PlayerDataAccessInterface,

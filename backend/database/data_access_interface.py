@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from database.entities.user_entity import UserEntity
-from database.entities.team_entity import TeamEntity
-from database.entities.player_entity import PlayerEntity
+from .entities.user_entity import UserEntity
+from .entities.team_entity import TeamEntity
+from .entities.player_entity import PlayerEntity
 
 
 # -------------------------

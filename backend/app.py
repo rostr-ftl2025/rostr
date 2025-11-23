@@ -4,14 +4,14 @@ import os
 from flask import Flask
 from flask_cors import CORS
 
-from database import Database
+from .database import Database
 
-from interactors import (
+from .interactors import (
     SignupInteractor,
     SigninInteractor
 )
 
-from controller import (
+from .controller import (
     SignupController,
     SigninController,
     TeamController,
@@ -20,13 +20,13 @@ from controller import (
     OpponentController
 )
 
-from database.data_access_postgresql import (
+from .database.data_access_postgresql import (
     UserDataAccess,
     TeamDataAccess,
     PlayerDataAccess
 )
 
-from blueprint import (
+from .blueprint import (
     UserBlueprint
 )
 

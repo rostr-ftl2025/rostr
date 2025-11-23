@@ -1,6 +1,6 @@
 from flask import Blueprint
-from database.entities.user_entity import UserEntity
-from controller import SignupController, SigninController
+from ..database.entities.user_entity import UserEntity
+from ..controller import SignupController, SigninController
 
 
 class UserBlueprint:

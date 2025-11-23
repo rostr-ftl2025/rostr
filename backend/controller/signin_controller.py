@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from interactors import SigninInteractor
+from ..interactors import SigninInteractor
 import bcrypt, jwt, datetime
 
 

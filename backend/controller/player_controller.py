@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify
-from database.data_access_interface import PlayerDataAccessInterface
-from database.entities.player_entity import PlayerEntity
+from ..database.data_access_interface import PlayerDataAccessInterface
+from ..database.entities.player_entity import PlayerEntity
 import pybaseball
 from pybaseball import pitching_stats
 import rapidfuzz
-from controller.pitcher_grading_service import PitcherGradingService
+from .pitcher_grading_service import PitcherGradingService
 
 
 class PlayerController:

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 import { handleSubmit } from "~/sign-in-page/api/handleSubmit";
 
 interface AuthModalProps {
@@ -21,94 +22,94 @@ export function AuthModal({ initialMode = "signup", onClose, onGoToHomeSection }
   }, [initialMode]);
 
   return (
-    // Full-screen overlay that centers the modal
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-2xl shadow-lg p-8 w-96 transition-all duration-300"
-        onClick={(e) => e.stopPropagation()} // prevent overlay click from firing when interacting with the modal
-      >
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex space-x-2">
+    <div className="min-h-screen flex items-center justify-center bg-[#070738]">
+      {/* lift popup slightly to account for sticky navbar */}
+      <div className="max-w-md w-full mx-auto transform -translate-y-12 md:-translate-y-16">
+         {/* White rounded card */}
+         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+           <div className="flex items-center justify-between mb-4">
+             <div className="inline-flex rounded-full bg-slate-100 p-1 shadow-inner">
+               <button
+                 onClick={() => setMode("signin")}
+                 className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                   mode === "signin"
+                     ? "bg-[#070738] text-white shadow-sm"
+                     : "text-slate-700 hover:bg-slate-200"
+                 }`}
+               >
+                 Sign In
+               </button>
+               <button
+                 onClick={() => setMode("signup")}
+                 className={`ml-1 px-4 py-2 rounded-full text-sm font-medium transition ${
+                   mode === "signup"
+                     ? "bg-[#070738] text-white shadow-sm"
+                     : "text-slate-700 hover:bg-slate-200"
+                 }`}
+               >
+                 Sign Up
+               </button>
+             </div>
+
             <button
-              onClick={() => setMode("signin")}
-              className={`px-4 py-2 rounded-l-lg font-semibold border border-black bg-white text-black hover:bg-black hover:text-white transition-colors ${
-                mode === "signin" ? "ring-2 ring-black" : ""
-              } hover:cursor-pointer`}
+              onClick={onClose}
+              className="text-[#070738] p-1 rounded-full hover:bg-gray-200 transition-colors"
             >
-              Sign In
+              <X className="w-6 h-6" />
             </button>
-            <button
-              onClick={() => setMode("signup")}
-              className={`px-4 py-2 rounded-r-lg font-semibold border border-black bg-white text-black hover:bg-black hover:text-white transition-colors ${
-                mode === "signup" ? "ring-2 ring-black" : ""
-              } hover:cursor-pointer`}
-            >
-              Sign Up
-            </button>
-          </div>
-          <button
-            onClick={onClose}
-            className="px-2 py-1 border border-black rounded bg-white text-black hover:bg-black hover:text-white transition-colors hover:cursor-pointer"
+           </div>
+
+          <h2 className="text-center text-[#070738] text-2xl font-semibold mb-2">
+            {mode === "signin" ? "Welcome back" : "Create your account"}
+          </h2>
+          <p className="text-center text-slate-600 text-sm mb-4">
+            {mode === "signin" ? "Sign in to continue to Rostr." : "Sign up to start making teams."}
+          </p>
+
+          <form
+            onSubmit={(e) =>
+              handleSubmit(e, {
+                mode,
+                username,
+                password,
+                setMessage,
+                setLoading,
+                setUsername,
+                setPassword,
+                setUserInfo,
+              })
+            }
+            className="flex flex-col gap-3"
           >
-            x
-          </button>
+            <input
+              className="w-full rounded-2xl px-4 py-3 bg-slate-50 border border-slate-200 text-slate-700 placeholder-slate-400 outline-none focus:ring-2 focus:ring-[#0b73d1]/30 transition-shadow"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <input
+              className="w-full rounded-2xl px-4 py-3 bg-slate-50 border border-slate-200 text-slate-700 placeholder-slate-400 outline-none focus:ring-2 focus:ring-[#0b73d1]/30 transition-shadow"
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              className="w-full py-3 rounded-2xl font-semibold bg-[#070738] text-white hover:opacity-95 transition disabled:opacity-60"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (mode === "signin" ? "Signing In..." : "Creating...") : mode === "signin" ? "Sign In" : "Sign Up"}
+            </button>
+
+            {message && (
+              <p className="text-center text-sm text-slate-600 mt-1">{message}</p>
+            )}
+          </form>
         </div>
-        <h2 className="text-2xl font-semibold mb-4 text-gray-700 text-center">
-          {mode === "signin" ? "Sign In" : "Sign Up"}
-        </h2>
-
-        <form
-          onSubmit={(e) =>
-            handleSubmit(e, {
-              mode,
-              username,
-              password,
-              setMessage,
-              setLoading,
-              setUsername,
-              setPassword,
-              setUserInfo,
-            })
-          }
-          className="flex flex-col space-y-3"
-        >
-          <input
-            className="border rounded-lg px-3 py-2"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <input
-            className="border rounded-lg px-3 py-2"
-            placeholder="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button
-            className="py-2 rounded-lg font-semibold bg-sky-400 text-white border border-sky-400 hover:bg-sky-500 disabled:opacity-50 transition-opacity duration-200 ease-in-out hover:opacity-90 hover:cursor-pointer"
-            type="submit"
-            disabled={loading}
-          >
-            {loading
-              ? mode === "signin"
-                ? "Signing In..."
-                : "Creating..."
-              : mode === "signin"
-              ? "Sign In"
-              : "Sign Up"}
-          </button>
-
-          {message && (
-            <p className="text-center text-sm text-gray-600">{message}</p>
-          )}
-        </form>
-      </div>
-    </div>
-  );
-}
+       </div>
+     </div>
+   );
+ }

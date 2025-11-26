@@ -69,7 +69,7 @@ export function Navbar({ onNavigate, onOpenAuth }: NavbarProps) {
               onClick={() => window.location.reload()}
               className="flex hover:opacity-80 transition-opacity cursor-pointer"
             >
-              <span className="tracking-tight text-4xl font-extrabold">rostr.</span>
+              <span className="tracking-tight text-4xl font-extrabold">Rostr.</span>
             </button>
           </div>
 
@@ -106,7 +106,7 @@ export function Navbar({ onNavigate, onOpenAuth }: NavbarProps) {
           onClick={() => window.location.reload()}
           className="flex hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <span className="tracking-tight text-4xl font-extrabold">rostr.</span>
+          <span className="tracking-tight text-4xl font-extrabold">Rostr.</span>
         </button>
 
         <div className="flex gap-10 text-lg font-medium">

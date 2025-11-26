@@ -31,7 +31,7 @@ export function AuthModal({ initialMode = "signup", onClose, onGoToHomeSection }
              <div className="inline-flex rounded-full bg-slate-100 p-1 shadow-inner">
                <button
                  onClick={() => setMode("signin")}
-                 className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                 className={`px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer ${
                    mode === "signin"
                      ? "bg-[#070738] text-white shadow-sm"
                      : "text-slate-700 hover:bg-slate-200"
@@ -41,7 +41,7 @@ export function AuthModal({ initialMode = "signup", onClose, onGoToHomeSection }
                </button>
                <button
                  onClick={() => setMode("signup")}
-                 className={`ml-1 px-4 py-2 rounded-full text-sm font-medium transition ${
+                 className={`ml-1 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer ${
                    mode === "signup"
                      ? "bg-[#070738] text-white shadow-sm"
                      : "text-slate-700 hover:bg-slate-200"
@@ -53,7 +53,7 @@ export function AuthModal({ initialMode = "signup", onClose, onGoToHomeSection }
 
             <button
               onClick={onClose}
-              className="text-[#070738] p-1 rounded-full hover:bg-gray-200 transition-colors"
+              className="text-[#070738] p-1 rounded-full hover:bg-gray-200 transition-colors cursor-pointer"
             >
               <X className="w-6 h-6" />
             </button>
@@ -97,7 +97,7 @@ export function AuthModal({ initialMode = "signup", onClose, onGoToHomeSection }
               required
             />
             <button
-              className="w-full py-3 rounded-2xl font-semibold bg-[#070738] text-white hover:opacity-95 transition disabled:opacity-60"
+              className="w-full py-3 rounded-2xl font-semibold bg-[#070738] text-white hover:opacity-95 transition disabled:opacity-60 cursor-pointer"
               type="submit"
               disabled={loading}
             >

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HomePage } from "~/homepage/home-page";
+import { HomePage } from "~/home-page/HomePage";
 import { AuthModal } from "~/sign-in-page/AuthModal";
 import { Navbar } from "~/components/navbar";
 import type { Route } from "./+types/home";

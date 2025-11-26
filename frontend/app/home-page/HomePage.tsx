@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { BarChart3, Users, Target, Zap } from 'lucide-react';
 import type { Page } from '../routes/home';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { ImageWithFallback } from '../components/ui/ImageWithFallback';
 import { AuthModal } from '~/sign-in-page/AuthModal';
 import { getUserFromJWT } from '~/utils/getToken';
 

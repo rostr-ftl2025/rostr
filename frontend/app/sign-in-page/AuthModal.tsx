@@ -63,7 +63,7 @@ export function AuthModal({ initialMode = "signup", onClose, onGoToHomeSection }
             {mode === "signin" ? "Welcome back" : "Create your account"}
           </h2>
           <p className="text-center text-slate-600 text-sm mb-4">
-            {mode === "signin" ? "Sign in to continue to Rostr." : "Sign up to start making teams."}
+            {mode === "signin" ? "Sign in to continue to Rostr." : "Sign up to start grading."}
           </p>
 
           <form

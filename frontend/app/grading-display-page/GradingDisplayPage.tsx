@@ -28,6 +28,9 @@ export default function GradingDisplayPage() {
   const [recExplanation, setRecExplanation] = useState<string>("");
   const [recError, setRecError] = useState<string | null>(null);
 
+  // whether to show the Rank column (becomes true when user clicks to view recommendations)
+  const [showRanks, setShowRanks] = useState(false);
+
   const [expanded, setExpanded] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +83,8 @@ export default function GradingDisplayPage() {
   // Fetch recommended lineup and apply ranking to local pitchers list
   const applyRecommendation = async () => {
     if (!teamId) return;
+    // show the Rank column as soon as user requests a recommendation
+    setShowRanks(true);
     setRecError(null);
     setRecLoading(true);
     try {
@@ -140,6 +145,8 @@ export default function GradingDisplayPage() {
     setPitchers(originalPitchers);
     setRecExplanation("");
     setRecError(null);
+    // hide Rank column when clearing recommendation
+    setShowRanks(false);
   };
 
   if (loading) {
@@ -189,8 +196,8 @@ export default function GradingDisplayPage() {
         <table className="min-w-full text-left text-sm">
           <thead className="bg-sky-200 text-lg">
             <tr>
-              {/* Added Rank column */}
-              <th className="px-3 py-2 font-semibold text-center">Rank</th>
+              {/* Rank column is hidden until user requests recommendations */}
+              {showRanks && <th className="px-3 py-2 font-semibold text-center">Rank</th>}
               <th className="px-3 py-2 font-semibold">Name</th>
               <th className="px-3 py-2 font-semibold">Position</th>
               <th className="px-3 py-2 font-semibold text-right">Grade</th>
@@ -200,7 +207,7 @@ export default function GradingDisplayPage() {
           <tbody>
             {pitchers.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-3 py-4 text-center text-gray-500">
+                <td colSpan={showRanks ? 5 : 4} className="px-3 py-4 text-center text-gray-500">
                   No pitchers found for this team.
                 </td>
               </tr>
@@ -211,9 +218,11 @@ export default function GradingDisplayPage() {
                     className="border-t bg-white hover:cursor-pointer hover:bg-sky-100"
                     onClick={() => setExpanded(expanded === index ? null : index)}
                   >
-                    <td className="px-4 py-3 text-base font-medium text-center">
-                      {typeof p.rank === "number" ? p.rank : "-"}
-                    </td>
+                    {showRanks && (
+                      <td className="px-4 py-3 text-base font-medium text-center">
+                        {typeof p.rank === "number" ? p.rank : "-"}
+                      </td>
+                    )}
                     <td className="px-4 py-3 text-base font-medium">{p.player_name}</td>
                     <td className="px-4 py-3 text-base">{p.position}</td>
                     <td className="px-4 py-3 text-gray-700 text-right text-base font-semibold text-[#562424]">
@@ -232,7 +241,7 @@ export default function GradingDisplayPage() {
 
                   {expanded === index && p.analysis && (
                     <tr className="bg-gray-50">
-                      <td colSpan={5} className="px-3 py-4">
+                      <td colSpan={showRanks ? 5 : 4} className="px-3 py-4">
                         <p className="whitespace-pre-wrap text-lg leading-relaxed text-gray-800">
                           {p.analysis}
                         </p>

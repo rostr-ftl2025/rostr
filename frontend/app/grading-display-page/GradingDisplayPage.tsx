@@ -193,7 +193,7 @@ export default function GradingDisplayPage() {
       </p>
 
 
-    <div className="my-8 flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4">
         {!showProfileSelect ? (
           <>
             <button
@@ -263,7 +263,7 @@ export default function GradingDisplayPage() {
       </div>
       
 
-      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border bg-sky-50 shadow mb-8">
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border bg-sky-50 shadow my-8">
         <table className="min-w-full text-left text-sm">
           <thead className="bg-sky-200 text-lg">
             <tr>

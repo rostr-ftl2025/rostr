@@ -74,7 +74,7 @@ class TradeController:
         body = request.get_json(silent=True) or {}
         sideA = body.get("sideA", [])
         sideB = body.get("sideB", [])
-        profile = body.get("profile", "standard")  # 🔥 NEW
+        profile = body.get("profile", "standard") 
 
         if not isinstance(sideA, list) or not isinstance(sideB, list):
             return jsonify({"error": "sideA and sideB must be arrays of names"}), 400
@@ -85,15 +85,20 @@ class TradeController:
         diff = round(A_total - B_total, 2)  # >0 means A is sending more value
         denom = max(A_total, B_total, 1e-9)
         fairness_pct = round(100.0 * (1.0 - abs(diff) / denom), 1)
-        winner = "A" if A_total > B_total else ("B" if B_total > A_total else "Even")
+        if A_total > B_total:
+            winner = "Other Team"
+        elif B_total > A_total:
+            winner = "Your Team"
+        else:
+            winner = "Even"
 
         # Suggest a target to make it ~95% fair
         target_diff = round((1.0 - 0.95) * denom, 2)  # 5% gap allowed
         suggestion = None
         if winner == "A" and diff > target_diff:
-            suggestion = f"Side B needs ~{abs(diff - target_diff):.2f} grade to make this ~95% fair."
+            suggestion = f"Other Team needs ~{abs(diff - target_diff):.2f} grade to make this ~95% fair."
         elif winner == "B" and (-diff) > target_diff:
-            suggestion = f"Side A needs ~{abs(diff + target_diff):.2f} grade to make this ~95% fair."
+            suggestion = f"Your Team needs ~{abs(diff + target_diff):.2f} grade to make this ~95% fair."
 
         profile_explanation = PitcherRecommenderService.EXPLANATIONS.get(
             profile,
@@ -108,5 +113,5 @@ class TradeController:
             "winner": winner,
             "suggestion": suggestion,
             "profile": profile,
-            "profile_explanation": profile_explanation,  # 🔥 NEW
+            "profile_explanation": profile_explanation, 
         }), 200

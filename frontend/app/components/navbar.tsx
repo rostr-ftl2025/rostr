@@ -87,9 +87,13 @@ export function Navbar({ onNavigate, onOpenAuth }: NavbarProps) {
             <button onClick={() => navigateWithParams("/counter-lineup", true)} className={btnClassFor("counter-lineup")}>
               Counter Lineup
             </button>
+             {/* include TeamId for Counter Lineup */}
             <button onClick={() => navigateWithParams("/trade-evaluator")} className={btnClassFor("trade-evaluator")}>
               Trade Analyzer
-            </button>
+              </button>
+              <button onClick={() => navigateWithParams("/stats-page")} className={btnClassFor("stats-page")}>
+              Baseball Stats Guide
+              </button>
             <SignOutButton />
           </div>
         </div>

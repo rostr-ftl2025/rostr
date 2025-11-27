@@ -257,7 +257,7 @@ export function HomePage({ onNavigate, onOpenAuth }: HomePageProps) {
             onClick={() => window.location.reload()}
             className="flex hover:opacity-80 transition-opacity cursor-pointer"
           >
-            <span className="tracking-tight text-4xl font-extrabold">Rostr.</span>
+            <span className="tracking-tight text-4xl font-extrabold pr-10">Rostr.</span>
           </button>
         </div>
       </footer>

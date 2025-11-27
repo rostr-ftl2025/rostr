@@ -15,26 +15,15 @@ import {
 export function StatsPage() {
   return (
     <div className="flex flex-col text-[#070738]">
-      {/* Hero */}
-      <section className="relative py-32 lg:py-48 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <ImageWithFallback
-            src="/images/bluejays.jpg"
-            alt="Baseball stadium"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
 
-        <div className="container mx-auto px-6 relative z-10 text-center text-white">
-          <h1 className="text-6xl lg:text-7xl font-extrabold tracking-tight mb-8">
-            Baseball Stats, Explained.
-          </h1>
-          <p className="text-xl lg:text-2xl max-w-3xl mx-auto opacity-90 italic">
-            A simple guide to the numbers you&apos;ll see in Rostr and on every player card.
-          </p>
-        </div>
-      </section>
+      <div className="container mx-auto px-6 relative z-10 text-center mt-10">
+        <h1 className="text-6xl lg:text-7xl font-extrabold tracking-tight mb-8">
+          Baseball Stats, Explained.
+        </h1>
+        <p className="text-xl lg:text-2xl max-w-3xl mx-auto opacity-90 italic">
+          A simple guide to the numbers you&apos;ll see in Rostr and on every player card.
+        </p>
+      </div>
 
       {/* Why stats matter */}
       <section className="py-20 bg-white">
@@ -370,7 +359,7 @@ export function StatsPage() {
 
       {/* Footer */}
       <footer className="py-14 bg-[#070738] text-white">
-        <div className="container mx-auto text-right">
+        <div className="container mx-auto text-right pr-10">
           <button
             onClick={() => (window.location.href = "/")}
             className="hover:opacity-80 transition-opacity text-4xl font-extrabold"

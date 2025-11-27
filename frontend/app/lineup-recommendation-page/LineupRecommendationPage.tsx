@@ -84,7 +84,6 @@ export default function LineupRecommendationPage() {
             <tr>
               <th className="px-3 py-2 font-semibold text-center">Rank</th>
               <th className="px-3 py-2 font-semibold">Name</th>
-              <th className="px-3 py-2 font-semibold">Suggested Position</th>
             </tr>
           </thead>
           <tbody>
@@ -92,7 +91,6 @@ export default function LineupRecommendationPage() {
               <tr key={index} className="border-t bg-white">
                 <td className="px-4 py-3 text-center text-base font-bold text-[#562424]">{index + 1}</td>
                 <td className="px-4 py-3 text-base font-medium">{p.name}</td>
-                <td className="px-4 py-3 text-base text-gray-700">{p.position}</td>
               </tr>
             ))}
           </tbody>

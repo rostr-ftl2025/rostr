@@ -338,7 +338,7 @@ export default function TradeEvaluator() {
         )}
 
         {result && (
-          <div className="bg-white rounded-2xl shadow p-4 mt-6 space-y-2">
+          <div className="bg-gray-50 rounded-2xl shadow p-4 mt-6 space-y-2">
             <h2 className="text-xl font-bold">Trade Summary</h2>
             <p>My Team Total: {result.sideA.total_grade.toFixed(2)}</p>
             <p>Other Team Total: {result.sideB.total_grade.toFixed(2)}</p>
@@ -394,12 +394,11 @@ export default function TradeEvaluator() {
               </p>
             ) : (
               <div className="max-h-80 overflow-y-auto rounded-xl border border-gray-100">
-                <table className="min-w-full text-left text-xs bg-white">
-                  <thead className="bg-sky-200">
+                <table className="min-w-full text-left text-sm bg-white">
+                  <thead className="bg-sky-200 text-lg">
                     <tr>
                       <th className="px-3 py-2">Select</th>
                       <th className="px-3 py-2">Name</th>
-                      <th className="px-3 py-2">Pos</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -415,7 +414,6 @@ export default function TradeEvaluator() {
                             />
                           </td>
                           <td className="px-3 py-2 font-medium">{p.player_name}</td>
-                          <td className="px-3 py-2 text-gray-700">{p.position}</td>
                         </tr>
                       )
                     })}

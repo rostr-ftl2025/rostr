@@ -82,7 +82,7 @@ export default function OpponentWeaknessesPage() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-white py-10 text-gray-900">
-      <h1 className="text-4xl font-bold mb-4 text-red-600">
+      <h1 className="text-4xl font-bold mb-4">
         Opponent Team Analysis
       </h1>
 
@@ -93,7 +93,7 @@ export default function OpponentWeaknessesPage() {
 
       <div className="w-full max-w-2xl mb-8 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
         <h2 className="text-xl font-bold mb-2 text-red-700">
-          🎯 Scouting Report
+          Scouting Report
         </h2>
         <p className="text-sm text-gray-700">
           This page shows only the <strong>weaknesses</strong> of your opponent's pitchers.
@@ -101,12 +101,11 @@ export default function OpponentWeaknessesPage() {
         </p>
       </div>
 
-      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border bg-red-50 shadow mb-8">
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border bg-red-50 shadow mb-8">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-red-200">
+          <thead className="bg-red-200 text-lg">
             <tr>
               <th className="px-3 py-2 font-semibold">Pitcher</th>
-              <th className="px-3 py-2 font-semibold">Position</th>
               <th className="px-3 py-2 font-semibold text-right">Grade</th>
               <th className="px-3 py-2 font-semibold text-right">Weaknesses</th>
             </tr>
@@ -114,7 +113,7 @@ export default function OpponentWeaknessesPage() {
           <tbody>
             {opponentData.pitchers.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-3 py-4 text-center text-gray-500">
+                <td colSpan={3} className="px-3 py-4 text-center text-gray-500">
                   No opponent pitchers found.
                 </td>
               </tr>
@@ -126,7 +125,6 @@ export default function OpponentWeaknessesPage() {
                     onClick={() => setExpanded(expanded === index ? null : index)}
                   >
                     <td className="px-3 py-2 font-medium">{p.player_name}</td>
-                    <td className="px-3 py-2 text-gray-700">{p.position}</td>
                     <td className="px-3 py-2 text-gray-700 text-right font-semibold text-red-600">
                       {p.grade}
                     </td>
@@ -139,14 +137,14 @@ export default function OpponentWeaknessesPage() {
 
                   {expanded === index && p.weaknesses && (
                     <tr className="bg-red-50">
-                      <td colSpan={4} className="px-3 py-4">
+                      <td colSpan={3} className="px-3 py-4">
                         <div className="bg-white p-3 rounded border border-red-200">
                           <h4 className="font-bold text-red-700 mb-2">
                             Exploitable Weaknesses:
                           </h4>
-                          <pre className="whitespace-pre-wrap text-sm text-gray-700">
+                          <p className="whitespace-pre-wrap text-sm text-gray-700">
                             {p.weaknesses}
-                          </pre>
+                          </p>
                         </div>
                       </td>
                     </tr>

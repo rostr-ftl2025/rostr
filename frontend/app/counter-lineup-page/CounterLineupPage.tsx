@@ -87,14 +87,14 @@ export default function CounterLineupPage() {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-white py-10 text-gray-900">
+    <div className="flex flex-col items-center min-h-screen py-10 text-gray-900">
       <h1 className="text-4xl font-bold mb-4 text-green-600">
         Counter Lineup Strategy
       </h1>
 
-      <div className="w-full max-w-3xl mb-8 p-6 bg-green-50 border-2 border-green-200 rounded-xl">
+      <div className="w-full max-w-3xl mb-8 p-6 bg-green-100 border-2 border-green-200 rounded-xl">
         <h2 className="text-2xl font-bold mb-3 text-green-700">
-          📊 Opponent Scouting Summary
+          Opponent Scouting Summary
         </h2>
         <p className="text-lg mb-2">
           <strong>Weaknesses Identified:</strong> {lineupData.opponent_weaknesses.summary}
@@ -107,7 +107,7 @@ export default function CounterLineupPage() {
 
       <div className="w-full max-w-3xl mb-8 p-6 bg-blue-50 border-2 border-blue-200 rounded-xl">
         <h2 className="text-2xl font-bold mb-3 text-blue-700">
-          🎯 Counter-Strategy Explanation
+          Counter-Strategy Explanation
         </h2>
         <p className="text-sm mb-2">
           <strong>Selected Strategy:</strong>{" "}
@@ -115,41 +115,35 @@ export default function CounterLineupPage() {
             {lineupData.strategy}
           </span>
         </p>
-        <pre className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+        <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
           {lineupData.explanation}
-        </pre>
+        </p>
       </div>
 
       <h2 className="text-2xl font-bold mb-4">Recommended Starting Rotation</h2>
 
-      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border bg-green-50 shadow mb-8">
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border bg-green-50 shadow mb-8">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-green-200">
+          <thead className="bg-green-200 text-lg">
             <tr>
               <th className="px-3 py-2 font-semibold">Rank</th>
               <th className="px-3 py-2 font-semibold">Name</th>
-              <th className="px-3 py-2 font-semibold">Position</th>
               <th className="px-3 py-2 font-semibold text-right">Score</th>
             </tr>
           </thead>
           <tbody>
             {lineupData.lineup.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-3 py-4 text-center text-gray-500">
+                <td colSpan={3} className="px-3 py-4 text-center text-gray-500">
                   No lineup recommendations available.
                 </td>
               </tr>
             ) : (
               lineupData.lineup.map((p, index) => (
                 <tr key={index} className="border-t bg-white">
-                  <td className="px-3 py-2 font-bold text-green-600">
-                    #{p.rank}
-                  </td>
+                  <td className="px-3 py-2 font-bold text-green-600">#{p.rank}</td>
                   <td className="px-3 py-2 font-medium">{p.name}</td>
-                  <td className="px-3 py-2 text-gray-700">{p.position}</td>
-                  <td className="px-3 py-2 text-gray-700 text-right font-semibold">
-                    {p.score}
-                  </td>
+                  <td className="px-3 py-2 text-gray-700 text-right font-semibold">{p.score}</td>
                 </tr>
               ))
             )}

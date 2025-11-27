@@ -79,7 +79,7 @@ export function Navbar({ onNavigate, onOpenAuth }: NavbarProps) {
               Team Maker
             </button>
             <button onClick={() => navigateWithParams("/grading-display")} className={btnClassFor(["grading-display", "lineup-recommendation"])}>
-              Grading & Line-up Suggestion
+              Grading & Starting Rotation Suggestion
             </button>
             {/* include opponentTeamId for Opponent Team */}
             <button onClick={() => navigateWithParams("/opponent-weaknesses", true)} className={btnClassFor("opponent-weaknesses")}>

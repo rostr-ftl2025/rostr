@@ -255,13 +255,13 @@ export default function GradingDisplayPage() {
               onClick={() => setShowProfileSelect(true)}
               className="rounded-xl bg-sky-400 text-white border border-sky-400 px-6 py-2 text-sm font-semibold shadow hover:bg-sky-500 transition-all"
             >
-              Suggest Lineup
+              Suggest Starting Rotation:
             </button>
           </>
         ) : (
           <div className="bg-sky-50 border rounded-2xl shadow p-4 flex flex-col items-center space-y-3">
             <label htmlFor="profile" className="font-semibold text-gray-800">
-              Choose Your Lineup Strategy:
+              Choose Your Rotation Strategy:
             </label>
             <select
               id="profile"
@@ -281,7 +281,7 @@ export default function GradingDisplayPage() {
                 href={`/lineup-recommendation?teamId=${teamId}&profile=${selectedProfile}`}
                 className="rounded-xl bg-sky-400 text-white border border-sky-400 px-4 py-2 text-sm font-semibold shadow hover:bg-sky-500"
               >
-                View Recommended Lineup
+                View Recommended Starting Rotation
               </a>
 
               <button

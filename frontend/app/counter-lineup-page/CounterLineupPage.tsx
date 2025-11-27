@@ -120,7 +120,7 @@ export default function CounterLineupPage() {
         </pre>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">Recommended Starting Lineup</h2>
+      <h2 className="text-2xl font-bold mb-4">Recommended Starting Rotation</h2>
 
       <div className="w-full max-w-2xl overflow-hidden rounded-2xl border bg-green-50 shadow mb-8">
         <table className="min-w-full text-left text-sm">

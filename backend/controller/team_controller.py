@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from ..database.data_access_interface import TeamDataAccessInterface
 from ..database.entities.team_entity import TeamEntity
-from .pitcher_recomender_service import PitcherRecommenderService
+from ..services.pitcher_recomender_service import PitcherRecommenderService
 from pybaseball import pitching_stats
 
 

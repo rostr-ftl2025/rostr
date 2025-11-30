@@ -4,7 +4,7 @@ from ..database.entities.player_entity import PlayerEntity
 import pybaseball
 from pybaseball import pitching_stats
 import rapidfuzz
-from .pitcher_grading_service import PitcherGradingService
+from ..services.pitcher_grading_service import PitcherGradingService
 
 
 class PlayerController:
@@ -13,13 +13,14 @@ class PlayerController:
         player_data_access: an instance of a class that implements PlayerDataAccessInterface
         """
         self.player_data_access = player_data_access
+        '''
         self.bp = Blueprint("players", __name__)
 
         # Register routes
         self.bp.add_url_rule("/api/search-pitcher", view_func=self.search_pitcher, methods=["GET"])
         self.bp.add_url_rule("/api/teams/<int:team_id>/add-player", view_func=self.add_player, methods=["POST"])
         self.bp.add_url_rule("/api/teams/<int:team_id>/remove-player/<string:player_name>", view_func=self.remove_player, methods=["DELETE"])
-
+        '''
         # Preload all pitcher data (same as before)
         self.all_pitcher_data = pybaseball.pitching_stats(2025)
 
@@ -52,7 +53,7 @@ class PlayerController:
         ].to_dict(orient="records")
 
         return jsonify(data_as_array)
-
+    '''
     # ----------------------------------------------------
     # ADD PLAYER (CREATE)
     # ----------------------------------------------------
@@ -125,7 +126,7 @@ class PlayerController:
 
         except Exception as e:
             return jsonify({"error": str(e)}), 400
-
+    '''
     # ----------------------------------------------------
     # REMOVE PLAYER (DELETE)
     # ----------------------------------------------------

@@ -1,7 +1,6 @@
 from flask import jsonify
 from ..database.data_access_interface import PlayerDataAccessInterface
 from ..database.entities.player_entity import PlayerEntity
-import pybaseball
 from pybaseball import pitching_stats
 from ..services.pitcher_grading_service import PitcherGradingService
 

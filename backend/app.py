@@ -9,7 +9,8 @@ from .database import Database
 from .interactors import (
     SignupInteractor,
     SigninInteractor,
-    AddPlayerInteractor
+    AddPlayerInteractor,
+    RecommendLineupInteractor
 )
 
 from .controller import (
@@ -19,7 +20,8 @@ from .controller import (
     PlayerController,
     TradeController,
     OpponentController,
-    AddPlayerController
+    AddPlayerController,
+    RecommendLineupController
 )
 
 from .database.data_access_postgresql import (
@@ -30,7 +32,8 @@ from .database.data_access_postgresql import (
 
 from .blueprint import (
     UserBlueprint,
-    PlayerBlueprint
+    PlayerBlueprint,
+    TeamBlueprint
 )
 
 
@@ -60,6 +63,7 @@ player_data_access = PlayerDataAccess(db)
 signup_interactor = SignupInteractor(user_data_access, team_data_access)
 signin_interactor = SigninInteractor(user_data_access, team_data_access)
 add_player_interactor = AddPlayerInteractor(player_data_access)
+recommend_lineup_interactor = RecommendLineupInteractor(team_data_access)
 
 
 # Register controllers
@@ -67,13 +71,14 @@ signup_controller = SignupController(signup_interactor)
 signin_controller = SigninController(signin_interactor, app)
 player_controller = PlayerController(player_data_access)
 add_player_controller = AddPlayerController(add_player_interactor)
+team_controller = TeamController(team_data_access)
+recommend_lineup_controller = RecommendLineupController(recommend_lineup_interactor)
 
 
 # Register blueprints
 user_blueprint = UserBlueprint(signup_controller, signin_controller)
 player_blueprint = PlayerBlueprint(player_controller, add_player_controller)
-team_controller = TeamController(team_data_access)
-#player_controller = PlayerController(player_data_access)
+team_blueprint = TeamBlueprint(team_controller, recommend_lineup_controller)
 trade_controller = TradeController(player_data_access)
 opponent_controller = OpponentController(team_data_access)
 
@@ -81,8 +86,7 @@ opponent_controller = OpponentController(team_data_access)
 # Register Flask blueprints
 app.register_blueprint(user_blueprint.bp)
 app.register_blueprint(player_blueprint.bp)
-app.register_blueprint(team_controller.bp)
-#app.register_blueprint(player_controller.bp)
+app.register_blueprint(team_blueprint.bp)
 app.register_blueprint(trade_controller.bp)
 app.register_blueprint(opponent_controller.bp)
 

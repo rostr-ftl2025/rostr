@@ -1,7 +1,7 @@
 from flask import jsonify
 from ..database.data_access_interface import PlayerDataAccessInterface
 from ..database.entities.player_entity import PlayerEntity
-from pybaseball import pitching_stats
+import pybaseball 
 from ..services.pitcher_grading_service import PitcherGradingService
 
 
@@ -16,6 +16,7 @@ class AddPlayerInteractor:
     def execute(self, team_id, player_name, mlbid, idfg, position):
         # Validate inputs
         if not player_name or not team_id or not position or not mlbid or not idfg:
+
             return jsonify({"error": "All fields are required"}), 400
 
         try:
@@ -36,7 +37,7 @@ class AddPlayerInteractor:
                 return jsonify({"error": "Player already exists on this team"}), 409
             
             #Get the pitcher's stats
-            data = pitching_stats(2025)
+            data = pybaseball.pitching_stats(2025)
             player_data = data[data['Name'].str.lower() == player_name.lower()]
 
             if player_data.empty:

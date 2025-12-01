@@ -39,9 +39,9 @@ The codebase is organized by component and layer: frontend, backend, and databas
 
 ## System Architecture
 **Stack & Hosting:**  
-- **Frontend:** React, hosted on [e.g., Vercel]  
-- **Backend:** Node.js/Express, hosted on [e.g., Heroku or AWS EC2]  
-- **Database:** PostgreSQL, hosted on [e.g., AWS RDS]  
+- **Frontend:** React, hosted on XYZ 
+- **Backend:** Node.js/Express, hosted on XYZ
+- **Database:** PostgreSQL, hosted on XYZ
 - **Containerization:** Docker, managed via Docker Compose  
 
 **Component Interaction:**  

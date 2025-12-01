@@ -34,10 +34,6 @@ How to Use:
 ## Code Architecture
 **Overview:**  
 The codebase is organized by component and layer: frontend, backend, and database. Naming conventions follow PascalCase for components/classes and camelCase for functions/variables.  
-/frontend # React app for user interface
-/backend # Node.js/Express APIs
-/database # PostgreSQL schema and seed scripts
-/docker # Docker and Docker Compose configurations
 
 ---
 

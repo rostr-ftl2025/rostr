@@ -1,237 +1,179 @@
-import json
-import pandas as pd
+import pytest
+from unittest.mock import MagicMock, patch
 from flask import Flask
-
 from backend.interactors.add_player_interactor import AddPlayerInteractor
-
-# ------------------------------------------------------------
-# Fake Data Access Layer
-# ------------------------------------------------------------
-
-class FakePlayerDAO:
-    def __init__(self):
-        self.players = []
-        self.force_exception = False
-
-    def list_by_team(self, team_id):
-        return [p for p in self.players if p["team_id"] == team_id]
-
-    def create(self, entity):
-        if self.force_exception:
-            raise Exception("DB error")
-
-        player_dict = {
-            "team_id": entity.team_id,
-            "player_name": entity.player_name,
-            "mlbid": entity.mlbid,
-            "idfg": entity.idfg,
-            "position": entity.position,
-            "grade": entity.grade,
-            "analysis": entity.analysis,
-        }
-        self.players.append(player_dict)
-        return player_dict
+from backend.database.entities.player_entity import PlayerEntity
 
 
-# ------------------------------------------------------------
-# Fake grading service
-# ------------------------------------------------------------
-
-class FakeGradingService:
-    @staticmethod
-    def calculate_pitcher_grade(stats):
-        return 90
-
-    @staticmethod
-    def analyze_pitcher(stats, grade):
-        return "Elite pitcher"
-
-
-# ------------------------------------------------------------
-# Monkey-patch real grading service
-# ------------------------------------------------------------
-
-import backend.services.pitcher_grading_service
-backend.services.pitcher_grading_service.PitcherGradingService = FakeGradingService
-
-
-# ------------------------------------------------------------
-# Monkey-patch pybaseball.pitching_stats
-# ------------------------------------------------------------
-from backend.interactors import add_player_interactor as interactor_module
-
-
-def fake_pitching_stats(year):
-    df = pd.DataFrame([
-        {"Name": "Gerrit Cole", "K%": 33.0, "IP": 200.0, "ERA": 2.44}
-    ])
-    df["Name"] = df["Name"].astype(str)   # <-- IMPORTANT FIX
-    return df
-
-interactor_module.pybaseball.pitching_stats = fake_pitching_stats
-
-
-# ============================================================
-#                     TEST CASES
-# ============================================================
-
-def make_interactor():
-    """Helper to create interactor + app context."""
-    dao = FakePlayerDAO()
-    interactor = AddPlayerInteractor(dao)
+@pytest.fixture
+def app():
     app = Flask(__name__)
-    return interactor, dao, app
+    app.config["TESTING"] = True
+    return app
 
 
-# ------------------------------------------------------------
-# 1. Missing input → 400
-# ------------------------------------------------------------
+@pytest.fixture
+def client(app):
+    return app.test_client()
 
-def test_missing_fields():
-    interactor, dao, app = make_interactor()
 
+@pytest.fixture
+def mock_player_data():
+    return MagicMock()
+
+
+@pytest.fixture
+def interactor(mock_player_data):
+    return AddPlayerInteractor(player_data_access=mock_player_data)
+
+
+# ---------------------------------------------------------
+# TEST 1 — Missing required fields
+# ---------------------------------------------------------
+def test_missing_required_fields(app, interactor):
     with app.app_context():
-        resp, status = interactor.execute(
-            team_id=None,
-            player_name="Test",
-            mlbid="1",
-            idfg="2",
+        response, status = interactor.execute(
+            team_id=1,
+            player_name="",
+            mlbid=123,
+            idfg=456,
             position="P"
         )
 
     assert status == 400
-    data = json.loads(resp.get_data())
-    assert "required" in data["error"].lower()
+    assert "error" in response.json
 
 
-# ------------------------------------------------------------
-# 2. Duplicate by idfg → 409
-# ------------------------------------------------------------
+# ---------------------------------------------------------
+# TEST 2 — Duplicate player by name or idfg
+# ---------------------------------------------------------
+def test_duplicate_player(app, interactor, mock_player_data):
+    mock_player_data.list_by_team.return_value = [
+        {"player_name": "Shohei Ohtani", "idfg": "999"}
+    ]
 
-def test_duplicate_idfg():
-    interactor, dao, app = make_interactor()
-
-    dao.players.append({
-        "team_id": 1,
-        "player_name": "Someone Else",
-        "mlbid": "500",
-        "idfg": "456",
-        "position": "P",
-        "grade": 80,
-        "analysis": "Good"
-    })
-
+    # Case: same name
     with app.app_context():
-        resp, status = interactor.execute(
+        response, status = interactor.execute(
             team_id=1,
-            player_name="New Pitcher",
-            mlbid="111",
-            idfg="456",   # same IDFG
+            player_name="Shohei Ohtani",
+            mlbid=123,
+            idfg=888,
             position="P"
         )
+    assert status == 409
 
+    # Case: same idfg
+    mock_player_data.list_by_team.return_value = [
+        {"player_name": "Random", "idfg": "456"}
+    ]
+
+    with app.app_context():
+        response, status = interactor.execute(
+            team_id=1,
+            player_name="Different Name",
+            mlbid=999,
+            idfg=456,
+            position="P"
+        )
     assert status == 409
 
 
-# ------------------------------------------------------------
-# 3. Duplicate by name (case-insensitive) → 409
-# ------------------------------------------------------------
+# ---------------------------------------------------------
+# TEST 3 — No MLB stat match
+# ---------------------------------------------------------
+@patch("backend.interactors.add_player_interactor.pitching_stats")
+def test_no_mlb_stats(mock_pitching_stats, app, interactor, mock_player_data):
+    mock_player_data.list_by_team.return_value = []
 
-def test_duplicate_name():
-    interactor, dao, app = make_interactor()
-
-    dao.players.append({
-        "team_id": 1,
-        "player_name": "GERRIT COLE",
-        "mlbid": "500",
-        "idfg": "999",
-        "position": "P",
-        "grade": 80,
-        "analysis": "Good"
+    import pandas as pd
+    # Must include valid values for columns referenced in code to avoid pandas exceptions
+    mock_pitching_stats.return_value = pd.DataFrame({
+        "Name": ["Different Pitcher"],
+        "K%": [20.0],
+        "IP": [120.0],
+        "ERA": [3.50],
     })
 
     with app.app_context():
-        resp, status = interactor.execute(
+        response, status = interactor.execute(
             team_id=1,
-            player_name="gerrit cole",  # same lowercase
-            mlbid="111",
-            idfg="123",
-            position="P"
-        )
-
-    assert status == 409
-
-
-# ------------------------------------------------------------
-# 4. No pitching stats for this player → 404
-# ------------------------------------------------------------
-
-def test_no_stats_found():
-    interactor, dao, app = make_interactor()
-
-    # Monkeypatch stats to return empty
-    def empty_stats(year):
-        return pd.DataFrame([])
-
-    interactor_module.pitching_stats = empty_stats
-
-    with app.app_context():
-        resp, status = interactor.execute(
-            team_id=1,
-            player_name="Unknown Guy",
-            mlbid="111",
-            idfg="123",
+            player_name="Unknown Player",
+            mlbid=111,
+            idfg=222,
             position="P"
         )
 
     assert status == 404
-    data = json.loads(resp.get_data())
-    assert "no stats" in data["error"].lower()
+    assert "No stats found" in response.json["error"]
 
 
-# ------------------------------------------------------------
-# 5. Successful addition → 201
-# ------------------------------------------------------------
+# ---------------------------------------------------------
+# TEST 4 — Successful add
+# ---------------------------------------------------------
+@patch("backend.interactors.add_player_interactor.pitching_stats")
+@patch("backend.interactors.add_player_interactor.PitcherGradingService")
+def test_successful_add(mock_grading, mock_pitching_stats, app, interactor, mock_player_data):
+    mock_player_data.list_by_team.return_value = []
 
-def test_add_player_success():
-    interactor, dao, app = make_interactor()
+    # MLB stats mock
+    import pandas as pd
+    mock_pitching_stats.return_value = pd.DataFrame(
+        {
+            "Name": ["Gerrit Cole"],
+            "K%": [32.1],
+            "IP": [180.2],
+            "ERA": [2.63],
+        }
+    )
 
-    # Restore working fake stats
-    interactor_module.pitching_stats = fake_pitching_stats
+    # Grade service mock
+    mock_grading.calculate_pitcher_grade.return_value = 92.5
+    mock_grading.analyze_pitcher.return_value = "Elite strikeout ability."
+
+    # Mock DB create → should return dict
+    mock_player_data.create.return_value = {
+        "team_id": 1,
+        "player_name": "Gerrit Cole",
+        "mlbid": 123,
+        "idfg": 999,
+        "position": "P",
+        "grade": 92.5,
+        "analysis": "Elite strikeout ability.",
+    }
 
     with app.app_context():
-        resp, status = interactor.execute(
+        response, status = interactor.execute(
             team_id=1,
             player_name="Gerrit Cole",
-            mlbid="123",
-            idfg="456",
-            position="P"
+            mlbid=123,
+            idfg=999,
+            position="P",
         )
 
     assert status == 201
-    data = json.loads(resp.get_data())
-    assert data["player_name"] == "Gerrit Cole"
-    assert data["grade"] == 90
-    assert len(dao.players) == 1
+    assert response.json["player_name"] == "Gerrit Cole"
+    assert response.json["grade"] == 92.5
 
 
-# ------------------------------------------------------------
-# 6. DAO.create() throws exception → 400
-# ------------------------------------------------------------
+# ---------------------------------------------------------
+# TEST 5 — Exception inside execution → returns 400
+# ---------------------------------------------------------
+@patch("backend.interactors.add_player_interactor.pitching_stats")
+def test_exception_handling(mock_pitching_stats, app, interactor, mock_player_data):
+    mock_player_data.list_by_team.return_value = []
 
-def test_database_exception():
-    interactor, dao, app = make_interactor()
-    dao.force_exception = True
+    # Force exception
+    mock_pitching_stats.side_effect = Exception("Test exception")
 
     with app.app_context():
-        resp, status = interactor.execute(
+        response, status = interactor.execute(
             team_id=1,
-            player_name="Gerrit Cole",
-            mlbid="123",
-            idfg="456",
-            position="P"
+            player_name="Any Player",
+            mlbid=123,
+            idfg=456,
+            position="P",
         )
 
     assert status == 400
-    data = json.loads(resp.get_data())
-    assert "db error" in data["error"].lower()
+    assert "Test exception" in response.json["error"]

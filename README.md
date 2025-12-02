@@ -1,7 +1,7 @@
 # Rostr.
 
 **Problem Domain and Goal:**  
-Fantasy baseball is a multi-billion-dollar virtual sports market where players act as general managers of MLB teams. While the market is growing rapidly—valued at $2.3 billion and projected to reach $3.8 billion by 2030—getting started can be overwhelming for beginners, with countless rules, statistics, and strategies making the game intimidating. 
+Fantasy baseball is a multi-billion-dollar virtual sports market where players act as general managers of MLB teams. While the market is growing rapidly—valued at $2.3 billion and projected to reach $3.8 billion by 2030, getting started can be overwhelming for beginners, with countless rules, statistics, and strategies making the game intimidating. 
 
 Rostr addresses this by providing an all-in-one personal assistant focused exclusively on pitchers: it grades teams across key pitching stats, recommends optimized lineups, analyzes opponents’ rosters to highlight weaknesses, and evaluates trades. By transforming data into tangible insights, Rostr makes fantasy baseball accessible to first-time players, enabling smarter decisions, enhancing enjoyment, and expanding engagement with the market, ultimately making the game easy, fun, and strategically rewarding.
 
@@ -36,12 +36,19 @@ How to Use:
 The codebase is organized by component and layer: frontend, backend, and database. Naming conventions follow PascalCase for components/classes and camelCase for functions/variables.  
 
 ---
-
+## Team Bios
+- [Vriti Dahiya] https://github.com/vritid
+- [Jason Li] https://github.com/jasonli0616
+- [Lucinda Li] https://github.com/Lucinda-Li
+- [Mustafa Majeed] https://github.com/MustafaMaj23
+- [Rui Weng] https://github.com/r-weng
+- 
+---
 ## System Architecture
 **Stack & Hosting:**  
-- **Frontend:** React, hosted on XYZ 
-- **Backend:** Node.js/Express, hosted on XYZ
-- **Database:** PostgreSQL, hosted on XYZ
+- **Frontend:** React
+- **Backend:** Node.js/Express
+- **Database:** PostgreSQL
 - **Containerization:** Docker, managed via Docker Compose  
 
 **Component Interaction:**  

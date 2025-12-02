@@ -174,6 +174,14 @@ export function Navbar({ onNavigate, onOpenAuth }: NavbarProps) {
           >
             How It Works
           </button>
+        <button
+          className="hover:opacity-80 transition-all cursor-pointer"
+          onClick={() => navigateWithParams("/stats-page")}
+        >
+          Baseball Stats Guide
+        </button>
+
+
           <button
             onClick={() => {
               if (onOpenAuth) onOpenAuth("signin");

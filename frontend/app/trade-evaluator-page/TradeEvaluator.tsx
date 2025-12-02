@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { API_URL } from "~/config"
 import { fetchTeamPlayers, fetchPitchers } from "~/team-maker-page/api/teamRoster"
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  Scale, 
+  CheckCircle2 
+} from "lucide-react"
 
 interface Player {
   player_name: string
@@ -44,6 +50,101 @@ const PROFILE_OPTIONS = [
   { value: "sabermetrics", label: "Sabermetrics / xFIP" },
 ]
 
+/* -------------------------------------------------------------------------- */
+/* VISUAL COMPONENTS   */
+/* -------------------------------------------------------------------------- */
+
+function GradeBar({ label, score, max = 100, color = "bg-blue-600" }: { label: string, score: number, max?: number, color?: string }) {
+  const safeMax = max === 0 ? 100 : max
+  const pct = Math.min(100, Math.max(0, (score / safeMax) * 100))
+  
+  return (
+    <div className="w-full space-y-1">
+      <div className="flex justify-between text-xs font-semibold text-gray-700">
+        <span>{label}</span>
+        <span>{score.toFixed(2)}</span>
+      </div>
+      <div className="h-2.5 w-full rounded-full bg-gray-200 overflow-hidden">
+        <div 
+          className={`h-full rounded-full transition-all duration-1000 ${color}`} 
+          style={{ width: `${pct}%` }} 
+        />
+      </div>
+    </div>
+  )
+}
+
+function TradeResultVisualizer({ result }: { result: TradeResult }) {
+  // Calculate a max score for the bar charts so they scale relative to each other
+  const maxScore = Math.max(result.sideA.total_grade, result.sideB.total_grade) * 1.2
+  const isWin = result.diff >= 0
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Header Banner */}
+      <div className={`p-4 text-white flex items-center justify-between ${isWin ? 'bg-emerald-600' : 'bg-rose-600'}`}>
+        <div className="flex items-center gap-2">
+          {isWin ? <TrendingUp className="h-5 w-5"/> : <TrendingDown className="h-5 w-5"/>}
+          <h2 className="text-lg font-bold">
+            {isWin ? "Win for You" : "Loss for You"}
+          </h2>
+        </div>
+        <div className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+          Fairness: {result.fairness_pct?.toFixed(0)}%
+        </div>
+      </div>
+
+      <div className="p-6 grid md:grid-cols-2 gap-8">
+        {/* Left Column: Grades */}
+        <div className="space-y-6">
+          <GradeBar 
+            label="Your Team (Current Value)" 
+            score={result.sideA.total_grade} 
+            max={maxScore} 
+            color="bg-indigo-600"
+          />
+          <GradeBar 
+            label="Other Team (Acquired Value)" 
+            score={result.sideB.total_grade} 
+            max={maxScore} 
+            color="bg-emerald-500"
+          />
+          
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Scale className="h-4 w-4" />
+              <span>Verdict</span>
+            </div>
+            <p className="font-bold text-gray-900">{result.winner}</p>
+          </div>
+        </div>
+
+        {/* Right Column: Analysis Text */}
+        <div className="space-y-4">
+           {result.suggestion && (
+            <div className="flex gap-3 items-start">
+               <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+               <p className="text-sm text-gray-700 leading-relaxed">{result.suggestion}</p>
+            </div>
+           )}
+           
+           {result.profile_explanation && (
+            <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+               <div className="text-xs font-bold text-indigo-800 uppercase tracking-wide mb-2">
+                 Strategy Impact: {PROFILE_OPTIONS.find(p => p.value === result.profile)?.label}
+               </div>
+               <p className="text-sm text-indigo-900 leading-relaxed">
+                 {result.profile_explanation}
+               </p>
+            </div>
+           )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+//Original Trade calculation
 function SideBSearch({ players, setPlayers, teamPlayers }: SideBSearchProps) {
   const [name, setName] = useState("")
   const [results, setResults] = useState<PitcherData[]>([])
@@ -228,7 +329,7 @@ export default function TradeEvaluator() {
   const [loading, setLoading] = useState(false)
   const [loadingTeam, setLoadingTeam] = useState(false)
 
-  const [profile, setProfile] = useState<string>("standard") // 🔥 NEW
+  const [profile, setProfile] = useState<string>("standard")
 
   // Read teamId from ?teamId=...
   useEffect(() => {
@@ -275,7 +376,7 @@ export default function TradeEvaluator() {
         body: JSON.stringify({
           sideA: selectedSideAPlayers.map((p) => p.player_name),
           sideB: sideBPlayers.map((p) => p.Name),
-          profile, // 🔥 send profile
+          profile, 
         }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -307,7 +408,7 @@ export default function TradeEvaluator() {
           </div>
         )}
 
-        {/* 🔥 Strategy selection */}
+        {/*Strategy selection */}
         <div className="rounded-2xl bg-gray-100 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm font-semibold text-gray-800">
             Fantasy Strategy / Profile
@@ -337,33 +438,8 @@ export default function TradeEvaluator() {
           </div>
         )}
 
-        {result && (
-          <div className="bg-gray-50 rounded-2xl shadow p-4 mt-6 space-y-2">
-            <h2 className="text-xl font-bold">Trade Summary</h2>
-            <p>My Team Total: {result.sideA.total_grade.toFixed(2)}</p>
-            <p>Other Team Total: {result.sideB.total_grade.toFixed(2)}</p>
-            <p>Difference: {result.diff.toFixed(2)}</p>
-            {typeof result.fairness_pct === "number" && (
-              <p>Fairness: {result.fairness_pct.toFixed(1)}%</p>
-            )}
-            <p>Winner: {result.winner}</p>
-            {result.suggestion && (
-              <p className="text-sm text-gray-700">{result.suggestion}</p>
-            )}
-            {result.profile_explanation && (
-              <div className="mt-3 border-t pt-2 text-xs text-gray-700">
-                <div className="font-semibold mb-1">
-                  Strategy:{" "}
-                  {
-                    PROFILE_OPTIONS.find((p) => p.value === result.profile)
-                      ?.label ?? result.profile
-                  }
-                </div>
-                <p>{result.profile_explanation}</p>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Updated Result Section */}
+        {result && <TradeResultVisualizer result={result} />}
 
         <button
           onClick={handleEvaluate}
@@ -379,7 +455,7 @@ export default function TradeEvaluator() {
         </button>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/*  My Team: your team */}
+          {/* My Team: your team */}
           <div className="rounded-2xl p-4 shadow space-y-3 bg-sky-100">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold">Your Team</h2>

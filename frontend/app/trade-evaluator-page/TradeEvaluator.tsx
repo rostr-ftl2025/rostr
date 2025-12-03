@@ -77,7 +77,7 @@ function GradeBar({ label, score, max = 100, color = "bg-blue-600" }: { label: s
 function TradeResultVisualizer({ result }: { result: TradeResult }) {
   // Calculate a max score for the bar charts so they scale relative to each other
   const maxScore = Math.max(result.sideA.total_grade, result.sideB.total_grade) * 1.2
-  const isWin = result.diff >= 0
+  const isWin = result.sideB.total_grade > result.sideA.total_grade
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
